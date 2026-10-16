@@ -1,15 +1,15 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "checked_on": "2026-10-16",
   "project": {
     "engine": "Tuanjie 1.9.3",
     "renderer": "Built-in",
     "platform": "Windows x64"
   },
-  "retrieval_status": "blocked_browser_url_verification",
-  "free_candidates": 8,
+  "retrieval_status": "partially_acquired_publisher_direct_store_account_downloads_pending",
+  "free_candidates": 11,
   "paid_candidates": 2,
-  "downloaded_count": 0,
+  "downloaded_count": 1,
   "license_terms_source": "https://assetstore.u3d.cn/legal/terms-of-service-and-eula",
   "items": [
     {
@@ -37,7 +37,10 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china",
+      "publisher_alternate_source": "https://sound-works-12.itch.io/small-sound-kit",
+      "publisher_download_attempt": "public_page_request_returned_429_stopped"
     },
     {
       "id": "20001064",
@@ -63,7 +66,15 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china",
+      "international_listing": {
+        "id": "67834",
+        "source": "https://assetstore.unity.com/packages/vfx/particles/simple-fx-cartoon-particles-67834",
+        "version_display": "1.2.0",
+        "package_size_display": "235.4 KB",
+        "original_unity_version_display": "2021.3.17"
+      }
     },
     {
       "id": "20004867",
@@ -89,7 +100,8 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china"
     },
     {
       "id": "20005944",
@@ -114,7 +126,8 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china"
     },
     {
       "id": "20006729",
@@ -141,7 +154,8 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china"
     },
     {
       "id": "20005957",
@@ -166,7 +180,8 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china"
     },
     {
       "id": "20000589",
@@ -191,7 +206,8 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china"
     },
     {
       "id": "20003524",
@@ -216,7 +232,8 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china"
     },
     {
       "id": "20000870",
@@ -243,7 +260,8 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china"
     },
     {
       "id": "20005366",
@@ -269,7 +287,128 @@
       "downloaded": false,
       "imported": false,
       "runtime_validated": false,
-      "claim_status": "not_verified"
+      "claim_status": "not_verified",
+      "store_region": "china"
+    },
+    {
+      "id": "54116",
+      "title": "FREE Casual Game SFX Pack",
+      "source": "https://assetstore.unity.com/packages/audio/sound-fx/free-casual-game-sfx-pack-54116",
+      "store_region": "international",
+      "kind": "Audio",
+      "publisher": "Dustyroom",
+      "price_usd_checked": 0,
+      "package_size_display": "8.6 MB",
+      "version_display": "1.1",
+      "original_unity_version_display": "2021.3.0",
+      "pipelines_display": [
+        "Built-in",
+        "URP",
+        "HDRP"
+      ],
+      "priority": "P1",
+      "proposed_use": "休闲反馈、UI、奖励与短促冲击",
+      "license_display": "publisher_direct_CC0",
+      "checked_on": "2026-10-16",
+      "status": "downloaded_verified_structure",
+      "claimed": null,
+      "claim_status": "not_required_for_publisher_direct_distribution",
+      "downloaded": true,
+      "imported": false,
+      "runtime_validated": false,
+      "publisher_url": "https://dustyroom.com/free-casual-game-sounds/",
+      "actual_download_url": "https://dustyroom.com/casualgamesounds/DM-CGS.zip",
+      "actual_download_version": "publisher-direct-undated",
+      "actual_archive_sha256": "7ffc649a641a8b8ee0136d431b5dd69bcf9eeabc250a18285ad984ad09bd4a4f",
+      "actual_archive_bytes": 8891352,
+      "actual_audio_count": 50,
+      "license_evidence": "AssetLibrary/Audio/Dustyroom-CasualGameSounds/license.pdf",
+      "local_folder": "AssetLibrary/Audio/Dustyroom-CasualGameSounds",
+      "notes": "官网 ZIP 已获取并核对 CC0；商店账号领取未操作。源文件含满幅样本，尚未主观试听、导入或运行验证。"
+    },
+    {
+      "id": "109565",
+      "title": "Cartoon FX Remaster Free",
+      "source": "https://assetstore.unity.com/packages/vfx/particles/cartoon-fx-remaster-free-109565",
+      "store_region": "international",
+      "kind": "VFX",
+      "publisher": "Jean Moreno",
+      "price_usd_checked": 0,
+      "package_size_display": "12.8 MB",
+      "version_display": "R 1.5.1",
+      "original_unity_version_display": "2020.3.12",
+      "pipelines_display": [
+        "Built-in",
+        "URP"
+      ],
+      "priority": "P1",
+      "proposed_use": "卡通命中、烟雾与魔法效果候选",
+      "license_display": "standard_unity_asset_store_eula",
+      "checked_on": "2026-10-16",
+      "status": "not_acquired",
+      "claimed": null,
+      "claim_status": "not_verified",
+      "downloaded": false,
+      "imported": false,
+      "runtime_validated": false,
+      "notes": "国际站已核对商品页；团结 1.9.3 实际导入与播放尚未验证。"
+    },
+    {
+      "id": "177824",
+      "title": "SwordSoundPack",
+      "source": "https://assetstore.unity.com/packages/audio/sound-fx/weapons/swordsoundpack-177824",
+      "store_region": "international",
+      "kind": "Audio",
+      "publisher": "Edoardo Gigante",
+      "price_usd_checked": 0,
+      "package_size_display": "4.1 MB",
+      "version_display": "1.0",
+      "original_unity_version_display": "2020.1.3",
+      "pipelines_display": [],
+      "priority": "P1",
+      "proposed_use": "刀剑声音候选；具体样本待取得后检查",
+      "license_display": "standard_unity_asset_store_eula",
+      "checked_on": "2026-10-16",
+      "status": "not_acquired",
+      "claimed": null,
+      "claim_status": "not_verified",
+      "downloaded": false,
+      "imported": false,
+      "runtime_validated": false,
+      "notes": "国际站已核对商品页；团结 1.9.3 实际导入与播放尚未验证。"
+    },
+    {
+      "id": "247933",
+      "title": "Magic Effects FREE",
+      "source": "https://assetstore.unity.com/packages/vfx/particles/spells/magic-effects-free-247933",
+      "store_region": "international",
+      "kind": "VFX",
+      "publisher": "Hovl Studio",
+      "price_usd_checked": 0,
+      "package_size_display": "36.4 MB",
+      "version_display": "1.6",
+      "original_unity_version_display": "2021.3.15",
+      "pipelines_display": [
+        "Built-in",
+        "URP",
+        "HDRP"
+      ],
+      "priority": "P1",
+      "proposed_use": "命中、火花、斩击、魔法效果候选",
+      "license_display": "standard_unity_asset_store_eula",
+      "checked_on": "2026-10-16",
+      "status": "not_acquired",
+      "claimed": null,
+      "claim_status": "not_verified",
+      "downloaded": false,
+      "imported": false,
+      "runtime_validated": false,
+      "notes": "国际站已核对商品页；团结 1.9.3 实际导入与播放尚未验证。"
     }
-  ]
+  ],
+  "total_resources": 14,
+  "listed_free": 12,
+  "listed_paid": 2,
+  "downloaded_audio_count": 50,
+  "imported_count": 0
 }

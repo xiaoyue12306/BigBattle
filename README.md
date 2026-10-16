@@ -74,7 +74,7 @@ Windows x64 构建成功（0 错误、0 警告），74 项独立程序自动检�
 
 ## 结构与交接
 
-后续音效 / 特效储备见 [团结商店素材清单](Docs/AssetLibrary/README.md)：已核对 10 个候选商品页（8 免费、2 付费），记录管线、最低引擎版本与用途。领取 / 下载尚待完成；本地接收目录为 `Artifacts/AssetStoreInbox/`，盘点命令 `Tools/InventoryAssetInbox.ps1`。当前游戏仍为已验证的 v0.3.0。
+后续音效 / 特效储备见 [素材清单](Docs/AssetLibrary/README.md)和[国际站获取记录](Docs/AssetLibrary/INTERNATIONAL.md)：共 14 个资源条目，已获取 Dustyroom 官网 CC0 音效包（50 个 WAV，见 `AssetLibrary/Audio/Dustyroom-CasualGameSounds/`）；其他条目仍待下载。记录管线、最低引擎版本、许可来源与 SHA-256。本地包接收目录为 `Artifacts/AssetStoreInbox/`，盘点命令 `Tools/InventoryAssetInbox.ps1`。当前游戏仍为已验证的 v0.3.0。
 
 - `Assets/BigBattle/Runtime/Input`：键盘、Windows XInput、五人分屏矩形计算。
 - `Runtime/Combat`：角色血量、阵营过滤、香蕉技能、统一近战 / 拼刀结算、香蕉陪练、团子 AI 和陷阱。

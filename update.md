@@ -156,3 +156,30 @@
 - 本轮未更改游戏逻辑、场景、音效运行库或构建；未重新运行游戏验收，不把上一版 74 项检查当作本次商店素材的导入验收。游戏仍为 v0.3.0。
 - 清单、盘点脚本、忽略规则和本记录提交 / 同步至 GitHub main；用本地 HEAD 与远端 main SHA 一致验证同步结果。
 - 收到下载包后：盘点实际文件并保存授权记录，先在独立团结 1.9.3 Built-in 工程检查许可 / 材质 / 脚本 / 依赖，再挑选合适内容接入 GameSound / Feedback，维持静音、拼刀、暂停和实例回收机制，并单独记录导入与运行验收。
+
+## 2026-10-16 — 改试 Unity 国际站，获取首批 50 个实际音效
+
+### 用户追加要求与获取结果
+
+- 用户要求改试 https://assetstore.unity.com/ 。国际站公开商品页可访问，内置浏览器页面创建仍超时；没有继续使用已被停止的电脑操作工具操作账户。
+- 找到 FREE Casual Game SFX Pack（Dustyroom，国际站 ID 54116），沿发布者官网公开直链实际下载 DM-CGS.zip。此为正式发布者直供，无需绕过账户或购买限制。
+- ZIP 8,891,352 字节，SHA-256：7ffc649a641a8b8ee0136d431b5dd69bcf9eeabc250a18285ad984ad09bd4a4f；CRC 校验通过。
+- 实际归档 50 个 WAV 到 AssetLibrary/Audio/Dustyroom-CasualGameSounds/，全部为 44.1kHz / 24-bit / Stereo；合计 10,661,194 字节、约 39.355 秒。保留原始 license.pdf 与 SOURCE.md。
+- 发布者网页与随包 PDF 均声明 CC0；用 pypdf 提取并用 Poppler 渲染核对，许可清晰。此包可随源码保留供后续使用；其他商店资源仍按各自授权本地储备。
+- 库存版本记 publisher-direct-undated；国际站页显示 1.1，但官网 ZIP 未标版本，未将其误报成同一商店版本。尚未向商店账户领取此资源。
+
+### 特效与刀剑音效入口
+
+- 新增国际站 Cartoon FX Remaster Free（109565）、Magic Effects FREE（247933）、SwordSoundPack（177824）；均已核对为免费商品，**尚未领取、下载或导入**。
+- 为现有 Simple FX 条目补充国际站入口（67834），合并为同一资源，避免把中外站重复资源算两包。
+- 找到 Small Sound Kit 作者 itch.io 页面；普通公开 HTTP 请求返回 429，停止请求，未获取该 ZIP。
+- 清单当前共 14 个资源条目：12 免费、2 付费，实际下载 1 包 / 50 个 WAV，其余 13 项未下载；未发生付款。
+
+### 验证与交接
+
+- 50 个 WAV 均可解码，文件 SHA-256、规格、时长、峰值和 RMS 记录在 Docs/AssetLibrary/download-report.json。13 个源文件合计 106 个满幅样本，源文件保持原样；后续挑选 / 混音时检查增益与听感，没有假称原包无削波。
+- 原始 ZIP 留本地 Artifacts/AssetStoreInbox/Audio/；InventoryAssetInbox.ps1 实际盘点 1 个包。CC0 音频与许可单独放在 Assets 外的 AssetLibrary，尚未进入游戏构建。
+- 相关说明：Docs/AssetLibrary/INTERNATIONAL.md、README.md、catalog.json；项目 README 同步更新数量与状态。原始文件全量校验、清单数量 / 状态一致性和 git diff --check 已通过。
+- 本次未更改游戏运行逻辑、不重新构建，游戏仍为 v0.3.0；主观试听、逐个事件映射和游戏内声音验证尚未做。
+- 本次更新包含可再分发的 CC0 原始音频、许可证、来源与校验记录，提交 / 推送 GitHub main，并以本地和远端 SHA 一致确认同步。
+- 下一步：完成国际站特效 / 刀剑包领取与下载；拿到文件后单独检查许可、团结 1.9.3 Built-in 材质 / 脚本和音频听感，再做实际接入。不得将入口已找到写成包已下载。
