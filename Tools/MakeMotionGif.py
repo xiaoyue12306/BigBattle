@@ -15,6 +15,6 @@ for index in range(len(times)):
 ticks = [round((stamp - times[0]) * 100) for stamp in times]
 durations = [max(10, (ticks[i + 1] - ticks[i]) * 10) for i in range(len(times) - 1)]
 durations.append(durations[-1])
-output = root / "Docs" / "Images" / "combat-motion-v020.gif"
+output = root / "Docs" / "Images" / "combat-motion-v030.gif"
 frames[0].save(output, save_all=True, append_images=frames[1:], duration=durations, loop=0, disposal=2, optimize=True)
 print(f"MOTION_GIF_OK frames={len(frames)} duration_ms={sum(durations)} bytes={output.stat().st_size}")

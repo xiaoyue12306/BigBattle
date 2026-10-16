@@ -21,6 +21,7 @@ Move sets facing; releasing movement retains facing. Basic attack, thrust and pe
 | Dodge | Space | LB |
 | Whirlwind | I | Y |
 | Start arena / return to practice | F | View |
+| Enter / reset blade sparring | G | D-pad right |
 | Pause / resume | Escape | Menu |
 | Menu navigation / confirm | W/S or arrows, Enter/J | D-pad/stick, A |
 
@@ -39,6 +40,12 @@ Split screen: one fullscreen, two side-by-side, three/four grid, five in two row
 Built-in forward renderer, custom meshes and Unity primitives, no external Unity package downloads. The banana is an original curved mesh with separate peel blades and articulated torso / limbs. v0.2.0 samples 13 locally licensed Mixamo tracks into a proportional pose library, blends locomotion and actions, and keeps procedural fallback for source-only checkouts. Raw FBX and baked motion data are excluded from public Git; see Docs/MIXAMO.md. Unity keyboard input plus Windows XInput isolates controller IDs without shared global gamepad axes. Chinese UI uses Windows Microsoft YaHei dynamically, not a redistributed font. Assets generated at runtime have explicit cleanup.
 
 v0.2.0 combat feel: three-step held-button combo (24 / 27 / 36 damage), contact events at 27% of retimed action duration, swept thrust path, 28–44ms hit pause at 0.08 time scale with unscaled recovery / pause precedence, damped knockback, short transparent slash ribbons / blade trails / afterimages, squash and recoil. Audio uses four variants for twelve original layered cues, with separate swing / hit sounds, a bounded voice pool, per-cue spacing, sample headroom and immediate mute. These improve the one-player MVP; multiplayer ownership and camera rules remain future work.
+
+v0.3.0: combo cadence is 0.30 / 0.34 / 0.52 seconds with 240ms tap buffering, a 1.05s idle reset, distinct swing cues and mint / blue / gold ribbons. Audio now has fifteen cues / sixty variants: smooth air layers without saturation, tuned impact bodies and inharmonic damped steel resonance. Ten ordinary voices plus two reserved steel-tail voices respect mute and spacing. Samples are linearly peak-normalized to at most 0.76, rather than driven through a saturator.
+
+Direct weapon attacks are declared during windup through MeleeResolver and resolved in GameRoot.LateUpdate after actor updates. Opposing teams clash when contact timestamps differ by at most 75ms, positions are 0.2–2.3 units apart, both aims face the other (dot > 0.35), and their aims oppose (dot < -0.15). Both pending attacks are consumed before any damage; emit one steel contact, sparks, brief recoil and hit pause. Slash and thrust share this path; ultimate, trap and unarmed mochi damage do not. This prevents update-order damage for reciprocal strikes, without granting immunity to unrelated attacks. Damage / dodge / replacement / reset cancel stale weapon contacts. A declared future strike within the window may be consumed when the earlier contact resolves. A strike can clash with only one opposing strike.
+
+Single-player G / D-pad right starts an armed banana sparring partner with a coral scarf / ring. It follows, announces a 600ms windup, then attacks through the same resolver; it restores HP on depletion. The player can lose and retry. Safe dummy practice remains the default. This enables testing two armed characters while five-player device ownership and split-screen remain future work.
 
 ## Acceptance
 

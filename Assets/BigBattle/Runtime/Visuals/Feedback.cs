@@ -15,10 +15,12 @@ namespace BigBattle
         public float NoticeUntil { get; private set; }
         public int ImpactCount {get;private set;}
         public int SlashCount {get;private set;}
+        public int ClashCount {get;private set;}
         public int ActiveEffects=>transform.childCount;
         public void Notice(string message) { NoticeText=message;NoticeUntil=Time.unscaledTime+2.5f; }
         public void Circle(Vector3 position,float radius,Color color,float life)
         {
+            if(transform.childCount>=220)return;
             var ring=Art.Ring("Combat pulse",transform,1,.055f,color);
             ring.GetComponent<Renderer>().sharedMaterial=Art.FxMat("Pulse"+ColorUtility.ToHtmlStringRGBA(color),color);
             ring.transform.position=position;ring.transform.localScale=Vector3.one*radius;
@@ -27,14 +29,50 @@ namespace BigBattle
         public void Slash(Vector3 position,Vector3 direction,Color color,int combo=0)
         {
             SlashCount++;
-            for(int layer=0;layer<2;layer++)
+            Color accent=combo==2?Art.Yellow:combo==1?new Color(.44f,.83f,1,.82f):color;
+            for(int layer=0;layer<(combo==2?4:3);layer++)
             {
-                var arc=Art.Arc(transform,layer==0?color:new Color(1,1,.87f,.90f),combo==2?205:150);
-                arc.transform.position=position+Vector3.up*(layer==0?.65f:.69f);
-                arc.transform.rotation=Quaternion.LookRotation(direction)*Quaternion.Euler(combo==1?-12:12,combo==1?16:-16,0);
-                arc.transform.localScale=Vector3.one*(1.55f+combo*.16f+layer*.09f);
-                arc.AddComponent<TransientVisual>().Setup(.19f+combo*.02f,1.12f,Vector3.zero,new Vector3(0,combo==1?-100:100,0));
+                if(transform.childCount>=200)break;
+                Color tint=layer==1?new Color(1,1,.91f,.96f):accent;
+                if(layer==2)tint.a=.24f;
+                var arc=Art.Arc(transform,tint,combo==2?215:combo==1?175:150);
+                arc.transform.position=position+Vector3.up*(.66f+layer*.055f);
+                arc.transform.rotation=Quaternion.LookRotation(direction)*Quaternion.Euler(combo==2?26:combo==1?-18:10,combo==1?22:-22,combo==1?-12:12);
+                arc.transform.localScale=Vector3.one*(1.48f+combo*.16f+layer*.12f);
+                arc.AddComponent<TransientVisual>().Setup(combo==2?.29f:.20f,combo==2?1.32f:1.16f,Vector3.zero,new Vector3(0,combo==1?-140:140,0));
             }
+            int motes=combo==2?9:5;
+            for(int i=0;i<motes;i++)
+            {
+                if(transform.childCount>=210)break;
+                Vector3 radial=Quaternion.AngleAxis(-65+i*130f/(motes-1),Vector3.up)*direction;
+                Vector3 tangent=Vector3.Cross(Vector3.up,radial)*(combo==1?-1:1);
+                var spark=Art.Shape("Blade stardust",PrimitiveType.Cube,transform,position+radial*(1.3f+combo*.14f)+Vector3.up*.75f,new Vector3(.035f,.035f,.20f),accent);
+                spark.GetComponent<Renderer>().sharedMaterial=Art.FxMat("Blade dust"+ColorUtility.ToHtmlStringRGBA(accent),accent);
+                spark.transform.rotation=Quaternion.LookRotation(tangent);
+                spark.AddComponent<TransientVisual>().Setup(.22f+i*.012f,.02f,tangent*(1.4f+i*.17f)+Vector3.up*.5f);
+            }
+            if(combo==2){Star(position+direction*1.45f+Vector3.up*.8f,Art.Cream,.65f);Circle(position,.9f,Art.Yellow,.28f);}
+        }
+        void Star(Vector3 position,Color color,float size)
+        {
+            for(int ray=0;ray<4;ray++)
+            {
+                if(transform.childCount>=220)break;
+                var flash=Art.Shape("Sharp contact star",PrimitiveType.Cube,transform,position,new Vector3(size,.025f,.035f),color);
+                flash.GetComponent<Renderer>().sharedMaterial=Art.FxMat("Star"+ColorUtility.ToHtmlStringRGBA(color),color);
+                flash.transform.rotation=Quaternion.Euler(-38,ray*45,0);
+                flash.AddComponent<TransientVisual>().Setup(.14f,.05f);
+            }
+        }
+        public void Clash(Vector3 position)
+        {
+            ClashCount++;
+            Numbers.Add(new FloatingNumber{Position=position+Vector3.up*.35f,Text="拼刀！",Born=Time.time,Color=Art.Cream});
+            if(Numbers.Count>32)Numbers.RemoveAt(0);
+            Star(position,Art.Cream,1.25f);Burst(position,Art.Yellow,16);Burst(position,Art.Cream,9);
+            Circle(position, .45f,Art.Cream,.18f);
+            Circle(new Vector3(position.x,.03f,position.z),1.1f,Art.Mint,.30f);
         }
         public void Hit(Vector3 position,float damage,bool friendly)
         {
@@ -42,6 +80,7 @@ namespace BigBattle
             Numbers.Add(new FloatingNumber {Position=position,Text=Mathf.RoundToInt(damage).ToString(),Born=Time.time,Color=friendly?new Color(.99f,.64f,.10f):Art.Coral});
             if(Numbers.Count>32)Numbers.RemoveAt(0);
             bool heavy=damage>=30;Color tint=friendly?Art.Yellow:Art.Coral;
+            Star(position,Art.Cream,heavy?.85f:.45f);
             Burst(position,tint,heavy?9:5);
             var star=Art.Shape("Contact flash",PrimitiveType.Sphere,transform,position,new Vector3(heavy?.40f:.26f,.07f,heavy?.40f:.26f),Art.Cream);
             star.GetComponent<Renderer>().sharedMaterial=Art.FxMat("White contact",new Color(1,1,.88f,.95f));

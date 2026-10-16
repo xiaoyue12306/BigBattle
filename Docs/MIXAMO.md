@@ -46,6 +46,6 @@ v0.2.0 使用用户从 Mixamo 下载的 **Sword and Shield Pack**（49 个动作
 
 ## 动态预览与声音
 
-独立程序参数 `--preview-capture` 会进入约三秒的自动动作录制，仅用于验收。全尺寸 PNG 与实际时间戳写入 `Artifacts/MotionPreview/`。运行 `python Tools/MakeMotionGif.py` 可编码动图；需要 Pillow。动图保留采样时间，仅裁切和放大游戏画面，没有重新生成动画。
+独立程序参数 `--preview-capture` 会进入约 4.8 秒的自动连招 / 拼刀录制，仅用于验收。全尺寸 PNG 与实际时间戳写入 `Artifacts/MotionPreview/`。运行 `python Tools/MakeMotionGif.py` 可编码当前 v0.3.0 动图；需要 Pillow。动图保留采样时间，仅裁切和放大游戏画面，没有重新生成动画。
 
 `Tools/Smoke.ps1` 会导出 `Artifacts/Smoke/combat-audio-demo.wav`，用于试听本项目原创的分层合成音效；它是音效示例序列，不是动图的同步录音。

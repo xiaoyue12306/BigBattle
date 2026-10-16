@@ -14,6 +14,8 @@ namespace BigBattle
         public ArenaCamera CameraRig {get;private set;}
         public Feedback Fx {get;private set;}
         public GameSound Sound {get;private set;}
+        public MeleeResolver Melee {get;private set;}
+        public BananaDuelist Duelist {get;private set;}
         public Transform Transients {get;private set;}
         public SessionState State {get;private set;}
         public bool Paused {get;private set;}
@@ -40,6 +42,7 @@ namespace BigBattle
             Transients=new GameObject("Session objects").transform;Transients.SetParent(transform);
             Fx=new GameObject("Feedback").AddComponent<Feedback>();Fx.transform.SetParent(transform);
             Sound=gameObject.AddComponent<GameSound>();Sound.Setup();
+            Melee=new MeleeResolver(this);
             Input=new LocalInput(new InputBinding {Kind=InputKind.Keyboard,DeviceIndex=0,KeyboardLayout=0},true);
             Player=new GameObject("Banana assassin • Player 1").AddComponent<BananaPlayer>();Player.transform.SetParent(transform);Player.Setup(this);
             CameraRig=new GameObject("Player 1 camera").AddComponent<ArenaCamera>();CameraRig.transform.SetParent(transform);CameraRig.Setup(this);
@@ -64,6 +67,7 @@ namespace BigBattle
                 if(input.Confirm || input.Session)StartBattle();return;
             }
             if(input.Session){if(State==SessionState.Practice)StartBattle();else EnterPractice();return;}
+            if(input.Sparring){EnterSparring();return;}
             Player.Tick(input);
             if(State==SessionState.Battle)
             {
@@ -76,6 +80,8 @@ namespace BigBattle
                 }
             }
         }
+
+        void LateUpdate(){if(Melee!=null && (State==SessionState.Practice || State==SessionState.Battle))Melee.Tick();}
 
         public void SetPaused(bool paused)
         {
@@ -109,9 +115,10 @@ namespace BigBattle
         }
         void ClearSession()
         {
+            Melee.Clear();Duelist=null;
             hitPauseUntil=nextHitPause=0;
             SetPaused(false);
-            for(int i=Actors.Count-1;i>=0;i--)if(Actors[i]!=Player && Actors[i]!=null)Destroy(Actors[i].gameObject);
+            for(int i=Actors.Count-1;i>=0;i--)if(Actors[i]!=Player && Actors[i]!=null){Actors[i].enabled=false;Destroy(Actors[i].gameObject);}
             Actors.RemoveAll(actor=>actor!=Player);Dummy=null;
             foreach(Transform child in Transients)Destroy(child.gameObject);
             Fx.Clear();Player.ResetCombat();Player.transform.position=new Vector3(0,0,-4);
@@ -125,6 +132,14 @@ namespace BigBattle
             Fx.Notice("欢迎来到香蕉花园 · 靠近木桩试试身手");
         }
         public void StartBattle(){ClearSession();State=SessionState.Battle;SpawnWave(1);}
+        public void EnterSparring()
+        {
+            ClearSession();State=SessionState.Practice;
+            Player.transform.position=new Vector3(0,0,-2);
+            Duelist=new GameObject("Banana blade sparring partner").AddComponent<BananaDuelist>();Duelist.transform.SetParent(transform);
+            Duelist.transform.position=new Vector3(0,0,1);Duelist.transform.rotation=Quaternion.Euler(0,180,0);Duelist.Setup(this);
+            Fx.Notice("拼刀陪练 · 对准红圈，在对手出刀前一瞬挥刀 · G / 十字键右重置");
+        }
         public void SpawnWave(int wave)
         {
             Wave=wave;nextWaveAt=0;

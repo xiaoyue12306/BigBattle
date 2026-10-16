@@ -58,7 +58,7 @@ namespace BigBattle
             Check(world.State==SessionState.Practice && world.Dummy!=null,"Boot into practice with dummy");
             Check(world.CameraRig.Camera.orthographic,"Overhead orthographic camera");
             Check(world.Player.Visual.UsesMixamo && world.Player.Visual.MotionCount==13,"Thirteen real Mixamo motion tracks loaded");
-            Check(world.Sound.GeneratedClipCount==48 && world.Sound.SamplesFinite && world.Sound.MaximumSample<=.781f,"Layered sound bank has 48 finite headroom-limited variants");
+            Check(world.Sound.GeneratedClipCount==60 && world.Sound.SamplesFinite && world.Sound.MaximumSample<=.761f,"Clean sound bank has 60 finite headroom-limited variants including steel clashes");
             world.Sound.ExportDemo(Path.Combine(output,"combat-audio-demo.wav"));
             yield return Shot("01-practice");
             Vector3 initial=world.Player.transform.position;
@@ -161,14 +161,82 @@ namespace BigBattle
             Check(world.Fx.ImpactCount>impactsBefore,"Combo hit events connect with dummy");
             world.SetPaused(true);yield return Wait(.08f);Check(Time.timeScale==0,"Pause takes precedence over hit pause");
             world.SetPaused(false);yield return Wait(.10f);Check(Mathf.Approximately(Time.timeScale,1),"Impact clock recovers after resume");
+            // Exercise real practice-mode controls, then the shared resolver with
+            // controlled geometry so AI scheduling cannot conceal ordering bugs.
+            Frame(new CombatInput{Sparring=true});yield return null;Frame();yield return Wait(.05f);
+            Check(world.Duelist!=null && world.Dummy==null && world.Duelist.Visual.UsesMixamo,"Sparring control creates a second animated banana with a weapon");
+            float timeout=Time.unscaledTime+2;
+            while(!world.Duelist.WindingUp && Time.unscaledTime<timeout)yield return null;
+            Check(world.Duelist.WindingUp,"Armed practice AI gives a visible windup");
+            hp=world.Player.Health;yield return Wait(.75f);
+            Check(world.Player.Health<hp,"Armed practice AI uses the shared melee damage path");
+            var duelist=world.Duelist;duelist.TrainingEnabled=false;
+            PrepareDuel(duelist);
+            Frame(new CombatInput{Move=Vector2.up});yield return null;Frame();
+            int clashes=world.Melee.ClashCount,clang=world.Sound.ClashPlays,hitSounds=world.Sound.ImpactPlays;
+            float playerDamage=world.Player.TotalDamageReceived,duelDamage=duelist.TotalDamageReceived;
+            // Opponent registered first: near-simultaneous real player Cast.
+            world.Melee.Slash(duelist,Vector3.back,0,.10f);
+            Check(world.Player.Cast(0,Vector3.zero),"Player can start a real combo against a declared incoming swing");
+            duelist.Visual.PlayMotion(MotionId.Attack1,.34f);
+            yield return Wait(.17f);
+            Check(world.Melee.ClashCount==clashes+1,"Near-simultaneous facing blades clash");
+            Check(world.Player.TotalDamageReceived==playerDamage && duelist.TotalDamageReceived==duelDamage && world.Player.Health==180 && duelist.Health==360,"Clash cancels both outgoing and incoming damage");
+            Check(world.Sound.ClashPlays==clang+1 && world.Sound.ImpactPlays==hitSounds && world.Fx.ClashCount>0,"Clash produces one steel sound and sparks without a damage impact sound");
+            yield return Shot("09-blade-clash");
+            PrepareDuel(duelist);clashes=world.Melee.ClashCount;
+            world.Melee.Slash(world.Player,Vector3.forward,0,.06f);world.Melee.Slash(duelist,Vector3.back,0,.12f);
+            yield return Wait(.23f);
+            Check(world.Melee.ClashCount==clashes+1 && world.Player.Health==180 && duelist.Health==360,"Reverse registration and 60ms offset still cancel both strikes");
+            PrepareDuel(duelist);clashes=world.Melee.ClashCount;duelDamage=duelist.TotalDamageReceived;
+            world.Melee.Slash(world.Player,Vector3.forward,0,.04f);world.Melee.Slash(duelist,Vector3.back,0,.04f+MeleeResolver.ClashWindow+.02f);
+            yield return Wait(.20f);
+            Check(world.Melee.ClashCount==clashes && duelist.TotalDamageReceived>duelDamage,"Outside the 75ms timing window a normal hit remains damaging");
+            PrepareDuel(duelist);clashes=world.Melee.ClashCount;duelDamage=duelist.TotalDamageReceived;
+            world.Melee.Slash(world.Player,Vector3.forward,0,.05f);world.Melee.Slash(duelist,Vector3.forward,0,.05f);
+            yield return Wait(.15f);
+            Check(world.Melee.ClashCount==clashes && duelist.TotalDamageReceived>duelDamage,"A back-facing weapon cannot parry a frontal hit");
+            PrepareDuel(duelist);clashes=world.Melee.ClashCount;duelist.transform.position=Vector3.forward*4;
+            world.Melee.Slash(world.Player,Vector3.forward,0,.05f);world.Melee.Slash(duelist,Vector3.back,0,.05f);
+            yield return Wait(.15f);
+            Check(world.Melee.ClashCount==clashes && world.Player.Health==180 && duelist.Health==360,"Distant blades neither clash nor hit");
+            PrepareDuel(duelist);
+            world.Melee.Slash(world.Player,Vector3.forward,0,.1f);
+            Check(world.Player.Cast(3,Vector3.right),"Dodge can cancel an announced swing");
+            duelDamage=duelist.TotalDamageReceived;yield return Wait(.2f);
+            Check(duelist.TotalDamageReceived==duelDamage && world.Melee.PendingCount==0,"Cancelled swing leaves no delayed damage");
+            PrepareDuel(duelist);
+            world.Melee.Slash(world.Player,Vector3.forward,0,.15f);
+            world.SetPaused(true);yield return Wait(.20f);
+            Check(world.Melee.PendingCount==1 && duelist.Health==360,"Pause freezes pending blade contacts");
+            world.SetPaused(false);world.EnterPractice();yield return Wait(.22f);
+            Check(world.Duelist==null && world.Melee.PendingCount==0 && world.Player.Health==180,"Session reset clears pending contacts and the sparring opponent");
+            // A quick tap during recovery is buffered; release must not drop it.
+            world.Player.transform.position=new Vector3(0,0,-1);
+            Frame(new CombatInput{Move=Vector2.up});yield return null;Frame();
+            Frame(new CombatInput{Attack=true});yield return Wait(.05f);Frame();yield return Wait(.08f);
+            float castsBefore=world.Player.Casts(0);
+            Frame(new CombatInput{Attack=true});yield return null;Frame();yield return Wait(.25f);
+            Check(world.Player.Casts(0)==castsBefore+1 && world.Player.ComboStep==1,"Quick second tap buffers through recovery into the second combo strike");
+            yield return Wait(1.15f);
+            Frame(new CombatInput{Attack=true});yield return null;Frame();
+            Check(world.Player.ComboStep==0,"Combo returns to its opening strike after idle timeout");
             int soundCount=world.Sound.ImpactPlays;world.Sound.Muted=true;world.Sound.Impact(true);
             Check(world.Sound.ImpactPlays==soundCount,"Mute suppresses impact playback");world.Sound.Muted=false;
+            clang=world.Sound.ClashPlays;world.Sound.Muted=true;world.Sound.Play(SoundCue.Clash);
+            Check(world.Sound.ClashPlays==clang,"Mute also suppresses steel collision playback");world.Sound.Muted=false;
             yield return Wait(.65f);Check(world.Fx.ActiveEffects<35,"Short-lived impact effects retire after combat");
             Check(report.errors.Count==0,"No runtime errors or exceptions");
             report.result=report.failed==0?"PASS":"FAIL";
             File.WriteAllText(Path.Combine(output,"report.json"),JsonUtility.ToJson(report,true));
             Debug.Log("BIGBATTLE_SMOKE_"+report.result+" passed="+report.passed+" failed="+report.failed);
             Application.Quit(report.failed==0?0:1);
+        }
+        void PrepareDuel(BananaDuelist duelist)
+        {
+            Frame();world.Melee.Clear();world.Fx.Clear();world.Player.ResetCombat();duelist.Restore();
+            world.Player.transform.position=Vector3.back*.8f;duelist.transform.position=Vector3.forward*.8f;
+            duelist.transform.rotation=Quaternion.LookRotation(Vector3.back);
         }
         void OnDestroy(){Application.logMessageReceived-=Log;}
     }

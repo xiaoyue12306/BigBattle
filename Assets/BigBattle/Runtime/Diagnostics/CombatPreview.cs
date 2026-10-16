@@ -18,14 +18,24 @@ namespace BigBattle
             yield return new WaitForSecondsRealtime(.3f);
             world.Input.Injected=true;world.EnterPractice();world.Player.transform.position=new Vector3(0,0,-2.5f);
             string output=Path.GetFullPath(Path.Combine(Application.dataPath,"../../../Artifacts/MotionPreview"));Directory.CreateDirectory(output);
-            var timing=new Timing();var frames=new List<Texture2D>();float born=Time.unscaledTime,nextCapture=0;int index=0;bool dodged=false,spun=false;
-            while(Time.unscaledTime-born<3.3f)
+            var timing=new Timing();var frames=new List<Texture2D>();float born=Time.unscaledTime,nextCapture=0;int index=0;bool duel=false,clashed=false;
+            while(Time.unscaledTime-born<4.8f)
             {
                 float t=Time.unscaledTime-born;var input=new CombatInput();
                 if(t<.3f)input.Move=Vector2.up;
-                if(t>.42f && t<1.86f)input.Attack=true;
-                if(t>=1.9f && !dodged){input.Dodge=true;dodged=true;}
-                if(t>=2.15f && !spun){input.Ultimate=true;spun=true;}
+                if(t>.42f && t<1.95f)input.Attack=true;
+                if(t>=2.25f && !duel)
+                {
+                    duel=true;world.EnterSparring();world.Duelist.TrainingEnabled=false;
+                    world.Player.transform.position=Vector3.back*.8f;world.Duelist.transform.position=Vector3.forward*.8f;
+                }
+                if(t>=2.28f && t<2.35f)input.Move=Vector2.up;
+                if(t>=2.4f && !clashed)
+                {
+                    clashed=true;input.Attack=true;world.Duelist.Visual.PlayMotion(MotionId.Attack1,.34f);
+                    world.Melee.Slash(world.Duelist,Vector3.back,0,.1f);
+                }
+                if(t>=3.3f && t<4.65f)input.Attack=true;
                 world.Input.InjectedFrame=input;
                 if(t<nextCapture){yield return null;continue;}
                 yield return new WaitForEndOfFrame();

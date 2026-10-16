@@ -60,9 +60,9 @@ namespace BigBattle
             Text(new Rect(103,37,250,38),"BANANA BRAWL",26,Art.Ink,TextAnchor.MiddleLeft,true);
             Text(new Rect(104,77,230,25),"香蕉花园   /   战斗原型 01",14,Muted);
             Box(new Rect(650,30,300,71),Paper);
-            string title=world.State==SessionState.Practice?"自由练习":world.State==SessionState.Battle?"花园守护战":"挑战结束";
+            string title=world.State==SessionState.Practice?(world.Duelist!=null?"香蕉拼刀陪练":"自由练习"):world.State==SessionState.Battle?"花园守护战":"挑战结束";
             Text(new Rect(650,37,300,28),title,22,Art.Ink,TextAnchor.MiddleCenter,true);
-            string subtitle=world.State==SessionState.Battle?"第 "+world.Wave+" / 3 波    ·    剩余 "+world.EnemyCount+" 只团子":world.State==SessionState.Practice?"熟悉身手，然后开始三波挑战":"按 Enter / A 再战一次";
+            string subtitle=world.State==SessionState.Battle?"第 "+world.Wave+" / 3 波    ·    剩余 "+world.EnemyCount+" 只团子":world.State==SessionState.Practice?(world.Duelist!=null?"相向出刀 · 双方免伤 · 金属交锋":"熟悉身手，然后开始三波挑战"):"按 Enter / A 再战一次";
             Text(new Rect(650,69,300,22),subtitle,14,Muted,TextAnchor.MiddleCenter);
             Box(new Rect(1270,30,300,70),Paper);
             Text(new Rect(1288,36,268,27),"P1  ·  "+world.Input.DeviceLabel+"控制",18,Art.Ink,TextAnchor.MiddleLeft,true);
@@ -93,7 +93,12 @@ namespace BigBattle
             string sessionKey=world.Input.DeviceLabel=="Xbox"?"View":"F";
             Text(new Rect(1270,771,280,28),sessionKey+"  "+(world.State==SessionState.Battle?"返回自由练习":"开始三波挑战"),20,Art.Ink,TextAnchor.MiddleLeft,true);
             Text(new Rect(1270,808,280,22),"方向箭头 = 技能释放方向",15,Muted);
-            Text(new Rect(1270,835,280,20),"本版单人  ·  无需鼠标",13,Muted);
+            Text(new Rect(1270,835,280,20),world.Input.DeviceLabel=="Xbox"?"十字键右：拼刀陪练":"G：拼刀陪练  ·  单人",13,Muted);
+            if(world.Player.ComboActive)
+            {
+                Box(new Rect(619,694,362,39),new Color(.12f,.25f,.22f,.9f));
+                Text(new Rect(619,694,362,39),BananaPlayer.ComboNames[world.Player.ComboStep],19,world.Player.ComboStep==2?Art.Yellow:Art.Mint,TextAnchor.MiddleCenter,true);
+            }
             Text(new Rect(480,879,650,18),"向前挥刃  ·  留意红圈  ·  闪避穿梭  ·  享受一场香蕉乱斗",12,new Color(.17f,.31f,.29f),TextAnchor.MiddleCenter);
         }
         Vector2 Project(Vector3 point)
@@ -112,7 +117,7 @@ namespace BigBattle
                 if(health>0)Box(new Rect(p.x-33,p.y+2,66*health,3),actor.IsDummy?Art.Yellow:Art.Coral);
                 if(actor.IsDummy)
                 {
-                    Text(new Rect(p.x-90,p.y-30,180,25),"训练木桩",16,Art.Ink,TextAnchor.MiddleCenter,true);
+                    Text(new Rect(p.x-90,p.y-30,180,25),actor is BananaDuelist?"香蕉陪练 · 红圈后出刀":"训练木桩",16,Art.Ink,TextAnchor.MiddleCenter,true);
                     if(actor.TotalDamageReceived>0)Text(new Rect(p.x-100,p.y+14,200,24),"累计伤害 "+Mathf.RoundToInt(actor.TotalDamageReceived),14,Muted,TextAnchor.MiddleCenter);
                 }
             }

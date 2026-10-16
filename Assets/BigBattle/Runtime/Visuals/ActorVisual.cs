@@ -100,6 +100,11 @@ namespace BigBattle
         }
 
         public void Animate(float movement, bool spin) { moveAmount = movement; spinning = spin; }
+        public void SetAccent(Color color)
+        {
+            foreach(var renderer in Renderers)
+                if(renderer.name=="Mint scarf" || renderer.name=="Scarf tail")renderer.sharedMaterial=Art.Mat("Scarf"+ColorUtility.ToHtmlStringRGB(color),color);
+        }
         public void Swing() { swingUntil = Time.time + .18f; }
         public void Flash() { flashUntil = Time.time + .10f; }
         public void Slip(float duration) { slipUntil = Time.time + duration; }

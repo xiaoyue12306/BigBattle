@@ -17,7 +17,7 @@ namespace BigBattle
     public struct CombatInput
     {
         public Vector2 Move;
-        public bool Attack, Thrust, Peel, Dodge, Ultimate, Pause, Session, Confirm;
+        public bool Attack, Thrust, Peel, Dodge, Ultimate, Pause, Session, Confirm, Sparring;
         public int MenuStep;
     }
 
@@ -45,7 +45,7 @@ namespace BigBattle
         {
             if (Injected) return InjectedFrame;
             var frame = Binding.Kind == InputKind.Keyboard || autoSwitch ? ReadKeyboard(Binding.KeyboardLayout) : default(CombatInput);
-            bool keyboardActive = frame.Move.sqrMagnitude > .01f || frame.Attack || frame.Thrust || frame.Peel || frame.Dodge || frame.Ultimate || frame.Pause || frame.Session || frame.Confirm;
+            bool keyboardActive = frame.Move.sqrMagnitude > .01f || frame.Attack || frame.Thrust || frame.Peel || frame.Dodge || frame.Ultimate || frame.Pause || frame.Session || frame.Confirm || frame.Sparring;
             if (keyboardActive) DeviceLabel = "键盘";
             XInput.State state;
             ControllerConnected = false;state = default(XInput.State);
@@ -79,6 +79,7 @@ namespace BigBattle
                 frame.Ultimate |= pressed(XInput.Y);
                 frame.Pause |= pressed(XInput.Start);
                 frame.Session |= pressed(XInput.Back);
+                frame.Sparring |= pressed(XInput.Right);
                 frame.Confirm |= pressed(XInput.A);
                 if (menuStep != 0) frame.MenuStep = menuStep;
                 previousButtons = buttons;
@@ -115,6 +116,7 @@ namespace BigBattle
                 Ultimate = Input.GetKeyDown(second ? KeyCode.Keypad5 : KeyCode.I),
                 Pause = Input.GetKeyDown(KeyCode.Escape),
                 Session = Input.GetKeyDown(KeyCode.F),
+                Sparring = Input.GetKeyDown(KeyCode.G),
                 Confirm = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.J),
                 MenuStep = Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) ? -1 : Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) ? 1 : 0
             };
@@ -133,7 +135,7 @@ namespace BigBattle
 
     public static class XInput
     {
-        public const ushort Up = 0x0001, Down = 0x0002, Start = 0x0010, Back = 0x0020, LB = 0x0100, A = 0x1000, B = 0x2000, X = 0x4000, Y = 0x8000;
+        public const ushort Up = 0x0001, Down = 0x0002, Right = 0x0008, Start = 0x0010, Back = 0x0020, LB = 0x0100, A = 0x1000, B = 0x2000, X = 0x4000, Y = 0x8000;
         [StructLayout(LayoutKind.Sequential)] public struct Pad { public ushort Buttons; public byte LeftTrigger, RightTrigger; public short ThumbLX, ThumbLY, ThumbRX, ThumbRY; }
         [StructLayout(LayoutKind.Sequential)] public struct State { public uint Packet; public Pad Gamepad; }
         [StructLayout(LayoutKind.Sequential)] struct Vibration { public ushort Left, Right; }

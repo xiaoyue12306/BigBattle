@@ -28,6 +28,7 @@ namespace BigBattle
         public bool Damage(float amount, Combatant source, Vector3 push, float stun = .08f)
         {
             if (!Alive || source == null || source.Team == Team || Time.time < InvulnerableUntil || amount <= 0) return false;
+            World.Melee.Cancel(this);
             LastHitAt = Time.time; TotalDamageReceived += amount;
             Health = Mathf.Max(0, Health-amount); Visual.Flash();
             Vector3 direction=transform.position-source.transform.position;direction.y=0;
@@ -49,13 +50,18 @@ namespace BigBattle
             }
             if (Health <= 0)
             {
-                if (IsDummy) { Health = MaxHealth; World.Fx.Notice("漂亮！木桩已重置"); }
+                if (IsDummy) { Health = MaxHealth; World.Fx.Notice(this is BananaDuelist?"漂亮！陪练生命已恢复":"漂亮！木桩已重置"); }
                 else Die();
             }
             return true;
         }
 
         public void Restore() { Health = MaxHealth; InvulnerableUntil = 0; StunnedUntil = 0;knockbackVelocity=Vector3.zero; }
+        public void WeaponRecoil(Vector3 away)
+        {
+            Visual.React(away,.45f);StunnedUntil=Mathf.Max(StunnedUntil,Time.time+.10f);
+            knockbackVelocity+=away*1.6f;
+        }
         protected virtual void LateUpdate()
         {
             if(World==null || World.Paused || !Alive)return;
