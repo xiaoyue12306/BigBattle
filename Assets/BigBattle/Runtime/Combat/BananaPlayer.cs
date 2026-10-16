@@ -20,6 +20,12 @@ namespace BigBattle
         float bufferedUntil;
         Vector3 bufferedMove;
         Transform arrow;
+        public int ComboStep {get;private set;}=-1;
+        public readonly int[] ComboUsage=new int[3];
+        float lastCombo=-100,pendingAt=float.PositiveInfinity,nextGhost,nextFootstep;
+        int pendingSkill=-1,pendingCombo;
+        Vector3 pendingAim;
+        Vector3 thrustOrigin;
 
         public void Setup(GameRoot world)
         {
@@ -39,6 +45,7 @@ namespace BigBattle
             if (!Alive) return;
             Vector3 previous = transform.position;
             Vector3 movement = new Vector3(input.Move.x,0,input.Move.y);
+            if(pendingSkill>=0 && Time.time>=pendingAt)ResolveContact();
             if (Time.time >= dashUntil && Time.time >= StunnedUntil)
             {
                 if (movement.sqrMagnitude>.01f) Facing=movement.normalized;
@@ -55,6 +62,9 @@ namespace BigBattle
                 else {bufferedSkill=-1;if(input.Attack)Cast(0,movement);}
             }
             if (Time.time<dashUntil) transform.position=GardenArena.Clamp(transform.position+dashDirection*dashSpeed*Time.deltaTime);
+            if(Time.time<dashUntil && Time.time>=nextGhost){nextGhost=Time.time+.045f;World.Fx.Ghost(Visual);}
+            if(movement.sqrMagnitude>.1f && Time.time>=nextFootstep && Time.time>=dashUntil)
+            {nextFootstep=Time.time+.22f;World.Fx.Dust(transform.position);World.Sound.Play(SoundCue.Step);}
             if (Spinning && Time.time>=nextSpinHit)
             {
                 nextSpinHit=Time.time+.16f;
@@ -76,31 +86,46 @@ namespace BigBattle
             switch(skill)
             {
                 case 0:
-                    Visual.Swing(); World.Sound.Play(SoundCue.Slash);
-                    World.HitArea(this,transform.position,1.85f,aim,.32f,24,.18f);
-                    World.Fx.Slash(transform.position,aim,Art.Cream); break;
+                    ComboStep=Time.time-lastCombo<.85f?(ComboStep+1)%3:0;lastCombo=Time.time;ComboUsage[ComboStep]++;
+                    Visual.PlayMotion((MotionId)((int)MotionId.Attack1+ComboStep),.36f);
+                    QueueContact(0,aim,ComboStep,.36f*.27f);World.Sound.Play(SoundCue.Slash,.8f+ComboStep*.12f);break;
                 case 1:
+                    thrustOrigin=transform.position;
                     Facing=aim; dashDirection=aim; dashSpeed=17; dashUntil=Time.time+.16f;
                     InvulnerableUntil=Time.time+.10f;
-                    World.HitArea(this,transform.position+aim*1.45f,1.75f,aim,-.2f,42,.45f);
-                    World.Fx.Slash(transform.position+aim*.6f,aim,Art.Yellow); World.Sound.Play(SoundCue.Thrust); break;
+                    QueueContact(1,aim,0,.28f*.27f);Visual.PlayMotion(MotionId.Thrust,.28f);
+                    World.Sound.Play(SoundCue.Thrust); break;
                 case 2:
-                    World.SpawnPeel(transform.position,aim); Visual.Swing(); World.Sound.Play(SoundCue.Toss); break;
+                    QueueContact(2,aim,0,.40f*.27f);Visual.PlayMotion(MotionId.Throw,.40f);World.Sound.Play(SoundCue.Toss);break;
                 case 3:
                     dashDirection=movement.sqrMagnitude>.01f?movement.normalized:Facing;
                     dashSpeed=18; dashUntil=Time.time+.16f; InvulnerableUntil=Time.time+.30f;
+                    pendingSkill=-1;Visual.PlayMotion(MotionId.Dodge,.28f);
                     World.Fx.Burst(transform.position+Vector3.up*.4f,Art.Mint,5); World.Sound.Play(SoundCue.Dodge); break;
                 case 4:
                     spinUntil=Time.time+.85f; nextSpinHit=0;
+                    pendingSkill=-1;Visual.PlayMotion(MotionId.Spin,.85f);
                     World.Fx.Circle(transform.position,2.35f,Art.Yellow,.85f); World.Sound.Play(SoundCue.Ultimate); World.CameraRig.Shake(.06f); break;
             }
             return true;
+        }
+        void QueueContact(int skill,Vector3 aim,int combo,float delay){pendingSkill=skill;pendingAim=aim;pendingCombo=combo;pendingAt=Time.time+delay;}
+        void ResolveContact()
+        {
+            int skill=pendingSkill;pendingSkill=-1;
+            if(skill==2){World.SpawnPeel(transform.position,pendingAim);return;}
+            float damage=skill==1?42:pendingCombo==2?36:pendingCombo==1?27:24;
+            Vector3 center=transform.position+(skill==1?pendingAim*.7f:Vector3.zero);
+            if(skill==1)World.HitCapsule(this,thrustOrigin,transform.position+pendingAim*.95f,.85f,42,.55f);
+            else World.HitArea(this,center,1.85f,pendingAim,.32f,damage,pendingCombo==2?.45f:.18f);
+            World.Fx.Slash(transform.position,pendingAim,skill==1?Art.Yellow:Art.Cream,skill==1?2:pendingCombo);
         }
 
         public void ResetCombat()
         {
             for(int i=0;i<readyAt.Length;i++) readyAt[i]=0;
-            dashUntil=spinUntil=0; bufferedSkill=-1; Restore(); Visual.gameObject.SetActive(true);
+            dashUntil=spinUntil=0; bufferedSkill=-1;pendingSkill=-1;ComboStep=-1;lastCombo=-100;
+            Restore(); Visual.gameObject.SetActive(true);Visual.ResetState();
             Facing=Vector3.back; transform.rotation=Quaternion.LookRotation(Facing);
         }
     }

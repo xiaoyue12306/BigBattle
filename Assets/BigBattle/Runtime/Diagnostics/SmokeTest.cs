@@ -57,6 +57,9 @@ namespace BigBattle
             yield return Wait(.7f);
             Check(world.State==SessionState.Practice && world.Dummy!=null,"Boot into practice with dummy");
             Check(world.CameraRig.Camera.orthographic,"Overhead orthographic camera");
+            Check(world.Player.Visual.UsesMixamo && world.Player.Visual.MotionCount==13,"Thirteen real Mixamo motion tracks loaded");
+            Check(world.Sound.GeneratedClipCount==48 && world.Sound.SamplesFinite && world.Sound.MaximumSample<=.781f,"Layered sound bank has 48 finite headroom-limited variants");
+            world.Sound.ExportDemo(Path.Combine(output,"combat-audio-demo.wav"));
             yield return Shot("01-practice");
             Vector3 initial=world.Player.transform.position;
             Frame(new CombatInput{Move=Vector2.up});yield return Wait(.62f);Frame();yield return Wait(.04f);
@@ -65,9 +68,10 @@ namespace BigBattle
             float damage=world.Dummy.TotalDamageReceived;
             Frame(new CombatInput{Attack=true});yield return Wait(.10f);Frame();yield return Wait(.05f);
             Check(world.Dummy.TotalDamageReceived>damage,"Basic attack damages front target");
+            Check(world.Fx.SlashCount>0 && world.Fx.ImpactCount>0 && world.Sound.ImpactPlays>0 && world.HitPauseCount>0,"Successful contact synchronizes ribbon, impact, sound and hit pause");
             damage=world.Dummy.TotalDamageReceived;
             Frame(new CombatInput{Thrust=true});yield return Wait(.03f);Frame();yield return Wait(.25f);
-            Check(world.Player.Casts(1)==1 && world.Dummy.TotalDamageReceived>damage,"Thrust damages and lunges");
+            Check(world.Player.Casts(1)==1 && world.Dummy.TotalDamageReceived>damage,"Thrust damages and lunges (casts="+world.Player.Casts(1)+", damage="+(world.Dummy.TotalDamageReceived-damage)+")");
             world.Player.transform.position=new Vector3(0,0,-2.4f);
             damage=world.Dummy.TotalDamageReceived;
             Frame(new CombatInput{Peel=true});yield return Wait(.03f);Frame();yield return Wait(.75f);
@@ -147,6 +151,19 @@ namespace BigBattle
             }
             Check(SplitScreenLayout.MaxPlayers==5,"Five-player expansion contract");
             Frame();yield return Shot("07-reset-practice");
+            world.Player.transform.position=new Vector3(0,0,-1);
+            Frame(new CombatInput{Move=Vector2.up});yield return null;Frame();yield return Wait(.05f);
+            var comboBefore=(int[])world.Player.ComboUsage.Clone();
+            int impactsBefore=world.Fx.ImpactCount;
+            Frame(new CombatInput{Attack=true});yield return Wait(.12f);yield return Shot("08-combo-contact");
+            yield return Wait(1.15f);Frame();yield return Wait(.16f);
+            Check(world.Player.ComboUsage[0]>comboBefore[0] && world.Player.ComboUsage[1]>comboBefore[1] && world.Player.ComboUsage[2]>comboBefore[2],"Holding attack advances all three combo motions");
+            Check(world.Fx.ImpactCount>impactsBefore,"Combo hit events connect with dummy");
+            world.SetPaused(true);yield return Wait(.08f);Check(Time.timeScale==0,"Pause takes precedence over hit pause");
+            world.SetPaused(false);yield return Wait(.10f);Check(Mathf.Approximately(Time.timeScale,1),"Impact clock recovers after resume");
+            int soundCount=world.Sound.ImpactPlays;world.Sound.Muted=true;world.Sound.Impact(true);
+            Check(world.Sound.ImpactPlays==soundCount,"Mute suppresses impact playback");world.Sound.Muted=false;
+            yield return Wait(.65f);Check(world.Fx.ActiveEffects<35,"Short-lived impact effects retire after combat");
             Check(report.errors.Count==0,"No runtime errors or exceptions");
             report.result=report.failed==0?"PASS":"FAIL";
             File.WriteAllText(Path.Combine(output,"report.json"),JsonUtility.ToJson(report,true));

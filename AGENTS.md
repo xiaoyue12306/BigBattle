@@ -9,3 +9,5 @@
 - No equipment, progression, matchmaking, minions, towers, or networking unless explicitly requested.
 - Preserve .meta files. Ignore Library, Temp, Logs, Artifacts, and Builds. Do not commit system fonts, third-party art without a license, or generated executable binaries.
 - Use Tools > BigBattle to rebuild the scene and Windows player. Run the standalone smoke test after gameplay changes. Record physical controller testing separately from automated input tests.
+- v0.2.0 uses a LOCAL Mixamo library; read Docs/MIXAMO.md. Never commit the raw FBX or baked motion data to the public repository. Prepare the user's Sword and Shield Pack with Tools/PrepareMixamo.ps1; the build bakes 13 proportion-adapted tracks. Without them only procedural fallback is available, and full animation acceptance must fail rather than silently claiming Mixamo support.
+- Hit pause is coordinated by GameRoot: preserve pause precedence and reset/recovery. Synchronize contact events with motion timing. Do not make new effects bypass mute or allocate permanent per-hit materials/meshes.

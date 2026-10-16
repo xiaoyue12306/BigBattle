@@ -8,6 +8,9 @@
 *.meta text eol=lf
 *.shader text eol=lf
 *.png binary
+*.gif binary
+*.wav binary
 # Unity serializes empty YAML fields with trailing spaces.
 *.asset whitespace=-blank-at-eol
 *.unity whitespace=-blank-at-eol
+*.meta whitespace=-blank-at-eol

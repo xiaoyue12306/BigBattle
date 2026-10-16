@@ -23,6 +23,9 @@ namespace BigBattle
         public int MenuSelection {get;private set;}
         public int EnemyCount {get {int count=0;foreach(var actor in Actors)if(actor!=null && actor.Alive && !actor.IsDummy && actor.Team==1)count++;return count;}}
         public float BattleSeconds {get;private set;}
+        public int HitPauseCount {get;private set;}
+        public bool HitPausing=>!Paused && Time.unscaledTime<hitPauseUntil;
+        float hitPauseUntil,nextHitPause;
         float nextWaveAt;
 
         void Awake()
@@ -30,7 +33,9 @@ namespace BigBattle
             Application.targetFrameRate=60;Application.runInBackground=true;
             QualitySettings.antiAliasing=4;QualitySettings.shadowDistance=65;
             Cursor.visible=false;Cursor.lockState=CursorLockMode.None;
-            SmokeTesting=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--smoke-test")>=0;
+            bool smoke=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--smoke-test")>=0;
+            bool preview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--preview-capture")>=0;
+            SmokeTesting=smoke || preview;
             var garden=new GameObject("Original garden arena").AddComponent<GardenArena>();garden.transform.SetParent(transform);garden.Build();
             Transients=new GameObject("Session objects").transform;Transients.SetParent(transform);
             Fx=new GameObject("Feedback").AddComponent<Feedback>();Fx.transform.SetParent(transform);
@@ -40,11 +45,13 @@ namespace BigBattle
             CameraRig=new GameObject("Player 1 camera").AddComponent<ArenaCamera>();CameraRig.transform.SetParent(transform);CameraRig.Setup(this);
             gameObject.AddComponent<GameHud>().Setup(this);
             EnterPractice();
-            if(SmokeTesting)gameObject.AddComponent<SmokeTest>().Setup(this);
+            if(smoke)gameObject.AddComponent<SmokeTest>().Setup(this);
+            else if(preview)gameObject.AddComponent<CombatPreview>().Setup(this);
         }
 
         void Update()
         {
+            ApplyClock();
             var input=Input.Read();
             if(input.Pause){SetPaused(!Paused);return;}
             if(Paused)
@@ -72,8 +79,15 @@ namespace BigBattle
 
         public void SetPaused(bool paused)
         {
-            Paused=paused;Time.timeScale=paused?0:1;MenuSelection=0;
+            Paused=paused;ApplyClock();MenuSelection=0;
             if(paused)Input.StopRumble();
+        }
+        void ApplyClock(){Time.timeScale=Paused?0:HitPausing?.08f:1;}
+        public void HitPause(bool heavy)
+        {
+            if(Paused || Time.unscaledTime<nextHitPause)return;
+            hitPauseUntil=Time.unscaledTime+(heavy?.044f:.028f);nextHitPause=Time.unscaledTime+.075f;
+            HitPauseCount++;ApplyClock();
         }
         void ActivateMenu()
         {
@@ -95,6 +109,7 @@ namespace BigBattle
         }
         void ClearSession()
         {
+            hitPauseUntil=nextHitPause=0;
             SetPaused(false);
             for(int i=Actors.Count-1;i>=0;i--)if(Actors[i]!=Player && Actors[i]!=null)Destroy(Actors[i].gameObject);
             Actors.RemoveAll(actor=>actor!=Player);Dummy=null;
@@ -130,6 +145,8 @@ namespace BigBattle
         {
             if(State==SessionState.Victory || State==SessionState.Defeat)return;
             State=victory?SessionState.Victory:SessionState.Defeat;Input.StopRumble();
+            Player.Visual.Animate(0,false);
+            if(victory)Player.Visual.PlayMotion(MotionId.Victory,1);
             if(victory){Sound.Play(SoundCue.Win);Fx.Burst(Player.transform.position+Vector3.up,Art.Yellow,18);}
             foreach(var actor in Actors)if(actor!=null && actor!=Player)actor.enabled=false;
         }
@@ -165,6 +182,19 @@ namespace BigBattle
         public PeelTrap SpawnPeel(Vector3 origin,Vector3 direction)
         {
             var peel=new GameObject("Banana peel trap").AddComponent<PeelTrap>();peel.transform.SetParent(Transients);peel.Setup(this,Player,origin,direction);return peel;
+        }
+        public int HitCapsule(Combatant source,Vector3 from,Vector3 to,float radius,float damage,float push)
+        {
+            int hits=0;Vector3 segment=to-from;float length=segment.sqrMagnitude;
+            foreach(var actor in Actors.ToArray())
+            {
+                if(actor==null || !actor.Alive || actor.Team==source.Team)continue;
+                float t=length<.001f?0:Mathf.Clamp01(Vector3.Dot(actor.transform.position-from,segment)/length);
+                Vector3 closest=from+segment*t;
+                if((actor.transform.position-closest).sqrMagnitude>(radius+actor.Radius)*(radius+actor.Radius))continue;
+                if(actor.Damage(damage,source,(actor.transform.position-from).normalized*push))hits++;
+            }
+            return hits;
         }
         void OnApplicationFocus(bool focus){if(!focus && !SmokeTesting && Input!=null && !Paused)SetPaused(true);}
         void OnApplicationQuit(){if(Input!=null)Input.StopRumble();Time.timeScale=1;}

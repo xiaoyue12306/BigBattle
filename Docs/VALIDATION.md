@@ -1,40 +1,40 @@
-# 0.1.0 validation record
+# v0.2.0 validation record
 
 Date: 2026-10-16 (Asia/Shanghai). Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono, Direct3D 11.
 
-## Passed
+## Build and runtime
 
-- Runtime C# compilation, UNITY_EDITOR conditional compilation, and Editor tooling compilation against the installed engine assemblies: passed via Tools/CheckSource.ps1.
-- 53 engine-independent checks: one-through-five viewport counts, bounds, non-overlap and full area coverage; reject zero / six players; analog drift / neutral / full / diagonal stick values; native XInput ABI structure sizes.
-- Actual Editor project import and player script compilation: passed during build.
-- Tools/Build.ps1 / BigBattle.Editor.ProjectBuilder.Build: **Succeeded, 0 errors, 0 warnings, 105,748,331 bytes** reported by BuildPipeline. Output: Builds/Windows/BigBattle.exe and adjacent data/runtime files.
-- Final Tools/Smoke.ps1: **45 passed, 0 failed, no runtime errors or exceptions**. Report timestamp: 2026-10-16T14:01:24Z. A copy is committed as Docs/Validation/smoke-report.json.
+- Windows BuildPipeline: Succeeded, 0 errors, 0 warnings. Final build report: 105,897,471 bytes. Output: Builds/Windows/BigBattle.exe and adjacent runtime / data files.
+- Runtime and Editor offline C# compilation passed; 53 independent input / viewport / XInput ABI checks passed. Actual Editor compilation additionally passed during the Windows build.
+- Standalone acceptance: **55 passed, 0 failed, no runtime errors or exceptions**. Report timestamp: 2026-10-16T14:47:54Z. Copy: Docs/Validation/smoke-report.json. The subsequent build only optimized the opt-in preview recorder, leaving gameplay, input, sound, shaders and the acceptance runner unchanged.
+- Original v0.1.0 coverage remains: boot, move / facing, all five combat actions, damage / cooldowns / invulnerability, assist cone, enemy chase / telegraph / strike, three finite waves / nine enemies, win / loss, reset, pause, bounds and 1–5 viewport geometry.
+- New coverage: all thirteen real Mixamo tracks loaded; 48 finite, amplitude-limited sound variants; successful contact produces slash / impact / audio / hit pause; all three held-button combo steps used; swept thrust deals 42 damage; pause wins over hit pause; clock restores; mute suppresses impacts; temporary effects retire.
 
-Standalone coverage: boot to practice, orthographic camera, movement / retained facing, basic attack, thrust damage and lunge, peel landing / damage / visible enemy stun, dodge invulnerability and expiry, buffered whirlwind and repeated damage, cooldown rejection, team filtering, aim cone and rear-target rejection, pause, enemy pursuit / telegraph / damage, all three waves / nine enemies, victory, defeat, retry cleanup, health / cooldown reset, arena bounds and five-player viewport geometry.
+## Animation and visual evidence
 
-## Visual review
+- User supplied Sword and Shield Pack.zip (49 animations). Thirteen selected clips were imported as Generic FBX, sampled at 60Hz, proportionally mapped to banana joints, and loaded in the actual player.
+- Idle, walk and run are blended; hands and feet are articulated and connected; horizontal source root motion is removed; action contact timing is retimed with hit events. The renderer remains the project's original banana, not an Adobe character replacement.
+- Eight final full-size screenshots were checked: practice, combat practice / slip, pause, telegraph, win, loss, reset and combo contact. Chinese HUD / menus fit, floor does not z-fight, no magenta shaders, and ribbons / afterimages are visible.
+- An opt-in standalone preview records real rendered frames and actual wall-clock timestamps. Docs/Images/combat-motion-v020.gif crops / enlarges those frames and retains timing; no AI-generated animation or interpolated motion is inserted. PNG recording overhead is not a performance benchmark.
 
-All seven final 1600×900 PNGs under Artifacts/Smoke/ were opened and checked: practice, combat practice / slip, pause, enemy telegraph, victory, defeat and return to practice. Chinese labels render, HUD and menus fit, facing / attack rings appear, and no magenta shaders or ground z-fighting remain. Two representative screenshots are committed under Docs/Images/.
+## Sound evidence
 
-## Resolved during validation
+- Twelve original DSP cues, four variants each. Separate filtered-noise whooshes, transients, low thumps, body resonance, soft footfalls and a short victory arpeggio replace the previous simple sine pips.
+- Individual samples are finite and soft-limited below 0.781 amplitude. A ten-voice pool, per-cue spacing, bounded volume and mute handling constrain playback.
+- The four-second exported example is mono, 44.1kHz, PCM16; measured peak 0.7841, RMS 0.0865, zero samples at clipping threshold. This verifies sample integrity, not subjective loudspeaker / headphone quality or every possible simultaneous mix.
+- Docs/Audio/combat-audio-v020.wav is an authored demonstration sequence, not synchronized audio recorded with the GIF.
 
-- Initially the Editor license was unavailable; user activated it in Tuanjie Hub and subsequent builds succeeded.
-- Added the built-in Screen Capture module required by the actual Editor compiler.
-- Removed editor-only internal text / colored shaders from Always Included Shaders; their DontSave references prevented player serialization. Standard and Unlit/Color remain explicitly retained for generated art.
-- Added a 150 ms skill buffer after standalone validation exposed a button press lost during brief hit stun.
-- Hidden Windows game windows did not present rendered frames. The acceptance script now opens the interactive game window and rejects blank screenshots rather than accepting black PNGs.
-- Separated coplanar sand / grass surfaces to remove z-fighting, adjusted lighting, corrected short health-bar drawing and removed stale wave notices on result screens.
+## Repairs during this update
 
-## Not tested / not implemented
+- Replaced sphere-only thrust contact with a capsule swept from the attack origin, preventing targets passed during a fast frame from being missed.
+- Preserved pause precedence over unscaled hit-pause recovery and reset stale pending strikes / animation state on retry.
+- Removed FBX horizontal root drift before foot mapping and used a common height scale across clips.
+- Fixed ghost placement to use source world transforms; faded short-lived effects and retained the custom transparent FX shader explicitly.
 
-- No XInput slots were connected during validation. Physical Xbox mapping, rumble, hot unplug / reconnect, and TV output remain pending hardware testing.
-- Automatic tests inject gameplay actions; they do not simulate real keyboard USB events or physical controller buttons.
-- Multiplayer joining, simultaneous players, five active cameras, PvP / cooperative sessions and independent physical keyboard input are future features. Only input binding and viewport foundations exist in this MVP.
-- No manual Editor Play Mode session is claimed; project import / compilation and the actual standalone player were verified.
+## Remaining practical limits
 
-## Next acceptance steps
-
-1. Run the player normally with a connected Xbox controller; test all actions, menus, retry, unplug / reconnect and vibration.
-2. Test the same build on the intended TV and assess character / HUD readability and input latency.
-3. Implement five player slots and joining, explicit second-keyboard layout / Raw Input choice, real split-screen cameras, then cooperative and versus rules.
-4. Record each subsequent update in update.md, validate, commit and push to GitHub.
+- No physical Xbox controllers were connected for this run. Mapping, rumble, unplug / reconnect and TV output still require hardware testing.
+- Automated acceptance injects gameplay actions, not actual USB keyboard / controller events. A manual Editor Play Mode session is not claimed.
+- Mixamo raw files and baked motion assets are local only; the public source checkout requires the user's own download to recreate the full animation build. See Docs/MIXAMO.md. The local portable build includes embedded animation data.
+- Adaptation uses torso / hand / foot joint poses with rigid banana pieces, not full-body skinned humanoid deformation. Dodge uses a crouching source, throw a casting gesture, and spin adds procedural rotation. They can be replaced by dedicated clips later.
+- Five simultaneous players, real split-screen cameras, co-op / versus and separate physical keyboard devices are not implemented by this update.

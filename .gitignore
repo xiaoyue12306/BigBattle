@@ -23,3 +23,8 @@ Thumbs.db
 sysinfo.txt
 MemoryCaptures/
 Recordings/
+# Mixamo permits embedded game use, not public redistribution of raw animations.
+/Assets/LocalMixamoSource/
+/Assets/LocalMixamoSource.meta
+/Assets/BigBattle/Resources/LocalMixamo/
+/Assets/BigBattle/Resources/LocalMixamo.meta

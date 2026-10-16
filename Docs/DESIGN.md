@@ -36,7 +36,9 @@ Split screen: one fullscreen, two side-by-side, three/four grid, five in two row
 
 ## Implementation choices
 
-Built-in forward renderer, custom meshes and Unity primitives, no external package downloads or art dependencies. The banana is an original curved mesh with separate peel blades and procedural animation; replaceable by a Blender rig later. Unity keyboard input plus Windows XInput isolates controller IDs without shared global gamepad axes. Chinese UI uses Windows Microsoft YaHei dynamically, not a redistributed font. Assets generated at runtime have explicit cleanup.
+Built-in forward renderer, custom meshes and Unity primitives, no external Unity package downloads. The banana is an original curved mesh with separate peel blades and articulated torso / limbs. v0.2.0 samples 13 locally licensed Mixamo tracks into a proportional pose library, blends locomotion and actions, and keeps procedural fallback for source-only checkouts. Raw FBX and baked motion data are excluded from public Git; see Docs/MIXAMO.md. Unity keyboard input plus Windows XInput isolates controller IDs without shared global gamepad axes. Chinese UI uses Windows Microsoft YaHei dynamically, not a redistributed font. Assets generated at runtime have explicit cleanup.
+
+v0.2.0 combat feel: three-step held-button combo (24 / 27 / 36 damage), contact events at 27% of retimed action duration, swept thrust path, 28–44ms hit pause at 0.08 time scale with unscaled recovery / pause precedence, damped knockback, short transparent slash ribbons / blade trails / afterimages, squash and recoil. Audio uses four variants for twelve original layered cues, with separate swing / hit sounds, a bounded voice pool, per-cue spacing, sample headroom and immediate mute. These improve the one-player MVP; multiplayer ownership and camera rules remain future work.
 
 ## Acceptance
 

@@ -32,6 +32,31 @@ namespace BigBattle
             Object.Destroy(go.GetComponent<Collider>());
             return go;
         }
+        public static Material FxMat(string key,Color color)
+        {
+            Material material;
+            if(materials.TryGetValue("fx"+key,out material))return material;
+            material=new Material(Shader.Find("BigBattle/CombatFX")){name=key,color=color};materials.Add("fx"+key,material);owned.Add(material);return material;
+        }
+        public static GameObject Arc(Transform parent,Color color,float sweep=145)
+        {
+            string key="arc"+sweep;Mesh mesh;
+            if(!rings.TryGetValue(key,out mesh))
+            {
+                const int segments=32;var vertices=new Vector3[(segments+1)*2];var colors=new Color[vertices.Length];var indices=new int[segments*6];
+                for(int i=0;i<=segments;i++)
+                {
+                    float t=i/(float)segments;float angle=(t-.5f)*sweep*Mathf.Deg2Rad;
+                    Vector3 d=new Vector3(Mathf.Sin(angle),0,Mathf.Cos(angle));
+                    vertices[i*2]=d*(1-.19f*Mathf.Sin(t*Mathf.PI));vertices[i*2+1]=d;
+                    colors[i*2]=new Color(1,1,1,Mathf.Sin(t*Mathf.PI)*.12f);colors[i*2+1]=new Color(1,1,1,Mathf.Sin(t*Mathf.PI)*.95f);
+                    if(i<segments){int v=i*2,j=i*6;indices[j]=v;indices[j+1]=v+1;indices[j+2]=v+2;indices[j+3]=v+1;indices[j+4]=v+3;indices[j+5]=v+2;}
+                }
+                mesh=new Mesh{name="Curved slash ribbon"};mesh.vertices=vertices;mesh.colors=colors;mesh.triangles=indices;mesh.RecalculateNormals();rings.Add(key,mesh);owned.Add(mesh);
+            }
+            var go=new GameObject("Slash ribbon");go.transform.SetParent(parent,false);go.AddComponent<MeshFilter>().sharedMesh=mesh;
+            var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=FxMat(ColorUtility.ToHtmlStringRGBA(color),color);renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;return go;
+        }
 
         public static GameObject MeshObject(string name, Transform parent, Mesh mesh, Color color)
         {
