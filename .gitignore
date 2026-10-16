@@ -28,3 +28,7 @@ Recordings/
 /Assets/LocalMixamoSource.meta
 /Assets/BigBattle/Resources/LocalMixamo/
 /Assets/BigBattle/Resources/LocalMixamo.meta
+# Store packages remain local until their individual redistribution terms permit otherwise.
+*.unitypackage
+/Assets/ThirdPartyLocal/
+/Assets/ThirdPartyLocal.meta

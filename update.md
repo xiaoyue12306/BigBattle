@@ -129,3 +129,30 @@
 - 结果副本：Docs/Validation/smoke-report.json、audio-metrics.json。当前说明：README.md、Docs/DESIGN.md、Docs/VALIDATION.md。
 - 本次源码 / 文档 / 预览提交并推送 GitHub main；完成依据为本地 HEAD 与远端 main SHA 一致。运行包和 Mixamo 原始 / 烘焙数据仍只保留本机。
 - 仍待真实 Xbox 震动 / 热插拔、电视画面和声音体验。后续可继续调节实际音响上的高频、混音和拼刀窗口，再实现 5 人加入 / 分屏与合作对战。
+
+## 2026-10-16 — 团结商店后续素材储备（领取 / 下载待完成）
+
+### 用户需求与本次产出
+
+- 从 https://assetstore.u3d.cn/ 获取合适的音效和特效，供后续版本使用。
+- 已逐个核对 10 个候选商品页：8 个免费、2 个付费。完整来源、用途、包大小、核对时价格、最低引擎版本、渲染管线与状态记录于 Docs/AssetLibrary/README.md、catalog.json。
+- 优先免费包：小音效包、Simple FX 卡通粒子、低聚火焰粒子、Legacy Particle Pack。前者用于草地脚步 / 衣物 / 魔法，后三者用于卡通尘土 / 烟花、元素火焰和粒子范例；并未假称免费音效包含专用剑对剑声音。
+- 免费后备：免费音效入门包、Particle Pack、Free Fire VFX - URP、通用拖尾特效1(URP)。前者最低团结 1.10.1，高于项目 1.9.3；后三者仅 URP，与当前 Built-in 不能直接混用。
+- 付费候选：剑击和格挡——战斗音效（核对时 ¥57.40，157 个音效）；Cartoon Casual VFX Pack（¥99.81，231 个预制体）。未购买、未付款，后者还标注发布者生成式 AI 用途限制，需人工核对许可。
+- 创建本地 Artifacts/AssetStoreInbox/Audio、VFX、Licenses 目录及使用说明；新增 Tools/InventoryAssetInbox.ps1，后续可盘点本地包、大小和 SHA-256，不执行导入或自动声称授权。
+- .gitignore 增加 .unitypackage 与 Assets/ThirdPartyLocal 原始素材排除；公开仓库只保存选型清单和工具。README 增加交接入口。
+
+### 获取阻塞与实际状态
+
+- 浏览器连接重试超时；随后电脑操作工具明确停止本轮控制，理由为无法足够可靠地识别当前浏览器 URL 以执行访问检查。没有继续点击或换途径操作账户、绕过限制。
+- 公开商品页检索已完成；领取状态无法验证。Downloads 与常用 Unity / Tuanjie 商店缓存没有发现可用 .unitypackage。
+- **当前实际下载 0 个，领取 0 个已确认，导入 0 个；10 项全部保留 not_acquired。** 候选 / 已创建目录不等同于已获取素材。
+- 已向用户提供第一批四个免费包的具体链接与本地保存路径，请用户完成领取 / 下载后回复“已保存”；这是工具无法继续浏览器操作所需的人工步骤，并非付费确认。
+
+### 验证与下一步
+
+- catalog.json 可解析，10 个商品 ID 唯一、来源均为用户指定商店；8 免费 / 2 付费与文档一致。
+- 实际运行 InventoryAssetInbox.ps1 成功，报告 0 个文件、状态 empty_no_assets_downloaded；报告留在 Artifacts/AssetLibrary/inventory.json。
+- 本轮未更改游戏逻辑、场景、音效运行库或构建；未重新运行游戏验收，不把上一版 74 项检查当作本次商店素材的导入验收。游戏仍为 v0.3.0。
+- 清单、盘点脚本、忽略规则和本记录提交 / 同步至 GitHub main；用本地 HEAD 与远端 main SHA 一致验证同步结果。
+- 收到下载包后：盘点实际文件并保存授权记录，先在独立团结 1.9.3 Built-in 工程检查许可 / 材质 / 脚本 / 依赖，再挑选合适内容接入 GameSound / Feedback，维持静音、拼刀、暂停和实例回收机制，并单独记录导入与运行验收。
