@@ -39,6 +39,20 @@ namespace BigBattle
             material=new Material(Shader.Find("BigBattle/CombatFX")){name=key,color=color};materials.Add("fx"+key,material);owned.Add(material);return material;
         }
         public static int SharedMaterialCount=>materials.Count;
+        public static Material SoulMaterial(string texture,bool glow,bool ribbon=false)
+        {
+            string key="soul:"+texture+":"+glow+":"+ribbon;Material material;
+            if(materials.TryGetValue(key,out material))return material;
+            material=new Material(Shader.Find("BigBattle/SoulParticle")){name=key,color=Color.white,mainTexture=Resources.Load<Texture2D>("SoulVfx/"+texture)};
+            material.SetInt("_DstBlend",glow?(int)UnityEngine.Rendering.BlendMode.One:(int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_Glow",glow?1:0);material.SetFloat("_UvRotate",ribbon?1:0);materials.Add(key,material);owned.Add(material);return material;
+        }
+        public static Mesh SoulQuad()
+        {
+            Mesh mesh;if(rings.TryGetValue("soul quad",out mesh))return mesh;
+            mesh=new Mesh{name="Shared soul texture card",vertices=new[]{new Vector3(-.5f,-.5f,0),new Vector3(.5f,-.5f,0),new Vector3(.5f,.5f,0),new Vector3(-.5f,.5f,0)},uv=new[]{Vector2.zero,Vector2.right,Vector2.one,Vector2.up},triangles=new[]{0,1,2,0,2,3},colors=new[]{Color.white,Color.white,Color.white,Color.white}};
+            mesh.RecalculateBounds();rings.Add("soul quad",mesh);owned.Add(mesh);return mesh;
+        }
         public static GameObject Crescent(Transform parent,Color color,float sweep,float width)
         {
             string key="energy"+sweep+":"+width;Mesh mesh;

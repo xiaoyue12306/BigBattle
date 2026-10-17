@@ -7,16 +7,25 @@ namespace BigBattle
     public sealed class FlowerLaneMap : MonoBehaviour
     {
         public const float HalfLength=34;
+        // Author geometry/rules in lane coordinates; the world camera stays fixed.
+        // Positive Z therefore travels from the lower left to the upper right.
+        public static readonly Quaternion Orientation=Quaternion.Euler(0,45,0);
+        public static Vector3 ToWorld(Vector3 lane)=>Orientation*lane;
+        public static Vector3 ToLane(Vector3 world)=>Quaternion.Inverse(Orientation)*world;
+        public static Vector3 Across=>ToWorld(Vector3.right);
+        public static Vector3 Forward(int team)=>ToWorld(team==0?Vector3.forward:Vector3.back);
         public static Vector3 Clamp(Vector3 p)
         {
+            p=ToLane(p);
             p.y=0;p.z=Mathf.Clamp(p.z,-HalfLength,HalfLength);
             float width=Mathf.Lerp(6.0f,9.0f,Mathf.InverseLerp(24,30,Mathf.Abs(p.z)));
-            p.x=Mathf.Clamp(p.x,-width,width);return p;
+            p.x=Mathf.Clamp(p.x,-width,width);return ToWorld(p);
         }
-        public static Vector3 Spawn(int team)=>new Vector3(0,0,team==0?-29:29);
+        public static Vector3 Spawn(int team)=>ToWorld(new Vector3(0,0,team==0?-29:29));
         static readonly Color Grass=new Color(.56f,.79f,.47f),Cream=new Color(.98f,.90f,.70f),Water=new Color(.43f,.77f,.83f);
         public void Build()
         {
+            transform.localRotation=Orientation;
             var sun=new GameObject("Flower creek sunshine").AddComponent<Light>();sun.transform.SetParent(transform,false);sun.type=LightType.Directional;sun.transform.rotation=Quaternion.Euler(48,-32,0);sun.intensity=.85f;sun.color=new Color(1,.95f,.84f);sun.shadows=LightShadows.Soft;sun.shadowStrength=.30f;
             Shape("Clear pastel lake",PrimitiveType.Cube,new Vector3(0,-.8f,0),new Vector3(180,.20f,180),Water);
             Shape("Soft island foundation",PrimitiveType.Cube,new Vector3(0,-.55f,0),new Vector3(25,.65f,72),new Color(.68f,.74f,.51f));

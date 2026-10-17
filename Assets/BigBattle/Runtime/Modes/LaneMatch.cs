@@ -20,7 +20,7 @@ namespace BigBattle
         float nextWave;
         public void Setup(GameRoot world)
         {
-            World=world;Heroes.Add(world.Player);world.Player.RespawnAt(FlowerLaneMap.Spawn(0)+Vector3.left*2.2f,Vector3.forward);
+            World=world;Heroes.Add(world.Player);world.Player.RespawnAt(FlowerLaneMap.Spawn(0)-FlowerLaneMap.Across*2.2f,FlowerLaneMap.Forward(0));
             for(int team=0;team<2;team++)
             {
                 for(int i=0;i<2;i++)Towers[team,i]=Structure(team,false,i,new Vector3(0,0,(team==0?-1:1)*(i==0?12:22)));
@@ -31,14 +31,14 @@ namespace BigBattle
         }
         LaneStructure Structure(int team,bool core,int index,Vector3 point)
         {
-            var go=new GameObject(core?"Flower heart core":"Sprout guardian tower");go.transform.SetParent(transform);go.transform.position=point;
+            var go=new GameObject(core?"Flower heart core":"Sprout guardian tower");go.transform.SetParent(transform);go.transform.position=FlowerLaneMap.ToWorld(point);
             var actor=go.AddComponent<LaneStructure>();actor.Setup(World,this,team,core,index);return actor;
         }
         void SpawnHero(int team,HeroKind kind,int slot)
         {
             var go=new GameObject((team==0?"Meadow ally • ":"Peach rival • ")+(kind==HeroKind.Banana?"Banana":"Yueyue")+" "+slot);go.transform.SetParent(transform);
             BananaPlayer hero=kind==HeroKind.Banana?go.AddComponent<BananaPlayer>():go.AddComponent<YueyuePlayer>();hero.SetupTeam(World,team);
-            hero.RespawnAt(FlowerLaneMap.Spawn(team)+Vector3.right*((slot-2)*1.1f),team==0?Vector3.forward:Vector3.back);
+            hero.RespawnAt(FlowerLaneMap.Spawn(team)+FlowerLaneMap.Across*((slot-2)*1.1f),FlowerLaneMap.Forward(team));
             Heroes.Add(hero);go.AddComponent<LaneHeroBot>().Setup(this,hero,(slot-2)*.8f);
         }
         void Update()
@@ -48,7 +48,7 @@ namespace BigBattle
             {
                 if(entry.Key==null){respawns.Remove(entry.Key);continue;}
                 if(Time.time<entry.Value)continue;
-                var hero=entry.Key;respawns.Remove(hero);hero.gameObject.SetActive(true);hero.RespawnAt(FlowerLaneMap.Spawn(hero.Team)+Vector3.right*((Heroes.IndexOf(hero)%TeamSize-2)*1.1f),hero.Team==0?Vector3.forward:Vector3.back);
+                var hero=entry.Key;respawns.Remove(hero);hero.gameObject.SetActive(true);hero.RespawnAt(FlowerLaneMap.Spawn(hero.Team)+FlowerLaneMap.Across*((Heroes.IndexOf(hero)%TeamSize-2)*1.1f),FlowerLaneMap.Forward(hero.Team));
                 if(hero==World.Player){World.CameraRig.Snap();World.Fx.Notice("重新出发 · 与花灵一起推进");}
             }
             foreach(var hero in Heroes)
@@ -63,7 +63,7 @@ namespace BigBattle
                 int living=0;foreach(var actor in World.Actors)if(actor is LaneMinion && actor.Alive && actor.Team==team)living++;
                 for(int i=0;i<3 && living+i<18;i++)
                 {
-                    var go=new GameObject(team==0?"Mint flower sprout":"Peach flower sprout");go.transform.SetParent(transform);go.transform.position=new Vector3((i-1)*.9f,0,team==0?-27:27);
+                    var go=new GameObject(team==0?"Mint flower sprout":"Peach flower sprout");go.transform.SetParent(transform);go.transform.position=FlowerLaneMap.ToWorld(new Vector3((i-1)*.9f,0,team==0?-27:27));
                     go.AddComponent<LaneMinion>().Setup(World,this,team,(i-1)*.9f);
                 }
             }

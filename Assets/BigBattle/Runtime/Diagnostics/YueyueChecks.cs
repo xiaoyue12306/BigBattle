@@ -12,12 +12,16 @@ namespace BigBattle
             var mage=world.Player as YueyuePlayer;
             Check(mage!=null && mage.HeroName=="越越大王" && mage.MaxHealth==155,"Selecting Yueyue creates the independent hero and HUD action set");
             var rig=mage.Visual.GetComponent<YueyueVisual>();var skin=mage.Visual.GetComponentInChildren<SkinnedMeshRenderer>();
+            bool textures=true;foreach(string name in SoulVfx.TextureNames)textures&=Resources.Load<Texture2D>("SoulVfx/"+name)!=null;
+            var soulShader=Shader.Find("BigBattle/SoulParticle");Check(textures && soulShader!=null && soulShader.isSupported,"Thirteen licensed online particle textures and native soul shader are present in the Windows player");
+            var bloom=Shader.Find("Hidden/BigBattle/SoulBloom");Check(bloom!=null && bloom.isSupported && world.CameraRig.Camera.allowHDR && world.CameraRig.GetComponent<SoulBloom>()!=null,"Selective HDR soul glow shader and native camera compositor survive player stripping");
             Check(rig!=null && rig.HasModel && rig.BoneCount>=10 && skin!=null && skin.bones.Length>=13 && skin.sharedMaterial.mainTexture!=null,"User FBX imports with authored bones, skin and texture");
             mage.transform.position=Vector3.back*3;Frame(new CombatInput{Move=Vector2.up});yield return Wait(.04f);Frame();
             float before=world.Dummy.TotalDamageReceived;
             Frame(new CombatInput{Attack=true});yield return Wait(.12f);Frame();
             var skull=world.Transients.GetComponentInChildren<GhostProjectile>();
             Check(skull!=null && !skull.Flying && world.Dummy.TotalDamageReceived==before,"Skull waits near its caster before launch");
+            Check(skull!=null && skull.GetComponentInChildren<SoulVfx>()!=null && skull.GetComponentsInChildren<ParticleSystem>().Length>=2,"Skull carries textured ghost flame, smoke and spark emitters");
             yield return Shot("13-yueyue-skull");yield return Wait(.75f);
             Check(world.Dummy.TotalDamageReceived>=before+28,"Accelerating homing skull hits the forward target");
             float casts=mage.Casts(0);Frame(new CombatInput{Attack=true});yield return Wait(1.4f);Frame();
@@ -29,6 +33,7 @@ namespace BigBattle
             Check(enemy.BoundUntil>Time.time+1.5f && enemy.Controlled,"Chain contact applies a two-second movement and action bind");
             Check(mage.Remaining(1)>9 && !mage.Cast(1,Vector3.zero),"Chain cooldown begins at cast and rejects repeats");
             Check(world.Transients.GetComponentInChildren<SoulCage>()!=null,"Void chains surround the bound victim");
+            var cage=world.Transients.GetComponentInChildren<SoulCage>();Check(cage!=null && cage.GetComponentInChildren<SoulVfx>()!=null,"Actual chain bind displays layered void portals and its ground seal");
             yield return Shot("14-void-chain-bind");
             Vector3 frozen=enemy.transform.position;world.SetPaused(true);float left=enemy.BoundUntil-Time.time;yield return Wait(.15f);world.SetPaused(false);
             Check(Mathf.Abs(enemy.BoundUntil-Time.time-left)<.04f,"Pause freezes remaining chain duration");
@@ -52,6 +57,7 @@ namespace BigBattle
             Check(!mage.Cast(0,Vector3.zero) && !mage.Cast(1,Vector3.zero) && !mage.Cast(2,Vector3.zero) && !mage.Cast(4,Vector3.zero),"Ghost form disables offensive actions and summoning");
             Vector3 pos=mage.transform.position;Frame(new CombatInput{Move=Vector2.right});yield return Wait(.25f);Frame();
             Check(Vector3.Distance(mage.transform.position,pos)>.5f && mage.Remaining(3)>7,"Ghost form retains movement and starts its eight-second cooldown");yield return Shot("16-void-ghost");
+            var phaseFx=System.Array.Find(mage.GetComponentsInChildren<SoulVfx>(),f=>f.Kind==SoulEffect.Phase);Check(phaseFx!=null && phaseFx.EmitterCount>=2,"Ghost form displays a live textured soul wake rather than only a transparent skin");
             yield return Wait(2.8f);Check(!mage.Phasing && mage.Damage(1,attacker,Vector3.zero,0),"Ghost invulnerability ends after three seconds");
             mage.FillPracticeSouls();Frame(new CombatInput{UltimateHeld=true});yield return Wait(.25f);Frame();yield return Wait(.05f);
             Check(!mage.Charging && mage.Souls==3 && mage.Remaining(4)==0,"Early charge release cancels without spending souls or starting cooldown");
@@ -70,6 +76,11 @@ namespace BigBattle
             Frame(new CombatInput{UltimateHeld=true});yield return Wait(3.7f);
             Check(mage.Charging && mage.ChargeProgress>=1 && mage.ReleasedWaves==0,"Full four-second charge waits for key release");yield return Shot("17-soul-sword-charge");
             world.SetPaused(true);float charge=mage.ChargeProgress;yield return Wait(.12f);Check(mage.ChargeProgress==charge,"Pause freezes sword charging");world.SetPaused(false);
+            var chargeFx=System.Array.Find(mage.GetComponentsInChildren<SoulVfx>(),f=>f.Kind==SoulEffect.Charge);
+            var chargeEmitter=chargeFx!=null?chargeFx.GetComponentInChildren<ParticleSystem>():null;
+            Check(chargeEmitter!=null && chargeEmitter.particleCount>0,"Full soul charge emits textured gathering sparks and ghost fire");
+            world.SetPaused(true);float particleClock=chargeEmitter!=null?chargeEmitter.time:0;Quaternion rune=chargeFx!=null?chargeFx.transform.GetChild(0).localRotation:Quaternion.identity;yield return Wait(.12f);
+            Check(chargeEmitter!=null && Mathf.Abs(chargeEmitter.time-particleClock)<.001f && rune==chargeFx.transform.GetChild(0).localRotation,"Pause freezes both imported-texture particles and rotating charge seals");world.SetPaused(false);
             Frame();yield return Wait(.12f);yield return Shot("18-doom-sword-wave");yield return Wait(.6f);
             Check(mage.ReleasedWaves==1 && mage.Souls==0 && mage.Remaining(4)>19,"Releasing full charge spends three souls and starts twenty-second cooldown");
             Check(a.Health==500 && b.Health==500,"Sword wave pierces two enemies for exactly five hundred damage each");
@@ -81,6 +92,7 @@ namespace BigBattle
             world.EnterPractice();yield return Wait(.12f);Check(mage.Souls==0 && !mage.Fallen.Valid && !mage.Charging && mage.Servant==null && world.Transients.childCount==0,"Session reset clears souls, record, ally, projectiles and charge");
             mage.FillPracticeSouls();Frame(new CombatInput{UltimateHeld=true});yield return Wait(.1f);world.EnterPractice();Frame();yield return Wait(.08f);
             Check(!mage.Charging && !rig.SwordVisible,"Reset during active charge removes the raised sword and soul currents");
+            Check(System.Array.Find(mage.GetComponentsInChildren<SoulVfx>(),f=>f.Kind==SoulEffect.Charge || f.Kind==SoulEffect.Phase)==null,"Reset deactivates reusable charge and phase emitters without residual particles");
             GhostProjectile.Spawn(world,mage,GhostShot.Doom,Vector3.forward);world.EnterPractice();yield return Wait(.1f);
             Check(world.Dummy.TotalDamageReceived==0 && world.Transients.GetComponentInChildren<GhostProjectile>()==null,"Old projectiles cannot damage new-session actors during deferred destruction");
             mage.transform.position=Vector3.back*4;
@@ -97,6 +109,9 @@ namespace BigBattle
             attacker=world.SpawnEnemy(Vector3.right*8,100);attacker.enabled=false;mage.Damage(999,attacker,Vector3.zero,0);Frame();
             Check(!mage.Charging && mage.ReleasedWaves==1 && world.State==SessionState.Defeat,"Death interrupts charge and never releases a stale sword wave");
             world.EnterPractice();yield return Wait(.08f);
+            SoulVfx.Burst(world,SoulEffect.Impact,Vector3.up);yield return Wait(.7f);int materials=Art.SharedMaterialCount;
+            for(int i=0;i<20;i++)SoulVfx.Burst(world,SoulEffect.Impact,new Vector3((i%5-2)*.3f,1,i/5*.3f));yield return Wait(.7f);
+            Check(world.Fx.GetComponentInChildren<SoulVfx>()==null && Art.SharedMaterialCount==materials,"Repeated online-texture impacts retire fully and reuse warmed shared materials");
             world.SetOpponent(HeroKind.Yueyue);world.EnterSparring();yield return Wait(.15f);
             Check(world.PracticeFoe is YueyueDuelist,"Practice opponent supports Yueyue as well as banana");yield return Shot("20-yueyue-opponent");
             world.SetOpponent(HeroKind.Banana);world.SelectHero(HeroKind.Banana);yield return Wait(.12f);

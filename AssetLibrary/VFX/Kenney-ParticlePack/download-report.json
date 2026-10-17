@@ -1,0 +1,117 @@
+{
+  "acquired": "2026-10-17",
+  "page": "https://kenney.nl/assets/particle-pack",
+  "archiveURL": "https://kenney.nl/media/pages/assets/particle-pack/f8fe0f8cb8-1677578741/kenney_particle-pack.zip",
+  "archiveSHA256": "b631d4b07f7002549fdcf155f01141ad482f79f3440e4e301eed49ce5f1d8958",
+  "archiveBytes": 15001764,
+  "license": "CC0",
+  "archiveLicenseVersion": "1.1",
+  "webPageVersion": "1.0",
+  "availableBaseTransparentPNG": 80,
+  "integrated": [
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/circle_02.png",
+      "sha256": "8a2112a6a5610c7cdcbfe8af0a5162b42dfb3431c63f494743945337b7981e51",
+      "bytes": 43380,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/fire_01.png",
+      "sha256": "9727a9743ac6ab8dd4dd79f5fc5b0266290efae45f4d4452279eb5e4bcf3a978",
+      "bytes": 99891,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/flame_01.png",
+      "sha256": "92a70bcb90b1e21c57b2dae42843135703b2e988abee97433f84c3119723d144",
+      "bytes": 54099,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/light_02.png",
+      "sha256": "f1bdb57478703fec539f7b8eeceb494c4a23664652b296389f310104be80cfe0",
+      "bytes": 93415,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/magic_01.png",
+      "sha256": "398479ea280c8161d0b6d509ca97eefb27e989c7832b404abcb65faae3e922ff",
+      "bytes": 81687,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/magic_03.png",
+      "sha256": "c2ef5fe86cd2fd08e5b9768389ab6580b346c391db3c7c09fc9b0a63e00ec4ce",
+      "bytes": 58093,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/slash_02.png",
+      "sha256": "a79a9e297790e6126b78d41015a3045cda3f1863b421c88321d2442ed6f9032e",
+      "bytes": 38224,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/smoke_04.png",
+      "sha256": "2db2f69874cdb1e5203f2f86803d5debde30402590cf50a810afaba882184616",
+      "bytes": 97568,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/spark_01.png",
+      "sha256": "5902da3a324cad0a4b5a88ce1e3c9cc18fee50922c358ce93d8c9f1ad7708f0a",
+      "bytes": 95070,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/spark_06.png",
+      "sha256": "fe6d473393d3b9350c7a654b7cb5fbd343766b5b5b11d3e4aba476832d4a6d3f",
+      "bytes": 46347,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/star_04.png",
+      "sha256": "6485ac16c773663bd39346f3bedae04465ac14c661eb47cc5cfa935cdbf6c2ec",
+      "bytes": 30613,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/trace_05.png",
+      "sha256": "3f3d687bd2c70b10add33bdbd4616deda28f0138f757d358f9f0b78fb38bde6e",
+      "bytes": 42174,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/twirl_02.png",
+      "sha256": "3963633f6b2395a3fa95b9f4f65f22a4d38a2c561d9312dfff4646b71c7aa6e2",
+      "bytes": 76886,
+      "width": 512,
+      "height": 512,
+      "mode": "P"
+    }
+  ]
+}

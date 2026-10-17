@@ -21,18 +21,19 @@ namespace BigBattle
             world=game;source=owner;Kind=kind;aim=direction.normalized;born=Time.time;origin=owner.transform.position;
             transform.position=origin+Vector3.up*.95f+aim*.65f;transform.rotation=Quaternion.LookRotation(aim);
             core=new GameObject("Flight art").transform;core.SetParent(transform,false);
-            if(kind==GhostShot.Skull){GhostArt.Skull(core);target=world.FrontTarget(owner,aim,12,.45f);}
+            if(kind==GhostShot.Skull){GhostArt.Skull(core);SoulVfx.Attach(core,world,SoulEffect.Skull);target=world.FrontTarget(owner,aim,12,.45f);}
             if(kind==GhostShot.Chain)
             {
                 chain=GhostArt.Line(transform,"Outbound iron chain",GhostArt.Teal,.075f,25);
                 for(int i=0;i<12;i++){var link=Art.Ring("Iron oval",core,.15f,.045f,new Color(.13f,.22f,.24f));link.transform.localPosition=Vector3.back*i*.25f;link.transform.localScale=new Vector3(.65f,1,1);link.transform.localRotation=Quaternion.Euler(i%2==0?90:0,0,0);}
                 Art.Shape("Hook point",PrimitiveType.Cube,core,Vector3.forward*.18f,new Vector3(.15f,.15f,.55f),GhostArt.Teal);
+                SoulVfx.Attach(core,world,SoulEffect.Chain);
             }
             if(kind==GhostShot.Doom)
             {
                 Color[] colors={GhostArt.Dark,GhostArt.Teal,GhostArt.Blue,GhostArt.Red};
                 for(int i=0;i<4;i++){var blade=Art.Crescent(core,colors[i],240,i==0?.48f:.16f);blade.GetComponent<Renderer>().sharedMaterial.SetFloat("_Progress",.5f);blade.transform.localPosition=Vector3.back*i*.15f;blade.transform.localScale=Vector3.one*(2.8f-i*.19f);blade.transform.localRotation=Quaternion.Euler(-90,0,i*9-14);}
-                var trail=core.gameObject.AddComponent<TrailRenderer>();trail.sharedMaterial=Art.FxMat("Doom wake",GhostArt.Teal);trail.time=.5f;trail.widthMultiplier=2;trail.startColor=GhostArt.Teal;trail.endColor=Color.clear;trail.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+                SoulVfx.Attach(core,world,SoulEffect.Doom);
             }
         }
         void Update()
@@ -70,6 +71,7 @@ namespace BigBattle
                 var cage=new GameObject("Void chains • two second bind").AddComponent<SoulCage>();cage.transform.SetParent(world.Transients);cage.Setup(actor);world.Sound.Play(SoundCue.Clash,.7f);
             }
             world.Fx.Burst(actor.transform.position+Vector3.up,GhostArt.Teal,Kind==GhostShot.Doom?15:6);
+            SoulVfx.Burst(world,SoulEffect.Impact,actor.transform.position+Vector3.up,aim);
         }
         void Crack(Vector3 point)
         {

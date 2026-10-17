@@ -20,7 +20,7 @@ namespace BigBattle
             var banana=new GameObject("Recorded defeated banana").AddComponent<BananaDuelist>();banana.transform.SetParent(world.transform);banana.transform.position=new Vector3(-9,0,5);banana.SetupEnemy(world);banana.Damage(999,mage,Vector3.zero,0);
             world.Fx.Notice("越越大王 · 追魂 / 铁索 / 亡者 / 鬼影 / 万魂魔剑");
             string output=Path.GetFullPath(Path.Combine(Application.dataPath,"../../../Artifacts/YueyuePreview"));Directory.CreateDirectory(output);
-            var timing=new Timing();float born=Time.unscaledTime,next=0;int index=0;
+            var timing=new Timing();var frames=new System.Collections.Generic.List<Texture2D>();float born=Time.unscaledTime,next=0;int index=0;
             while(Time.unscaledTime-born<11.6f)
             {
                 float t=Time.unscaledTime-born;var input=new CombatInput();
@@ -34,10 +34,11 @@ namespace BigBattle
                 if(t>6.1f && t<10.35f)input.UltimateHeld=true;
                 world.Input.InjectedFrame=input;
                 if(t<next){yield return null;continue;}yield return new WaitForEndOfFrame();
-                Texture2D frame=ScreenCapture.CaptureScreenshotAsTexture();timing.seconds.Add(Time.unscaledTime-born);
-                File.WriteAllBytes(Path.Combine(output,"frame"+index.ToString("D4")+".png"),frame.EncodeToPNG());Destroy(frame);index++;next=t+1f/15;
+                frames.Add(ScreenCapture.CaptureScreenshotAsTexture());timing.seconds.Add(Time.unscaledTime-born);next=t+1f/12;
             }
-            world.Input.InjectedFrame=default(CombatInput);File.WriteAllText(Path.Combine(output,"timing.json"),JsonUtility.ToJson(timing));
+            world.Input.InjectedFrame=default(CombatInput);world.SetPaused(true);
+            foreach(var frame in frames){File.WriteAllBytes(Path.Combine(output,"frame"+(index++).ToString("D4")+".png"),frame.EncodeToPNG());Destroy(frame);}
+            File.WriteAllText(Path.Combine(output,"timing.json"),JsonUtility.ToJson(timing));
             Debug.Log("YUEYUE_PREVIEW_OK frames="+index);Application.Quit();
         }
     }

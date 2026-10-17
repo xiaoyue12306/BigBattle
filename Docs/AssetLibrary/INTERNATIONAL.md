@@ -1,5 +1,7 @@
 # Unity 国际站获取记录
 
+更新 2026-10-17：v0.7.0 另从 Kenney 官方直接获取 CC0 Particle Pack（80 张基础透明贴图，选 13 张实际接入越越大王）。见 [下载与许可记录](../../AssetLibrary/VFX/Kenney-ParticlePack/SOURCE.md) 及 [技能特效实现](../SOUL_VFX.md)。这不改变下面 Asset Store 候选仍未领取的事实。
+
 2026-10-16，按用户要求改试 https://assetstore.unity.com/ 。国际站公开商品页可访问；内置浏览器创建页面仍超时，账户内领取和下载未能代操作。没有继续通过已停止的电脑操作工具控制浏览器，也没有访问他人的素材镜像。
 
 ## 已实际下载并归档

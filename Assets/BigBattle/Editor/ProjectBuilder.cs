@@ -35,13 +35,20 @@ namespace BigBattle.Editor
         public static void Build(){MixamoBaker.Bake();CreateScene();BuildWindows();}
         static void Configure()
         {
-            PlayerSettings.companyName="BigBattle";PlayerSettings.productName="Banana Brawl";PlayerSettings.bundleVersion="0.6.0";
+            PlayerSettings.companyName="BigBattle";PlayerSettings.productName="Banana Brawl";PlayerSettings.bundleVersion="0.7.0";
             PlayerSettings.defaultScreenWidth=1600;PlayerSettings.defaultScreenHeight=900;
             PlayerSettings.fullScreenMode=FullScreenMode.FullScreenWindow;PlayerSettings.resizableWindow=true;PlayerSettings.runInBackground=true;
             PlayerSettings.colorSpace=ColorSpace.Linear;
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone,ScriptingImplementation.Mono2x);
             PlayerSettings.SetApiCompatibilityLevel(BuildTargetGroup.Standalone,ApiCompatibilityLevel.NET_Standard_2_0);
             PlayerSettings.stripEngineCode=false;PlayerSettings.usePlayerLog=true;
+            // A newly added AssetPostprocessor can compile after a texture's
+            // first import. Ensure the same final settings on that first build.
+            foreach(string guid in AssetDatabase.FindAssets("t:Texture2D",new[]{"Assets/BigBattle/Resources/SoulVfx"}))
+            {
+                var importer=AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(guid)) as TextureImporter;
+                if(importer!=null && importer.maxTextureSize!=512){importer.maxTextureSize=512;importer.SaveAndReimport();}
+            }
             // All art is generated at runtime, so retain the shaders explicitly.
             var graphicsAssets=AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/GraphicsSettings.asset");
             if(graphicsAssets.Length>0)
@@ -60,7 +67,7 @@ namespace BigBattle.Editor
                         included.DeleteArrayElementAtIndex(i);
                     }
                 }
-                foreach(string shaderName in new[]{"Standard","Unlit/Color","BigBattle/CombatFX","BigBattle/BladeEnergy"})
+                foreach(string shaderName in new[]{"Standard","Unlit/Color","BigBattle/CombatFX","BigBattle/BladeEnergy","BigBattle/SoulParticle","Hidden/BigBattle/SoulBloom"})
                 {
                     Shader shader=Shader.Find(shaderName);if(shader==null)continue;
                     bool found=false;for(int i=0;i<included.arraySize;i++)if(included.GetArrayElementAtIndex(i).objectReferenceValue==shader)found=true;

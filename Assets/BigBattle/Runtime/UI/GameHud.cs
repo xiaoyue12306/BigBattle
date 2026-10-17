@@ -204,17 +204,17 @@ namespace BigBattle
                 for(int i=0;i<2;i++){bool alive=mode.Towers[team,i]!=null && mode.Towers[team,i].Alive;Box(new Rect(280-i*19,y-1,12,15),alive?(team==0?Art.Mint:Art.Coral):new Color(.7f,.74f,.67f));}
             }
             Text(new Rect(30,282,280,26),"无花灵支援时，建筑减伤 80%",12,Muted,TextAnchor.MiddleCenter);
-            Box(new Rect(1395,156,170,385),Paper);
+            Box(new Rect(1395,156,170,235),Paper);
             Text(new Rect(1400,162,160,28),"花溪路线",17,Art.Ink,TextAnchor.MiddleCenter,true);
-            Fill(new Rect(1478,205,5,285),new Color(.84f,.79f,.60f));
+            for(int i=0;i<51;i++)Fill(new Rect(1428+i*2,335-i*2,4,4),new Color(.84f,.79f,.60f));
             foreach(var actor in world.Actors)
             {
                 if(actor==null || !actor.Alive || !actor.gameObject.activeInHierarchy)continue;
-                float x=1480+actor.transform.position.x*3.5f,y=347-actor.transform.position.z*4.2f;
+                float x=1480+actor.transform.position.x*2.1f,y=285-actor.transform.position.z*2.1f;
                 float size=actor==world.Player?10:actor.IsStructure?9:actor is LaneMinion?4:7;
                 Box(new Rect(x-size*.5f,y-size*.5f,size,size),actor==world.Player?Art.Yellow:actor.Team==0?Art.Mint:Art.Coral);
             }
-            Text(new Rect(1400,503,160,23),"花灵 "+mode.NextWaveIn.ToString("0")+" 秒后出发",13,Muted,TextAnchor.MiddleCenter);
+            Text(new Rect(1400,362,160,23),"花灵 "+mode.NextWaveIn.ToString("0")+" 秒后出发",13,Muted,TextAnchor.MiddleCenter);
             if(!world.Player.Alive && world.State==SessionState.Battle)
             {
                 Box(new Rect(530,300,540,145),Paper);Text(new Rect(550,316,500,40),"休息一下，再次守护花溪",27,Art.Ink,TextAnchor.MiddleCenter,true);

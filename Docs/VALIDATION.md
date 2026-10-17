@@ -1,4 +1,34 @@
-# v0.6.0 validation record
+# v0.7.0 validation record
+
+Date: 2026-10-17 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
+
+## Final build and automated checks
+
+- Final warm Windows build succeeds with **0 errors / 0 warnings**, **115,138,983 bytes**. Its log has no C# or shader errors. Earlier imports first exposed the missing built-in particle module and later new-script import ordering; the module is enabled and the final warm build is clean. Build summary / executable / portable archive hashes: [build-v070.json](Validation/build-v070.json).
+- Final standalone acceptance: **191 passed / 0 failed / zero runtime errors or exceptions**, UTC **2026-10-17T08:57:32.2815471Z**. [Actual report](Validation/smoke-report.json). The old banana, Mixamo, combo, clash, sound/mute, hero, summon, charge/interruption, objective and reset coverage remains.
+- Added coverage verifies all 13 downloaded textures and both retained native shaders, HDR compositor availability, actual skull emitters / cage portals / phase wake / charge particles, frozen particle clocks and rotating seals while paused, reusable charge/phase reset, impact expiry and material reuse. Existing swept ultimate tests still deliver exactly 500 once to each near / distant target, retaining three-soul cost and 20s cooldown.
+- Diagonal tests verify the camera projects allied base lower-left and enemy base upper-right; lane-space bridge/courtyard bounds, actual movement, AI hero/sprout advance, defense projectile priority, two-team respawn with retained cooldowns, objective ordering / support reduction, core victory/defeat and garden return pass.
+- Final CheckSource: runtime / Editor-conditional runtime / Editor C# compilation and **53** pure input / layout / XInput ABI checks pass. PrepareSoulVfx.ps1 also parses without errors. Four physical XInput slots are disconnected; these are automated input checks, not controller acceptance.
+
+## Complete objective matches and rendered review
+
+- Final [accelerated AI report](Validation/lane-simulation.json), UTC **2026-10-17T08:57:51.5233390Z**, completes both matches without recorded errors. Banana lead: **Defeat**, 577.54 game seconds / 48 waves, hero kills 94:109, enemy core 366.40 HP left. Yueyue lead: **Victory**, 371.50 seconds / 31 waves, kills 68:82, allied core 697.20 HP left. No direct building-kill commands are inserted in this runner. Earlier passes produced different outcomes; these are flow checks, not balance guarantees.
+- Simulation disables camera/HUD drawing and uses fixed 0.1-second steps. It is not a manual playthrough, real-time performance benchmark or hardware-controller test.
+- Reviewed the 25 final acceptance screenshots as a contact sheet and key effects / map frames at full size, plus actual normal-clock recordings. Corrected additive washout on the light ground, replaced solid charge lines with textured electric ribbons, and added modest quarter-resolution HDR glow. UI remains readable; the overview fits the full diagonal island; normal gameplay follows the player without rotating the route back to vertical.
+- **Yueyue preview:** 137 captured frames / **11.63 seconds** encoded timing / **3,462,735 bytes**, [actual GIF](Images/yueyue-combat-v070.gif). Shows real skull/chain casts, a half-stat banana summon, moving phase, four-second hold and release. Real enemy defeat fixtures prepare the three souls before recording; this is a skill showcase, not an unassisted battle.
+- **Lane preview:** 212 captured frames / **18.07 seconds** encoded timing / **9,836,621 bytes**, [actual GIF](Images/flower-lane-combat-v070.gif). One human slot is controlled by the same hero AI planner, starting from its normal base and reaching a real bridge fight. No lead teleport, scripted kills or generated frames. Both preview logs complete without errors/exceptions. Recorded frame counts describe capture sampling, not gameplay FPS.
+- Actual crops: [diagonal map](Images/flower-lane-map-v070.png), [charge](Images/yueyue-charge-v070.png), [doom](Images/yueyue-doom-v070.png), [guardian defense](Images/flower-lane-defense-v070.png). Cropping/encoding uses the captured Windows frames and measured timestamps.
+- Tested portable **Builds/BigBattle-v0.7.0-Windows.zip**: **43,209,002 bytes / 137 entries**, archive CRC passes, executable and Data directory present. Packaged from the same final tested Windows folder; binaries remain local/ignored.
+
+## Online asset provenance and limits
+
+- Actual original-publisher download: [Kenney Particle Pack](https://kenney.nl/assets/particle-pack), CC0. The 15,001,764-byte ZIP passes extraction; 80 base transparent PNGs are available locally and 13 unmodified 512×512 PNGs are integrated. Per-file and archive SHA-256, original license and source links are retained in [the asset record](../AssetLibrary/VFX/Kenney-ParticlePack/SOURCE.md). Shader, Shuriken composition and glow are authored for this project. No claim is made that paid store VFX prefabs were acquired.
+- One human plus nine AI remains the mode limit. Physical Xbox play/rumble/reconnect, two physical keyboards, TV presentation/audio and five-view rendering load are **not tested**. Particle/effect caps and a normal rendered clip do not establish a multiplayer performance budget.
+- No gameplay damage/control/cooldown or objective rules were intentionally retuned. Prior flat-plane collisions, initial AI balance, Yueyue rig quality and local-only Mixamo reconstruction limits remain. HDR glow adds rendering cost; tune quality on target hardware before multiplayer acceptance.
+
+---
+
+# Historical v0.6.0 validation record
 
 Date: 2026-10-17 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
 

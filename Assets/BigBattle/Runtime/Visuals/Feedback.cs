@@ -163,6 +163,9 @@ namespace BigBattle
             ghost.transform.SetPositionAndRotation(source.transform.position,source.transform.rotation);
             ghost.GetComponent<ActorVisual>().enabled=false;
             foreach(var trail in ghost.GetComponentsInChildren<TrailRenderer>()){trail.Clear();trail.emitting=false;trail.enabled=false;}
+            // An afterimage is a frozen silhouette, never a second live emitter.
+            foreach(var fx in ghost.GetComponentsInChildren<SoulVfx>())fx.gameObject.SetActive(false);
+            foreach(var ps in ghost.GetComponentsInChildren<ParticleSystem>())ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
             if(!death)foreach(var renderer in ghost.GetComponentsInChildren<Renderer>())renderer.sharedMaterial=Art.FxMat("Mint afterimage",new Color(.43f,.95f,.80f,.30f));
             ghost.AddComponent<TransientVisual>().Setup(death?.36f:.18f,death?.05f:.9f,death?new Vector3(.2f,2,0):Vector3.zero,death?new Vector3(0,200,180):Vector3.zero,death);
         }
@@ -207,11 +210,15 @@ namespace BigBattle
         {
             world=game;Camera=gameObject.AddComponent<Camera>();Camera.orthographic=true;Camera.orthographicSize=9.8f;
             Camera.backgroundColor=new Color(.63f,.84f,.89f);Camera.clearFlags=CameraClearFlags.SolidColor;Camera.nearClipPlane=.1f;Camera.farClipPlane=100;
-            Camera.allowHDR=false;Camera.allowMSAA=true;gameObject.AddComponent<AudioListener>();
+            Camera.allowHDR=true;Camera.allowMSAA=true;gameObject.AddComponent<SoulBloom>();gameObject.AddComponent<AudioListener>();
             Snap();
         }
         public bool MapOverview;
-        Vector3 Target()=>world!=null && world.IsLane?new Vector3(world.Player.transform.position.x*.45f,0,Mathf.Clamp(world.Player.transform.position.z+3,-28,28)):world.Player.transform.position*.24f;
+        Vector3 Target()
+        {
+            if(world!=null && world.IsLane){Vector3 lane=FlowerLaneMap.ToLane(world.Player.transform.position);return FlowerLaneMap.ToWorld(new Vector3(lane.x*.45f,0,Mathf.Clamp(lane.z+3,-28,28)));}
+            return world.Player.transform.position*.24f;
+        }
         public void Snap(){focus=MapOverview?Vector3.zero:world!=null && world.IsLane?Target():Vector3.zero;kick=Vector3.zero;shake=punch=0;Place();}
         public void Shake(float amount){shake=Mathf.Max(shake,amount);}
         public void Impact(Vector3 direction,float strength)

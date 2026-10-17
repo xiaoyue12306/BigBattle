@@ -17,9 +17,9 @@ namespace BigBattle
             Vector3 delta=target.transform.position-transform.position;delta.y=0;float distance=delta.magnitude;
             var mage=hero as YueyuePlayer;float attackRange=mage!=null?6.2f:1.65f;
             Vector3 goal=target.transform.position;
-            if(retreat)goal=FlowerLaneMap.Spawn(hero.Team)+Vector3.right*offset;
-            else if(target is LaneStructure && !match.MinionSupport(hero.Team,target.transform.position))goal=target.transform.position+(hero.Team==0?Vector3.back:Vector3.forward)*8.5f+Vector3.right*offset;
-            else if(target.IsStructure)goal+=Vector3.right*offset*.4f;
+            if(retreat)goal=FlowerLaneMap.Spawn(hero.Team)+FlowerLaneMap.Across*offset;
+            else if(target is LaneStructure && !match.MinionSupport(hero.Team,target.transform.position))goal=target.transform.position-FlowerLaneMap.Forward(hero.Team)*8.5f+FlowerLaneMap.Across*offset;
+            else if(target.IsStructure)goal+=FlowerLaneMap.Across*offset*.4f;
             Vector3 move=goal-transform.position;move.y=0;
             bool advancing=retreat?move.magnitude>1:Vector3.Distance(goal,target.transform.position)>7?move.magnitude>.5f:distance>attackRange;
             var input=new CombatInput{Move=advancing?new Vector2(move.normalized.x,move.normalized.z):Vector2.zero,Attack=!retreat && distance<attackRange+.5f};

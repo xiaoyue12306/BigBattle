@@ -24,7 +24,7 @@ namespace BigBattle
                 striking=false;if(victim!=null && victim.Alive && Vector3.Distance(victim.transform.position,transform.position)<1.7f+victim.Radius)victim.Damage(7,this,Vector3.zero,.03f);
             }
             bool move=delta.magnitude>1.1f+target.Radius;
-            if(move){Vector3 goal=target.transform.position;if(delta.magnitude>5)goal.x=lateral;Vector3 velocity=(goal-transform.position).normalized;transform.position=World.Clamp(transform.position+velocity*2.65f*Time.deltaTime);}
+            if(move){Vector3 goal=FlowerLaneMap.ToLane(target.transform.position);if(delta.magnitude>5)goal.x=lateral;goal=FlowerLaneMap.ToWorld(goal);Vector3 velocity=(goal-transform.position).normalized;transform.position=World.Clamp(transform.position+velocity*2.65f*Time.deltaTime);}
             else if(Time.time>=ready){ready=Time.time+.95f;contact=Time.time+.25f;striking=true;victim=target;Visual.Swing();}
             Visual.Animate(move?1:0,false);
         }

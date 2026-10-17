@@ -43,6 +43,7 @@ namespace BigBattle
             actor=owner;
             for(int i=0;i<motes.Length;i++){motes[i]=Art.Glint(transform,i%2==0?GhostArt.Teal:GhostArt.Blue,true).transform;motes[i].localScale=Vector3.one*.15f;}
             Art.Ring("Returned soul rune",transform,.63f,.06f,GhostArt.Teal);
+            SoulVfx.Attach(transform,owner.World,SoulEffect.Aura);
         }
         void LateUpdate()
         {
@@ -56,6 +57,7 @@ namespace BigBattle
         public void Setup(Combatant target)
         {
             victim=target;end=Time.time+2;
+            SoulVfx.Attach(transform,target.World,SoulEffect.Cage);
             for(int i=0;i<6;i++){chains[i]=GhostArt.Line(transform,"Binding iron and ghost light",i%2==0?GhostArt.Teal:new Color(.10f,.17f,.20f),i%2==0?.045f:.075f,17);portals[i]=Art.Ring("Void anchor",transform,.24f,.045f,GhostArt.Blue).transform;}
             Place();
         }

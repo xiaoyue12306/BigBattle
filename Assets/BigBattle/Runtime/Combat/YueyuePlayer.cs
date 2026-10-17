@@ -99,6 +99,7 @@ namespace BigBattle
                 Servant=new GameObject("Returned spirit • "+Fallen.Name).AddComponent<SpiritAlly>();Servant.transform.SetParent(World.Transients);
                 Servant.transform.position=World.Clamp(transform.position-Facing*.9f+Vector3.right*.6f);Servant.Setup(World,this,Fallen);
                 World.Fx.Burst(Servant.transform.position+Vector3.up, GhostArt.Teal,14);World.Sound.Play(SoundCue.Ultimate,.65f);
+                SoulVfx.Burst(World,SoulEffect.Summon,Servant.transform.position);
             }
             if(skill==3){Cleanse();phaseUntil=Time.time+3;InvulnerableUntil=phaseUntil;World.Melee.Cancel(this);World.Sound.Play(SoundCue.Dodge);if(rig!=null)rig.Present(false,0,true);}
             return true;
@@ -111,6 +112,7 @@ namespace BigBattle
         {
             Charging=false;requireRelease=true;Souls-=3;ready[4]=Time.time+20;uses[4]++;ReleasedWaves++;
             GhostProjectile.Spawn(World,this,GhostShot.Doom,Facing);Visual.PlayMotion(MotionId.Attack3,.7f);
+            SoulVfx.Burst(World,SoulEffect.Release,transform.position+Vector3.up*.5f,Facing);
             if(rig!=null)rig.Release();
             World.CameraRig.Shake(1.05f);World.CameraRig.Impact(Facing,2.5f);World.Input.Rumble(.95f,.48f);
             World.Sound.Play(SoundCue.Ultimate,1.3f);World.Sound.Impact(true);World.Fx.Notice("万魂归剑 · 斩！");World.Fx.DoomFlashUntil=Time.unscaledTime+.24f;
