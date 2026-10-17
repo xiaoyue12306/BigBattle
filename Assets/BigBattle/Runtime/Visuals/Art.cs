@@ -38,6 +38,76 @@ namespace BigBattle
             if(materials.TryGetValue("fx"+key,out material))return material;
             material=new Material(Shader.Find("BigBattle/CombatFX")){name=key,color=color};materials.Add("fx"+key,material);owned.Add(material);return material;
         }
+        public static int SharedMaterialCount=>materials.Count;
+        public static GameObject Crescent(Transform parent,Color color,float sweep,float width)
+        {
+            string key="energy"+sweep+":"+width;Mesh mesh;
+            if(!rings.TryGetValue(key,out mesh))
+            {
+                const int segments=64,rows=5;
+                var vertices=new Vector3[(segments+1)*rows];var uv=new Vector2[vertices.Length];var colors=new Color[vertices.Length];var triangles=new int[segments*(rows-1)*6];
+                for(int s=0;s<=segments;s++)for(int r=0;r<rows;r++)
+                {
+                    float t=s/(float)segments,v=r/(float)(rows-1),a=(t-.5f)*sweep*Mathf.Deg2Rad;
+                    // sin(PI) can be slightly negative in float precision;
+                    // fractional powers must never receive that endpoint.
+                    float taper=Mathf.Pow(Mathf.Max(0,Mathf.Sin(t*Mathf.PI)),.65f);
+                    int n=s*rows+r;vertices[n]=new Vector3(Mathf.Sin(a),0,Mathf.Cos(a))*(1-width*taper*(1-v));
+                    uv[n]=new Vector2(t,v);colors[n]=new Color(1,1,1,Mathf.Min(1,taper*3));
+                    if(s<segments && r<rows-1)
+                    {
+                        int at=(s*(rows-1)+r)*6;
+                        triangles[at]=n;triangles[at+1]=n+1;triangles[at+2]=n+rows;
+                        triangles[at+3]=n+1;triangles[at+4]=n+rows+1;triangles[at+5]=n+rows;
+                    }
+                }
+                mesh=new Mesh{name="Shared tapered energy crescent"};mesh.vertices=vertices;mesh.uv=uv;mesh.colors=colors;mesh.triangles=triangles;mesh.RecalculateBounds();
+                rings.Add(key,mesh);owned.Add(mesh);
+            }
+            return EnergyObject("Banana moonblade",parent,mesh,color);
+        }
+        public static GameObject Lance(Transform parent,Color color)
+        {
+            Mesh mesh;
+            if(!rings.TryGetValue("lance",out mesh))
+            {
+                const int segments=20;var vertices=new Vector3[(segments+1)*2];var uv=new Vector2[vertices.Length];var colors=new Color[vertices.Length];var triangles=new int[segments*6];
+                for(int i=0;i<=segments;i++)
+                {
+                    float t=i/(float)segments,w=Mathf.Sin(t*Mathf.PI)*.40f;
+                    vertices[i*2]=new Vector3(-w,0,t);vertices[i*2+1]=new Vector3(w,0,t);
+                    uv[i*2]=new Vector2(t,0);uv[i*2+1]=new Vector2(t,1);
+                    colors[i*2]=colors[i*2+1]=Color.white;
+                    if(i<segments){int n=i*2,at=i*6;triangles[at]=n;triangles[at+1]=n+1;triangles[at+2]=n+2;triangles[at+3]=n+1;triangles[at+4]=n+3;triangles[at+5]=n+2;}
+                }
+                mesh=new Mesh{name="Shared thrust lance"};mesh.vertices=vertices;mesh.uv=uv;mesh.colors=colors;mesh.triangles=triangles;mesh.RecalculateBounds();rings.Add("lance",mesh);owned.Add(mesh);
+            }
+            return EnergyObject("Banana thrust stream",parent,mesh,color);
+        }
+        static GameObject EnergyObject(string name,Transform parent,Mesh mesh,Color color)
+        {
+            string key="energy"+ColorUtility.ToHtmlStringRGBA(color);Material material;
+            if(!materials.TryGetValue(key,out material)){material=new Material(Shader.Find("BigBattle/BladeEnergy")){name="Moonblade "+key,color=color};materials.Add(key,material);owned.Add(material);}
+            var go=new GameObject(name);go.transform.SetParent(parent,false);go.AddComponent<MeshFilter>().sharedMesh=mesh;
+            var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;return go;
+        }
+        public static GameObject Glint(Transform parent,Color color,bool leaf=false)
+        {
+            string key=leaf?"leaf glyph":"star glyph";Mesh mesh;
+            if(!rings.TryGetValue(key,out mesh))
+            {
+                int count=leaf?4:8;var vertices=new Vector3[count+1];var colors=new Color[count+1];var triangles=new int[count*3];colors[0]=Color.white;
+                for(int i=0;i<count;i++)
+                {
+                    float a=i*Mathf.PI*2/count;float radius=leaf?1:i%2==0?1:.22f;
+                    vertices[i+1]=new Vector3(Mathf.Sin(a)*radius*(leaf?.45f:1),Mathf.Cos(a)*radius,0);
+                    colors[i+1]=new Color(1,1,1,.65f);triangles[i*3]=0;triangles[i*3+1]=i+1;triangles[i*3+2]=(i+1)%count+1;
+                }
+                mesh=new Mesh{name="Shared "+key};mesh.vertices=vertices;mesh.colors=colors;mesh.triangles=triangles;mesh.RecalculateBounds();rings.Add(key,mesh);owned.Add(mesh);
+            }
+            var go=new GameObject(key);go.transform.SetParent(parent,false);go.AddComponent<MeshFilter>().sharedMesh=mesh;
+            var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=FxMat(key+ColorUtility.ToHtmlStringRGBA(color),color);renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;return go;
+        }
         public static GameObject Arc(Transform parent,Color color,float sweep=145)
         {
             string key="arc"+sweep;Mesh mesh;

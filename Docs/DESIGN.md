@@ -49,4 +49,6 @@ Single-player G / D-pad right starts an armed banana sparring partner with a cor
 
 ## Acceptance
 
+v0.4.0 banana presentation uses authored, shared crescent / lance / star / leaf meshes and a Built-in BladeEnergy shader. Three combo contacts have jade / blue / gold energy blades; thrust has a dedicated path stream, whirlwind has a fixed-size following ribbon assembly, peel landing has a leaf bloom and weapon clashes have a gold starburst. Lifetimes follow scaled game time, pause freezes the vortex without a late-frame step, and retry removes live effects. Damage, ranges, audio, motion clips and clash timing retain v0.3.0 semantics. See Docs/BANANA_VFX.md. Store VFX packages remain unacquired and are not claimed as the source of these new effects.
+
 Editor opens with no compile errors; Windows build succeeds; standalone smoke test exercises moving/facing, all skills, invulnerability, traps, enemies, pause, reset, victory/defeat and viewport layouts; rendered screenshots are visually reviewed. Physical Xbox and television testing must be honestly marked pending until performed on hardware.

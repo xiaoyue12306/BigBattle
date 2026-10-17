@@ -57,6 +57,8 @@ namespace BigBattle
             yield return Wait(.7f);
             Check(world.State==SessionState.Practice && world.Dummy!=null,"Boot into practice with dummy");
             Check(world.CameraRig.Camera.orthographic,"Overhead orthographic camera");
+            var energyShader=Shader.Find("BigBattle/BladeEnergy");
+            Check(energyShader!=null && energyShader.isSupported,"Moonblade energy shader is retained and supported in the player");
             Check(world.Player.Visual.UsesMixamo && world.Player.Visual.MotionCount==13,"Thirteen real Mixamo motion tracks loaded");
             Check(world.Sound.GeneratedClipCount==60 && world.Sound.SamplesFinite && world.Sound.MaximumSample<=.761f,"Clean sound bank has 60 finite headroom-limited variants including steel clashes");
             world.Sound.ExportDemo(Path.Combine(output,"combat-audio-demo.wav"));
@@ -70,12 +72,15 @@ namespace BigBattle
             Check(world.Dummy.TotalDamageReceived>damage,"Basic attack damages front target");
             Check(world.Fx.SlashCount>0 && world.Fx.ImpactCount>0 && world.Sound.ImpactPlays>0 && world.HitPauseCount>0,"Successful contact synchronizes ribbon, impact, sound and hit pause");
             damage=world.Dummy.TotalDamageReceived;
-            Frame(new CombatInput{Thrust=true});yield return Wait(.03f);Frame();yield return Wait(.25f);
+            Frame(new CombatInput{Thrust=true});yield return Wait(.03f);Frame();yield return Wait(.10f);
+            yield return Shot("10-thrust-stream");yield return Wait(.15f);
             Check(world.Player.Casts(1)==1 && world.Dummy.TotalDamageReceived>damage,"Thrust damages and lunges (casts="+world.Player.Casts(1)+", damage="+(world.Dummy.TotalDamageReceived-damage)+")");
+            Check(world.Fx.ThrustCount>0,"Thrust contact creates its dedicated stream effect");
             world.Player.transform.position=new Vector3(0,0,-2.4f);
             damage=world.Dummy.TotalDamageReceived;
             Frame(new CombatInput{Peel=true});yield return Wait(.03f);Frame();yield return Wait(.75f);
             Check(world.Player.Casts(2)==1 && world.Dummy.TotalDamageReceived>=damage+20,"Peel toss lands and triggers damage");
+            Check(world.Fx.PeelBloomCount>0,"Peel landing emits golden leaf particles");
             var source=world.SpawnEnemy(new Vector3(8,0,0),60);
             Frame(new CombatInput{Dodge=true});yield return Wait(.03f);Frame();
             float hp=world.Player.Health;
@@ -85,16 +90,26 @@ namespace BigBattle
             Check(world.Player.Damage(10,source,Vector3.zero),"Invulnerability expires");
             world.Player.transform.position=new Vector3(0,0,-.5f);
             damage=world.Dummy.TotalDamageReceived;
-            Frame(new CombatInput{Ultimate=true});yield return Wait(.03f);Frame();yield return Wait(.95f);
+            Frame(new CombatInput{Ultimate=true});yield return Wait(.03f);Frame();yield return Wait(.16f);
+            var vortex=world.Fx.GetComponentInChildren<BladeVortex>();
+            Check(vortex!=null && world.Fx.WhirlwindCount>0,"Ultimate creates a golden leaf vortex");
+            yield return Shot("11-golden-vortex");
+            Frame(new CombatInput{Move=Vector2.right});yield return Wait(.08f);Frame();yield return null;
+            Check(vortex!=null && Vector3.Distance(vortex.transform.position,world.Player.transform.position)<.01f,"Ultimate vortex follows the moving player");
+            world.SetPaused(true);Quaternion frozenBand=vortex.transform.GetChild(0).localRotation;yield return Wait(.08f);
+            Check(frozenBand.Equals(vortex.transform.GetChild(0).localRotation),"Pause freezes animated vortex ribbons");
+            world.SetPaused(false);yield return Wait(.90f);
+            Check(world.Fx.GetComponentInChildren<BladeVortex>()==null,"Ultimate vortex retires when the action ends");
             Check(world.Player.Casts(4)==1 && world.Dummy.TotalDamageReceived>=damage+65,"Whirlwind deals repeated area damage");
             Check(world.Player.Remaining(4)>5,"Ultimate cooldown is active");
             Check(!world.Player.Cast(4,Vector3.zero),"Cooldown rejects repeated casts");
             Check(!world.Player.Damage(10,world.Player,Vector3.zero),"Team filtering prevents friendly fire");
+            // Isolate both aim fixtures from the dummy left near the moving vortex test.
+            Vector3 dummyPosition=world.Dummy.transform.position;
+            world.Dummy.transform.position=Vector3.left*8;
             Vector3 behind=world.Player.transform.position-Vector3.forward*2;
             source.transform.position=behind;
             Check(Vector3.Dot(world.Assist(world.Player,Vector3.forward,4),Vector3.forward)>.99f,"Aim assist never turns toward rear target");
-            Vector3 dummyPosition=world.Dummy.transform.position;
-            world.Dummy.transform.position=Vector3.left*8;
             source.transform.position=world.Player.transform.position+new Vector3(.30f,0,2);
             Vector3 assisted=world.Assist(world.Player,Vector3.forward,4);
             Check(assisted.x>0 && Vector3.Angle(assisted,Vector3.forward)<=10.4f,"Front-cone aim correction stays small");
@@ -154,11 +169,13 @@ namespace BigBattle
             world.Player.transform.position=new Vector3(0,0,-1);
             Frame(new CombatInput{Move=Vector2.up});yield return null;Frame();yield return Wait(.05f);
             var comboBefore=(int[])world.Player.ComboUsage.Clone();
+            int finishersBefore=world.Fx.FinisherCount;
             int impactsBefore=world.Fx.ImpactCount;
             Frame(new CombatInput{Attack=true});yield return Wait(.12f);yield return Shot("08-combo-contact");
             yield return Wait(1.15f);Frame();yield return Wait(.16f);
             Check(world.Player.ComboUsage[0]>comboBefore[0] && world.Player.ComboUsage[1]>comboBefore[1] && world.Player.ComboUsage[2]>comboBefore[2],"Holding attack advances all three combo motions");
             Check(world.Fx.ImpactCount>impactsBefore,"Combo hit events connect with dummy");
+            Check(world.Fx.FinisherCount>finishersBefore,"Third combo contact triggers crossed golden crescents");
             world.SetPaused(true);yield return Wait(.08f);Check(Time.timeScale==0,"Pause takes precedence over hit pause");
             world.SetPaused(false);yield return Wait(.10f);Check(Mathf.Approximately(Time.timeScale,1),"Impact clock recovers after resume");
             // Exercise real practice-mode controls, then the shared resolver with
@@ -226,6 +243,18 @@ namespace BigBattle
             clang=world.Sound.ClashPlays;world.Sound.Muted=true;world.Sound.Play(SoundCue.Clash);
             Check(world.Sound.ClashPlays==clang,"Mute also suppresses steel collision playback");world.Sound.Muted=false;
             yield return Wait(.65f);Check(world.Fx.ActiveEffects<35,"Short-lived impact effects retire after combat");
+            // Stress the real effect entry point: cap the live burst, reuse the
+            // warmed materials, then verify all of those instances retire.
+            for(int i=0;i<3;i++)world.Fx.Slash(world.Player.transform.position,Vector3.forward,Art.Mint,i);
+            yield return Wait(.55f);int materialCount=Art.SharedMaterialCount;
+            for(int i=0;i<32;i++)world.Fx.Slash(world.Player.transform.position,Vector3.forward,Art.Mint,i%3);
+            world.Fx.Hit(world.Player.transform.position+Vector3.up,36,true);
+            Check(world.Fx.ActiveEffects<=Feedback.EffectLimit,"Dense moonblade and contact bursts respect the effect instance limit");
+            Check(Art.SharedMaterialCount==materialCount,"Repeated attack effects reuse their warmed materials");
+            yield return Wait(.65f);
+            Check(world.Fx.ActiveEffects==0,"All stressed attack particles and crescents are reclaimed");
+            world.Fx.Whirlwind(world.Player.transform,.85f);yield return null;world.EnterPractice();yield return Wait(.06f);
+            Check(world.Fx.GetComponentInChildren<BladeVortex>()==null,"Retry clears a vortex during its active lifetime");
             Check(report.errors.Count==0,"No runtime errors or exceptions");
             report.result=report.failed==0?"PASS":"FAIL";
             File.WriteAllText(Path.Combine(output,"report.json"),JsonUtility.ToJson(report,true));

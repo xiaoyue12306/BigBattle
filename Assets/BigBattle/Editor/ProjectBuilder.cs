@@ -35,7 +35,7 @@ namespace BigBattle.Editor
         public static void Build(){MixamoBaker.Bake();CreateScene();BuildWindows();}
         static void Configure()
         {
-            PlayerSettings.companyName="BigBattle";PlayerSettings.productName="Banana Brawl";PlayerSettings.bundleVersion="0.3.0";
+            PlayerSettings.companyName="BigBattle";PlayerSettings.productName="Banana Brawl";PlayerSettings.bundleVersion="0.4.0";
             PlayerSettings.defaultScreenWidth=1600;PlayerSettings.defaultScreenHeight=900;
             PlayerSettings.fullScreenMode=FullScreenMode.FullScreenWindow;PlayerSettings.resizableWindow=true;PlayerSettings.runInBackground=true;
             PlayerSettings.colorSpace=ColorSpace.Linear;
@@ -60,7 +60,7 @@ namespace BigBattle.Editor
                         included.DeleteArrayElementAtIndex(i);
                     }
                 }
-                foreach(string shaderName in new[]{"Standard","Unlit/Color","BigBattle/CombatFX"})
+                foreach(string shaderName in new[]{"Standard","Unlit/Color","BigBattle/CombatFX","BigBattle/BladeEnergy"})
                 {
                     Shader shader=Shader.Find(shaderName);if(shader==null)continue;
                     bool found=false;for(int i=0;i<included.arraySize;i++)if(included.GetArrayElementAtIndex(i).objectReferenceValue==shader)found=true;

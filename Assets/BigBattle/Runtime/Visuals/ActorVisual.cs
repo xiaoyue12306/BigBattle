@@ -127,7 +127,7 @@ namespace BigBattle
         {
             var tip=new GameObject("Peel blade ribbon");tip.transform.SetParent(hand,false);tip.transform.localPosition=new Vector3(side*.12f,.70f,.26f);
             var trail=tip.AddComponent<TrailRenderer>();trail.sharedMaterial=Art.FxMat("Blade trail",Color.white);
-            trail.time=.12f;trail.minVertexDistance=.035f;trail.widthMultiplier=.14f;
+            trail.time=.16f;trail.minVertexDistance=.025f;trail.widthMultiplier=.22f;
             trail.widthCurve=AnimationCurve.Linear(0,1,1,0);trail.startColor=new Color(1,.96f,.60f,.9f);trail.endColor=new Color(.35f,.90f,.75f,0);
             trail.numCornerVertices=3;trail.emitting=false;trail.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;trail.receiveShadows=false;return trail;
         }

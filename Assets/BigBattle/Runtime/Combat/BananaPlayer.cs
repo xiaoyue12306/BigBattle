@@ -79,7 +79,7 @@ namespace BigBattle
             {
                 nextSpinHit=Time.time+.16f;
                 World.HitArea(this,transform.position,2.35f,Vector3.forward,-1,13,.20f);
-                World.Fx.Circle(transform.position,2.35f,Art.Cream,.18f);
+                World.Fx.WhirlBeat(transform.position);
             }
             transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(Facing),Time.deltaTime*28);
             Travelled+=Vector3.Distance(previous,transform.position);
@@ -117,7 +117,7 @@ namespace BigBattle
                 case 4:
                     spinUntil=Time.time+.85f; nextSpinHit=0;
                     pendingSkill=-1;World.Melee.Cancel(this);Visual.PlayMotion(MotionId.Spin,.85f);
-                    World.Fx.Circle(transform.position,2.35f,Art.Yellow,.85f); World.Sound.Play(SoundCue.Ultimate); World.CameraRig.Shake(.06f); break;
+                    World.Fx.Whirlwind(transform,.85f); World.Sound.Play(SoundCue.Ultimate); World.CameraRig.Shake(.06f); break;
             }
             return true;
         }

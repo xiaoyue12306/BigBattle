@@ -18,24 +18,29 @@ namespace BigBattle
             yield return new WaitForSecondsRealtime(.3f);
             world.Input.Injected=true;world.EnterPractice();world.Player.transform.position=new Vector3(0,0,-2.5f);
             string output=Path.GetFullPath(Path.Combine(Application.dataPath,"../../../Artifacts/MotionPreview"));Directory.CreateDirectory(output);
-            var timing=new Timing();var frames=new List<Texture2D>();float born=Time.unscaledTime,nextCapture=0;int index=0;bool duel=false,clashed=false;
-            while(Time.unscaledTime-born<4.8f)
+            var timing=new Timing();var frames=new List<Texture2D>();float born=Time.unscaledTime,nextCapture=0,clashInputUntil=0;int index=0;bool duel=false,clashed=false;
+            while(Time.unscaledTime-born<6.2f)
             {
                 float t=Time.unscaledTime-born;var input=new CombatInput();
                 if(t<.3f)input.Move=Vector2.up;
-                if(t>.42f && t<1.95f)input.Attack=true;
-                if(t>=2.25f && !duel)
+                if(t>.42f && t<1.55f)input.Attack=true;
+                // Keep one-shot controls alive across an Update. An end-of-frame
+                // capture can otherwise overwrite an injected edge before read.
+                if(t>=1.80f && t<1.92f)input.Thrust=true;
+                if(t>=2.30f && t<2.42f)input.Ultimate=true;
+                if(t>=3.45f && !duel)
                 {
                     duel=true;world.EnterSparring();world.Duelist.TrainingEnabled=false;
                     world.Player.transform.position=Vector3.back*.8f;world.Duelist.transform.position=Vector3.forward*.8f;
                 }
-                if(t>=2.28f && t<2.35f)input.Move=Vector2.up;
-                if(t>=2.4f && !clashed)
+                if(t>=3.48f && t<3.55f)input.Move=Vector2.up;
+                if(t>=3.65f && !clashed)
                 {
-                    clashed=true;input.Attack=true;world.Duelist.Visual.PlayMotion(MotionId.Attack1,.34f);
+                    clashed=true;clashInputUntil=Time.unscaledTime+.12f;world.Duelist.Visual.PlayMotion(MotionId.Attack1,.34f);
                     world.Melee.Slash(world.Duelist,Vector3.back,0,.1f);
                 }
-                if(t>=3.3f && t<4.65f)input.Attack=true;
+                if(Time.unscaledTime<clashInputUntil)input.Attack=true;
+                if(t>=4.30f && t<5.65f)input.Attack=true;
                 world.Input.InjectedFrame=input;
                 if(t<nextCapture){yield return null;continue;}
                 yield return new WaitForEndOfFrame();

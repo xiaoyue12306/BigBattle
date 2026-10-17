@@ -28,6 +28,7 @@ namespace BigBattle
             if(world.Paused) return;
             float age=Time.time-born;
             if(age<.38f) { float t=age/.38f;transform.position=Vector3.Lerp(start,target,t)+Vector3.up*Mathf.Sin(t*Mathf.PI)*1.35f;model.Rotate(0,500*Time.deltaTime,0); return; }
+            if(!Landed)world.Fx.PeelBloom(target);
             Landed=true;transform.position=target;
             if(age>6.5f){Destroy(gameObject);return;}
             if(world.State!=SessionState.Battle && world.State!=SessionState.Practice) return;

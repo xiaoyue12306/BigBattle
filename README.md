@@ -2,11 +2,11 @@
 
 面向 Windows 电视聚会场景的卡通 3D 俯视角战斗游戏。使用**团结引擎 1.9.3 / 2022.3.62t11**，首个角色是香蕉刺客。
 
-当前版本为 **0.3.0 单人 MVP**：训练木桩、香蕉拼刀陪练、三波单人战斗、普攻和四个技能、暂停、胜负和重开。使用 13 个 Mixamo 动作适配；普攻为横斩 / 反手 / 月牙终结三段连招，支持长按和短按缓存。近乎同时相向出刀会拼刀，双方攻击免伤，伴随金属碰撞声与火花。新版有 60 个原创音效变体、多层刀光和收尾星芒。无需鼠标。后续目标是最多 **5 人同机分屏、合作与对战**；多人加入尚未实现。
+当前版本为 **0.4.0 单人 MVP**：训练木桩、香蕉拼刀陪练、三波单人战斗、普攻和四个技能、暂停、胜负和重开。香蕉刺客换上“金月双刃”攻击特效：青 / 蓝 / 金三段月牙、交叉终结刃、突刺流光、跟随角色的青金旋转刃环、叶片星屑和金白拼刀星爆。使用 13 个 Mixamo 动作和 60 个原创音效变体，普攻支持长按 / 短按缓存，75ms 相向拼刀取消双方本次伤害。无需鼠标。后续目标是最多 **5 人同机分屏、合作与对战**；多人加入尚未实现。
 
-Windows x64 构建成功（0 错误、0 警告），74 项独立程序自动检查和 53 项纯逻辑检查通过。真实 Xbox 手柄和电视操作体验仍待实机确认。详见 `Docs/VALIDATION.md`。
+Windows x64 构建成功（0 错误、0 警告），88 项独立程序自动检查和 53 项纯逻辑检查通过。真实 Xbox 手柄和电视操作体验仍待实机确认。详见 `Docs/VALIDATION.md`；特效设计与接入见 [BANANA_VFX.md](Docs/BANANA_VFX.md)。
 
-![实际游戏连招与拼刀预览](Docs/Images/combat-motion-v030.gif)
+![实际游戏金月双刃特效预览](Docs/Images/combat-motion-v040.gif)
 
 [新版音效试听](Docs/Audio/combat-audio-v030.wav)（七秒原创音效示例：三段连招、两次金属拼刀、突刺和连斩，非动图同步录音）。
 
@@ -18,7 +18,7 @@ Windows x64 构建成功（0 错误、0 警告），74 项独立程序自动检�
 
 本机构建完成后，启动 `Builds/Windows/BigBattle.exe`。完整 `Builds/Windows` 文件夹可以复制到其他 Windows 电脑；不能只复制 exe。生成的 Windows 文件不进入源码仓库。
 
-本机另有便携压缩包 `Builds/BigBattle-v0.3.0-Windows.zip`，解压后运行 `BigBattle.exe`。GitHub 保存源码和预览图，运行包保留在本机。
+本机另有便携压缩包 `Builds/BigBattle-v0.4.0-Windows.zip`，解压后运行 `BigBattle.exe`。GitHub 保存源码和预览图，运行包保留在本机。
 
 ### 在编辑器中
 
@@ -67,14 +67,14 @@ Windows x64 构建成功（0 错误、0 警告），74 项独立程序自动检�
 
 - 构建输出：`Builds/Windows/`。
 - 构建日志：`Artifacts/editor-build.log`、`Artifacts/build-result.txt`。
-- 独立玩家自动验证：`Artifacts/Smoke/report.json` 和九张截图。
+- 独立玩家自动验证：`Artifacts/Smoke/report.json` 和十一张截图。
 - 另有连招 / 拼刀接触截图、原创音效示例和 `--preview-capture` 动态录制入口。
 - 源码仓库保留本次结果副本：`Docs/Validation/smoke-report.json`。
 - 自动验证注入的是动作输入，不等同于真实 Xbox、双键盘或电视验收。实际硬件验证须另行记录。
 
 ## 结构与交接
 
-后续音效 / 特效储备见 [素材清单](Docs/AssetLibrary/README.md)和[国际站获取记录](Docs/AssetLibrary/INTERNATIONAL.md)：共 14 个资源条目，已获取 Dustyroom 官网 CC0 音效包（50 个 WAV，见 `AssetLibrary/Audio/Dustyroom-CasualGameSounds/`）；其他条目仍待下载。记录管线、最低引擎版本、许可来源与 SHA-256。本地包接收目录为 `Artifacts/AssetStoreInbox/`，盘点命令 `Tools/InventoryAssetInbox.ps1`。当前游戏仍为已验证的 v0.3.0。
+后续音效 / 特效储备见 [素材清单](Docs/AssetLibrary/README.md)和[国际站获取记录](Docs/AssetLibrary/INTERNATIONAL.md)：共 14 个资源条目，已获取 Dustyroom 官网 CC0 音效包（50 个 WAV，见 `AssetLibrary/Audio/Dustyroom-CasualGameSounds/`）；其他条目仍待下载。记录管线、最低引擎版本、许可来源与 SHA-256。本地包接收目录为 `Artifacts/AssetStoreInbox/`，盘点命令 `Tools/InventoryAssetInbox.ps1`。v0.4.0 使用本项目原创网格和 Shader 制作攻击特效。
 
 - `Assets/BigBattle/Runtime/Input`：键盘、Windows XInput、五人分屏矩形计算。
 - `Runtime/Combat`：角色血量、阵营过滤、香蕉技能、统一近战 / 拼刀结算、香蕉陪练、团子 AI 和陷阱。
