@@ -1,0 +1,27 @@
+{
+    "utc": "2026-10-17T13:10:04.7785720Z",
+    "maxGameSeconds": 900,
+    "runs": [
+        {
+            "hero": "香蕉刺客",
+            "result": "Defeat",
+            "seconds": 684.864013671875,
+            "enemyCore": 185.4000244140625,
+            "alliedCore": 0.0,
+            "waves": 57,
+            "alliedKills": 125,
+            "enemyKills": 120
+        },
+        {
+            "hero": "越越大王",
+            "result": "Defeat",
+            "seconds": 456.26806640625,
+            "enemyCore": 794.4000244140625,
+            "alliedCore": 0.0,
+            "waves": 38,
+            "alliedKills": 82,
+            "enemyKills": 98
+        }
+    ],
+    "errors": []
+}

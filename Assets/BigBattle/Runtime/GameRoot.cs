@@ -45,9 +45,10 @@ namespace BigBattle
             bool smoke=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--smoke-test")>=0;
             bool preview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--preview-capture")>=0;
             bool yuePreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--yueyue-preview")>=0;
+            bool doomPreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--doom-preview")>=0;
             bool laneSim=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--lane-sim")>=0;
             bool lanePreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--lane-preview")>=0;
-            SmokeTesting=smoke || preview || yuePreview || laneSim || lanePreview;
+            SmokeTesting=smoke || preview || yuePreview || doomPreview || laneSim || lanePreview;
             var garden=new GameObject("Original garden arena").AddComponent<GardenArena>();garden.transform.SetParent(transform);garden.Build();
             gardenMap=garden.gameObject;
             Transients=new GameObject("Session objects").transform;Transients.SetParent(transform);
@@ -62,6 +63,7 @@ namespace BigBattle
             Selecting=!SmokeTesting;
             if(smoke)gameObject.AddComponent<SmokeTest>().Setup(this);
             else if(laneSim || lanePreview)gameObject.AddComponent<LaneCapture>().Setup(this,laneSim);
+            else if(doomPreview)gameObject.AddComponent<DoomPreview>().Setup(this);
             else if(yuePreview)gameObject.AddComponent<YueyuePreview>().Setup(this);
             else if(preview)gameObject.AddComponent<CombatPreview>().Setup(this);
         }

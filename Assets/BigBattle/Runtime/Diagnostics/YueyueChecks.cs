@@ -89,7 +89,11 @@ namespace BigBattle
             float particleDelta=chargeEmitter!=null?Mathf.Abs(chargeEmitter.time-particleClock):-1;float sealDelta=Quaternion.Angle(rune,chargeFx.transform.GetChild(0).localRotation);
             Check(chargeEmitter!=null && particleDelta<.001f && rune==chargeFx.transform.GetChild(0).localRotation,"Pause freezes imported particles and charge seals (particle="+particleDelta.ToString("0.000000")+", seal="+sealDelta.ToString("0.000000")+")");world.SetPaused(false);
             Check(atlasPaused==chargeFx.AnimationFrame,"Pause freezes the animated atlas sampling clock as well");
-            Frame();yield return Wait(.12f);yield return Shot("18-doom-sword-wave");yield return Wait(.6f);
+            Frame();yield return Wait(.12f);yield return Shot("18-doom-sword-wave");
+            var waveVisual=world.Transients.GetComponentInChildren<DoomWaveVisual>();var upright=waveVisual!=null?waveVisual.GetComponentInChildren<MeshFilter>():null;
+            Check(upright!=null && upright.GetComponent<Renderer>().bounds.size.y>8 && upright.sharedMesh.bounds.size.y>upright.sharedMesh.bounds.size.x*5,"Doom is a towering world-up volume rather than a horizontal slash card");
+            Check(Shader.Find("BigBattle/DoomEnergy")!=null && Shader.Find("BigBattle/DoomEnergy").isSupported,"Dedicated black-core HDR doom shader survives Windows stripping");
+            yield return Wait(.6f);
             Check(mage.ReleasedWaves==1 && mage.Souls==0 && mage.Remaining(4)>19,"Releasing full charge spends three souls and starts twenty-second cooldown");
             Check(a.Health==500 && b.Health==500,"Sword wave pierces two enemies for exactly five hundred damage each");
             Check(!mage.Cast(4,Vector3.zero) && world.Fx.transform.Find("Doom fractured ground")!=null,"Ultimate rejects immediate repeat and leaves temporary ground fissures");
@@ -117,6 +121,7 @@ namespace BigBattle
             attacker=world.SpawnEnemy(Vector3.right*8,100);attacker.enabled=false;mage.Damage(999,attacker,Vector3.zero,0);Frame();
             Check(!mage.Charging && mage.ReleasedWaves==1 && world.State==SessionState.Defeat,"Death interrupts charge and never releases a stale sword wave");
             world.EnterPractice();yield return Wait(.08f);
+            yield return DoomVisualChecks(mage);
             SoulVfx.Burst(world,SoulEffect.Impact,Vector3.up);yield return Wait(.7f);int materials=Art.SharedMaterialCount;
             for(int i=0;i<20;i++)SoulVfx.Burst(world,SoulEffect.Impact,new Vector3((i%5-2)*.3f,1,i/5*.3f));yield return Wait(.7f);
             Check(world.Fx.GetComponentInChildren<SoulVfx>()==null && Art.SharedMaterialCount==materials,"Repeated online-texture impacts retire fully and reuse warmed shared materials");
@@ -124,6 +129,27 @@ namespace BigBattle
             Check(world.PracticeFoe is YueyueDuelist,"Practice opponent supports Yueyue as well as banana");yield return Shot("20-yueyue-opponent");
             world.SetOpponent(HeroKind.Banana);world.SelectHero(HeroKind.Banana);yield return Wait(.12f);
             Check(!(world.Player is YueyuePlayer) && world.Player.HeroName=="香蕉刺客" && world.Player.Health==180,"Switching back preserves original banana combat setup");
+        }
+        IEnumerator DoomVisualChecks(YueyuePlayer mage)
+        {
+            Mesh shared=null;bool vertical=true,reused=true;int warmMaterials=Art.SharedMaterialCount;
+            foreach(Vector3 heading in new[]{Vector3.forward,Vector3.right,Vector3.back,new Vector3(-1,0,1).normalized})
+            {
+                var shot=GhostProjectile.Spawn(world,mage,GhostShot.Doom,heading);var volume=shot.GetComponentInChildren<DoomWaveVisual>().GetComponentInChildren<MeshFilter>();
+                Bounds bounds=volume.GetComponent<Renderer>().bounds;vertical&=bounds.size.y>8 && bounds.size.y>Mathf.Max(bounds.size.x,bounds.size.z)*1.8f;
+                if(shared!=null)reused&=volume.sharedMesh==shared;shared=volume.sharedMesh;
+            }
+            yield return Wait(.25f);Check(vertical && reused,"Forward, side, reverse and diagonal sword waves stay vertical and reuse the same 3D mesh");
+            var rifts=world.Fx.GetComponentsInChildren<DoomRift>();bool continuous=rifts.Length==4;
+            foreach(var rift in rifts)for(int j=1;j<rift.transform.childCount;j++)continuous&=Vector3.Distance(rift.transform.GetChild(j-1).localPosition,rift.transform.GetChild(j).localPosition)<1.3f;
+            Check(continuous && DoomRift.LiveSegments>8 && DoomRift.LiveSegments<=DoomRift.SegmentLimit,"Distance-based overlapping fractures remain continuous and bounded for simultaneous waves");
+            var surface=rifts[0].GetComponentInChildren<Renderer>();var beforeBlock=new MaterialPropertyBlock();surface.GetPropertyBlock(beforeBlock);float clock=beforeBlock.GetFloat("_Clock");int marks=DoomRift.LiveSegments;
+            world.SetPaused(true);yield return Wait(.15f);var afterBlock=new MaterialPropertyBlock();surface.GetPropertyBlock(afterBlock);
+            Check(DoomRift.LiveSegments==marks && afterBlock.GetFloat("_Clock")==clock,"Pause freezes travelling rifts and their animated emissive shader clock");world.SetPaused(false);
+            yield return Wait(7.8f);Check(DoomRift.LiveSegments==0 && world.Fx.GetComponentInChildren<DoomRift>()==null,"Every fissure, shard and flame expires after the wave without permanent terrain objects");
+            Check(Art.SharedMaterialCount==warmMaterials,"Repeated towering waves, scorches and fractures reuse warmed materials without permanent growth");
+            GhostProjectile.Spawn(world,mage,GhostShot.Doom,Vector3.forward);yield return Wait(.08f);world.EnterPractice();yield return Wait(.08f);
+            Check(DoomRift.LiveSegments==0 && world.Fx.GetComponentInChildren<DoomRift>()==null,"Retry clears the live fracture budget and all doom ground marks");
         }
         IEnumerator MageMotionChecks(YueyuePlayer mage,YueyueVisual rig,SkinnedMeshRenderer skin)
         {

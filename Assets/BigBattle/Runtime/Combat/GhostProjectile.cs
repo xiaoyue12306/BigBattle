@@ -9,7 +9,7 @@ namespace BigBattle
         public GhostShot Kind {get;private set;}
         public bool Flying {get;private set;}
         public int HitCount {get;private set;}
-        GameRoot world;Combatant source,target;Vector3 aim,origin;float born,speed,nextCrack;LineRenderer chain;Transform core;
+        GameRoot world;Combatant source,target;Vector3 aim,origin;float born,speed;LineRenderer chain;Transform core;DoomWaveVisual doom;
         readonly HashSet<Combatant> hit=new HashSet<Combatant>();
         public static GhostProjectile Spawn(GameRoot world,Combatant source,GhostShot kind,Vector3 direction)
         {
@@ -31,9 +31,7 @@ namespace BigBattle
             }
             if(kind==GhostShot.Doom)
             {
-                Color[] colors={GhostArt.Dark,GhostArt.Teal,GhostArt.Blue,GhostArt.Red};
-                for(int i=0;i<4;i++){var blade=Art.Crescent(core,colors[i],240,i==0?.48f:.16f);blade.GetComponent<Renderer>().sharedMaterial.SetFloat("_Progress",.5f);blade.transform.localPosition=Vector3.back*i*.15f;blade.transform.localScale=Vector3.one*(2.8f-i*.19f);blade.transform.localRotation=Quaternion.Euler(-90,0,i*9-14);}
-                SoulVfx.Attach(core,world,SoulEffect.Doom);
+                doom=core.gameObject.AddComponent<DoomWaveVisual>();doom.Setup(world,aim);
             }
         }
         void Update()
@@ -47,10 +45,7 @@ namespace BigBattle
             speed=Kind==GhostShot.Doom?24:Kind==GhostShot.Chain?19:Mathf.Min(18,3+(age-.35f)*24);
             Vector3 from=transform.position,to=from+aim*speed*Time.deltaTime;transform.position=to;transform.rotation=Quaternion.LookRotation(aim);
             if(chain!=null){Vector3 start=source.transform.position+Vector3.up;for(int j=0;j<25;j++){float t=j/24f;Vector3 p=Vector3.Lerp(start,to,t)+Vector3.up*Mathf.Sin(t*Mathf.PI)*-.12f;chain.SetPosition(j,transform.InverseTransformPoint(p));}}
-            if(Kind==GhostShot.Doom && Time.time>=nextCrack)
-            {
-                nextCrack=Time.time+.065f;Crack(new Vector3(to.x,.025f,to.z));
-            }
+            if(doom!=null)doom.Advance(to);
             Combatant first=null;float firstAt=float.PositiveInfinity;
             foreach(var actor in world.Actors.ToArray())
             {
@@ -72,15 +67,6 @@ namespace BigBattle
             }
             world.Fx.Burst(actor.transform.position+Vector3.up,GhostArt.Teal,Kind==GhostShot.Doom?15:6);
             SoulVfx.Burst(world,SoulEffect.Impact,actor.transform.position+Vector3.up,aim);
-        }
-        void Crack(Vector3 point)
-        {
-            // Limit persistent ground marks independently of the short hit-particle budget.
-            if(world.Fx.transform.childCount>=Feedback.EffectLimit-1)return;
-            var root=new GameObject("Doom fractured ground");root.transform.SetParent(world.Fx.transform);root.transform.position=point;root.transform.rotation=Quaternion.LookRotation(aim);
-            var dark=GhostArt.Line(root.transform,"Black fissure",GhostArt.Dark,.12f,7);var glow=GhostArt.Line(root.transform,"Red green fissure",GhostArt.Teal,.035f,7);
-            for(int j=0;j<7;j++){Vector3 p=new Vector3(Mathf.Sin(j*11.8f+point.x)*.65f,0,(j-3)*.18f);dark.SetPosition(j,p);glow.SetPosition(j,p+Vector3.up*.006f);}
-            root.AddComponent<TransientVisual>().Setup(4,1);
         }
     }
 }

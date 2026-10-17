@@ -110,44 +110,52 @@ namespace BigBattle
             }
             if(kind==SoulEffect.Charge)
             {
-                RingSet(4.6f);
+                RingSet(6.8f);
+                Layer("light_02",new Color(.01f,.025f,.04f,.48f),Vector3.up*.02f,Vector3.one*8,true,0,false);
                 Layer("light_02",Ink,Tip,Vector3.one*1.5f,false,-120,false).role=1;
                 Layer("magic_03",Hot,Tip,Vector3.one*1.25f,false,35).role=1;
                 Sheet("ArcaneOrb",Cyan,Tip,Vector3.one*1.9f,false,-80).role=1;
-                for(int i=0;i<9;i++){var stream=Layer(i%3==0?"spark_06":"trace_05",i%3==0?Red:i%3==1?Cyan:Mint,Vector3.zero,new Vector3(.35f,2,1));stream.role=2;stream.ordinal=i;}
+                Sheet("ArcaneLightning",Mint,Tip,new Vector3(3,4,1),false,25).role=1;
+                for(int i=0;i<18;i++){var stream=Layer(i%3==0?"spark_06":"trace_05",i%3==0?Red:i%3==1?Cyan:Mint,Vector3.zero,new Vector3(.45f,2.6f,1));stream.role=2;stream.ordinal=i;}
                 Sheet("AuraRays",new Color(.10f,.7f,1,.55f),Vector3.up*.10f,Vector3.one*4.6f,true,-28);
                 Sheet("AuraFlames",new Color(.02f,.8f,.5f,.75f),Vector3.up*.12f,Vector3.one*3.4f,true,42);
-                for(int i=0;i<3;i++)
+                for(int i=0;i<6;i++)
                 {
                     currentEdges.Add(GhostArt.Line(transform,"Dark border of gathered soul",new Color(.01f,.05f,.09f,.55f),.13f,24));
-                    currents.Add(GhostArt.Line(transform,"Red blue green soul current",i==0?Red:i==1?Cyan:Mint,.065f,24));
-                    Color tint=i==0?Red:i==1?Cyan:Mint;var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(tint,0),new GradientColorKey(tint,.8f),new GradientColorKey(Hot,1)},new[]{new GradientAlphaKey(0,0),new GradientAlphaKey(.9f,.22f),new GradientAlphaKey(1,.8f),new GradientAlphaKey(.3f,1)});
+                    currents.Add(GhostArt.Line(transform,"Red blue green soul current",i%3==0?Red:i%3==1?Cyan:Mint,.10f,24));
+                    Color tint=i%3==0?Red:i%3==1?Cyan:Mint;var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(tint,0),new GradientColorKey(tint,.8f),new GradientColorKey(Hot,1)},new[]{new GradientAlphaKey(0,0),new GradientAlphaKey(.9f,.22f),new GradientAlphaKey(1,.8f),new GradientAlphaKey(.3f,1)});
                     currents[i].sharedMaterial=Art.SoulMaterial("spark_06",true,true);currents[i].colorGradient=gradient;
                     currentEdges[i].sharedMaterial=Art.SoulMaterial("trace_05",false,true);currentEdges[i].startColor=currentEdges[i].endColor=new Color(.01f,.07f,.10f,.35f);currentEdges[i].widthMultiplier=1.2f;
                 }
-                gathering=Emitter("star_04",Hot,38,.19f,1.3f,0,3.5f);gathering.transform.localPosition=Tip;
-                Emitter("flame_01",new Color(.03f,.65f,.52f,.28f),26,.95f,.8f,.7f,1.1f);
+                gathering=Emitter("star_04",Hot,75,.23f,1.3f,0,4.5f);gathering.transform.localPosition=Tip;
+                Emitter("flame_01",new Color(.03f,.65f,.52f,.38f),52,1.6f,.8f,1.1f,1.5f);
             }
             if(kind==SoulEffect.Doom)
             {
-                Layer("slash_02",Ink,Vector3.zero,new Vector3(5.8f,3.2f,1),false,0,false,false);
-                Layer("slash_02",Mint,Vector3.forward*.04f,new Vector3(5.5f,2.8f,1),false,0,true,false);
-                Layer("slash_02",Cyan,Vector3.forward*.08f,new Vector3(5.1f,2.5f,1),false,0,true,false);
-                Layer("slash_02",Red,Vector3.forward*.12f+Vector3.up*.22f,new Vector3(4.7f,2.3f,1),false,0,true,false);
-                Layer("magic_03",Hot,Vector3.zero,Vector3.one*2.2f,false,90);
-                FireFrames(Mint,48,1.8f,.65f,1.4f,1.15f);
-                Emitter("smoke_04",Ink,35,1.7f,.65f,1.2f,.9f,false);
-                Emitter("spark_01",Cyan,45,.7f,.28f,2.2f,1.2f);
-                Sheet("ArcaneVortex",new Color(.03f,.55f,.8f,.6f),Vector3.zero,Vector3.one*3.6f,false,70);
+                // Tall, narrow flame envelope: the actual blade remains a world-up 3D volume.
+                Layer("flame_01",new Color(.015f,.16f,.20f,.5f),Vector3.up*3.1f,new Vector3(2.1f,9.4f,1),false,0,false);
+                Sheet("ArcaneLightning",Cyan,Vector3.up*3.2f,new Vector3(1.8f,8.4f,1));
+                Sheet("ArcaneVortex",Mint,Vector3.up*.3f,new Vector3(1.5f,2.5f,1),false,90);
+                var fire=FireFrames(Mint,95,2.1f,.65f,1.8f,.5f);fire.transform.localPosition=Vector3.up*3;
+                var shape=fire.shape;shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(.65f,7.5f,1.2f);
+                var smoke=Emitter("smoke_04",Ink,65,2.6f,.75f,1.8f,.6f,false);smoke.transform.localPosition=Vector3.up*2.8f;shape=smoke.shape;shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(.8f,6,1.5f);
+                var sparks=Emitter("spark_01",Cyan,85,.85f,.35f,4,.5f);sparks.transform.localPosition=Vector3.up*3;shape=sparks.shape;shape.shapeType=ParticleSystemShapeType.Box;shape.scale=new Vector3(.8f,7,1);
             }
             if(kind==SoulEffect.Impact || kind==SoulEffect.Release)
             {
-                bool release=kind==SoulEffect.Release;life=release?.8f:.45f;
+                bool release=kind==SoulEffect.Release;life=release?1.1f:.45f;
                 Layer("light_02",Ink,Vector3.zero,Vector3.one*(release?4:1.6f),false,0,false);
                 Layer("magic_03",Hot,Vector3.zero,Vector3.one*(release?3.5f:1.25f),false,25);
                 Layer("spark_01",Mint,Vector3.zero,Vector3.one*(release?4:1.9f),false,-60);
                 Sheet(release?"ArcaneLightning":"ArcaneImpact",release?Cyan:Mint,Vector3.zero,Vector3.one*(release?4.1f:2.1f),false,0,true);
-                if(release)RingSet(5.5f);
+                if(release)
+                {
+                    RingSet(10);
+                    Sheet("AuraRays",Cyan,Vector3.up*.04f,Vector3.one*12,true,-80,true);
+                    Sheet("AuraFlames",Mint,Vector3.up*.07f,Vector3.one*9,true,110,true);
+                    Layer("flame_01",new Color(.01f,.13f,.16f,.55f),Vector3.up*2,new Vector3(3.2f,8,1),false,0,false);
+                    Layer("spark_06",Hot,Vector3.up*1.5f,new Vector3(1.3f,9,1));
+                }
                 var ps=Emitter("star_04",Hot,0,release?.26f:.17f,.5f,release?6:3,.15f);ps.Emit(release?42:18);
                 ps=Emitter("fire_01",Mint,0,release?1.3f:.75f,.6f,release?3:1,.25f);ps.Emit(release?16:7);
             }
@@ -188,8 +196,8 @@ namespace BigBattle
             Quaternion view=world.CameraRig.Camera.transform.rotation;
             for(int i=0;i<currents.Count;i++)
             {
-                float a=i*Mathf.PI*2/3+age*.9f;Vector3 radial=new Vector3(Mathf.Sin(a),0,Mathf.Cos(a));
-                Vector3 from=radial*(3.4f+Progress*.5f)+Vector3.up*.2f,control=radial*3+Vector3.up*(2+Progress),bend=Tip+Vector3.Cross(Vector3.up,radial)*1.3f;
+                float a=i*Mathf.PI*2/6+age*(i%2==0?.9f:-.65f);Vector3 radial=new Vector3(Mathf.Sin(a),0,Mathf.Cos(a));
+                Vector3 from=radial*(4.5f+Progress*.7f)+Vector3.up*(.2f+i%2),control=radial*3.8f+Vector3.up*(2+Progress*2),bend=Tip+Vector3.Cross(Vector3.up,radial)*1.8f;
                 for(int j=0;j<24;j++)
                 {
                     float t=j/23f,u=1-t;Vector3 p=u*u*u*from+3*u*u*t*control+3*u*t*t*bend+t*t*t*Tip;

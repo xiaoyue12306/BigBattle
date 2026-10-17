@@ -80,6 +80,47 @@ namespace BigBattle
             }
             return EnergyObject("Banana moonblade",parent,mesh,color);
         }
+        // Both meshes are authored once; every travelling blade and ground stamp shares them.
+        public static GameObject DoomSurface(Transform parent,bool ground,int variant=0)
+        {
+            string key=ground?"doom rift "+variant:"doom upright blade";Mesh mesh;
+            if(!rings.TryGetValue(key,out mesh))
+            {
+                var vertices=new List<Vector3>();var uv=new List<Vector2>();var triangles=new List<int>();
+                if(!ground)
+                {
+                    const int rows=40,sides=8;
+                    for(int y=0;y<=rows;y++)
+                    {
+                        float t=y/(float)rows,bulge=Mathf.Pow(Mathf.Max(.0001f,Mathf.Sin(t*Mathf.PI)),.65f);
+                        for(int s=0;s<=sides;s++)
+                        {
+                            float a=s*Mathf.PI*2/sides;
+                            vertices.Add(new Vector3(Mathf.Sin(a)*.44f*bulge,t*8.8f,Mathf.Cos(a)*.5f*bulge+Mathf.Sin(t*Mathf.PI)*2.0f-t*.8f));
+                            uv.Add(new Vector2(s/(float)sides,t));
+                            if(y<rows && s<sides){int n=y*(sides+1)+s;triangles.AddRange(new[]{n,n+1,n+sides+1,n+1,n+sides+2,n+sides+1});}
+                        }
+                    }
+                }
+                else
+                {
+                    // Longitudinal overlapping strips, with jagged branches joining the main chasm.
+                    for(int branch=0;branch<(variant>=4?1:3);branch++)for(int j=0;j<=8;j++)
+                    {
+                        float t=j/8f,sign=branch%2==0?1:-1;
+                        float x=branch==0?Mathf.Sin(t*7+variant*2)*.20f:sign*t*(1.1f+variant%4*.20f)+Mathf.Sin(t*12+variant)*.13f*t;
+                        float z=branch==0?t*1.5f: .2f+(branch-1)*.6f+t*.45f;
+                        float w=branch==0?.65f+Mathf.Sin(t*8+variant)*.18f:Mathf.Lerp(.20f,.008f,t);
+                        int n=vertices.Count;vertices.Add(new Vector3(x-w,0,z));vertices.Add(new Vector3(x+w,0,z));uv.Add(new Vector2(0,t));uv.Add(new Vector2(1,t));
+                        if(j<8)triangles.AddRange(new[]{n,n+1,n+2,n+1,n+3,n+2});
+                    }
+                }
+                mesh=new Mesh{name=key};mesh.SetVertices(vertices);mesh.SetUVs(0,uv);mesh.SetTriangles(triangles,0);mesh.RecalculateBounds();rings.Add(key,mesh);owned.Add(mesh);
+            }
+            string materialKey=ground?(variant>=4?"doom scorch":"doom ground"):"doom blade";Material material;
+            if(!materials.TryGetValue(materialKey,out material)){material=new Material(Shader.Find("BigBattle/DoomEnergy")){name=materialKey};material.SetFloat("_Ground",ground?(variant>=4?2:1):0);materials.Add(materialKey,material);owned.Add(material);}
+            var go=new GameObject(key);go.transform.SetParent(parent,false);go.AddComponent<MeshFilter>().sharedMesh=mesh;var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;return go;
+        }
         public static GameObject Lance(Transform parent,Color color)
         {
             Mesh mesh;

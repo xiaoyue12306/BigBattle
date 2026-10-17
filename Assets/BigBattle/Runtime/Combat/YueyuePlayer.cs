@@ -115,7 +115,7 @@ namespace BigBattle
             GhostProjectile.Spawn(World,this,GhostShot.Doom,Facing);Visual.PlayMotion(MotionId.Attack3,.7f);
             SoulVfx.Burst(World,SoulEffect.Release,transform.position+Vector3.up*.5f,Facing);
             if(rig!=null)rig.Release();
-            World.CameraRig.Shake(1.05f);World.CameraRig.Impact(Facing,2.5f);World.Input.Rumble(.95f,.48f);
+            World.CameraRig.DoomImpact();World.CameraRig.Impact(Facing,2.5f);World.Input.Rumble(.95f,.48f);
             World.Sound.Play(SoundCue.Ultimate,1.3f);World.Sound.Impact(true);World.Fx.Notice("万魂归剑 · 斩！");World.Fx.DoomFlashUntil=Time.unscaledTime+.24f;
         }
         public override void ResetCombat()

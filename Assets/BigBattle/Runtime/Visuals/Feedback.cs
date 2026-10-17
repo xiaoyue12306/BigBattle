@@ -205,7 +205,7 @@ namespace BigBattle
     public sealed class ArenaCamera : MonoBehaviour
     {
         public Camera Camera {get;private set;}
-        GameRoot world;Vector3 focus,kick;float shake,punch;
+        GameRoot world;Vector3 focus,kick;float shake,punch,doomAt=-100;
         public void Setup(GameRoot game)
         {
             world=game;Camera=gameObject.AddComponent<Camera>();Camera.orthographic=true;Camera.orthographicSize=9.8f;
@@ -215,13 +215,16 @@ namespace BigBattle
         }
         public bool MapOverview;
         public bool CaptureCloseup;
+        public bool CaptureDoom;
         Vector3 Target()
         {
+            if(CaptureDoom)return world.Player.transform.position+world.Player.Facing*5;
             if(CaptureCloseup)return world.Player.transform.position;
             if(world!=null && world.IsLane){Vector3 lane=FlowerLaneMap.ToLane(world.Player.transform.position);return FlowerLaneMap.ToWorld(new Vector3(lane.x*.45f,0,Mathf.Clamp(lane.z+3,-28,28)));}
             return world.Player.transform.position*.24f;
         }
-        public void Snap(){focus=MapOverview?Vector3.zero:world!=null && (world.IsLane || CaptureCloseup)?Target():Vector3.zero;kick=Vector3.zero;shake=punch=0;Place();}
+        public void Snap(){focus=MapOverview?Vector3.zero:world!=null && (world.IsLane || CaptureCloseup || CaptureDoom)?Target():Vector3.zero;kick=Vector3.zero;shake=punch=0;doomAt=-100;Place();}
+        public void DoomImpact(){doomAt=Time.time;Shake(1.05f);}
         public void Shake(float amount){shake=Mathf.Max(shake,amount);}
         public void Impact(Vector3 direction,float strength)
         {
@@ -233,7 +236,8 @@ namespace BigBattle
             Vector3 target=MapOverview?Vector3.zero:Target();
             focus=Vector3.Lerp(focus,target,1-Mathf.Exp(-Time.unscaledDeltaTime*3));
             // Wider floor coverage on narrower displays, including future viewports.
-            Camera.orthographicSize=MapOverview?38:CaptureCloseup?6.8f:Mathf.Max(9.8f,15.4f/Mathf.Max(.7f,Camera.aspect))-punch;Place();
+            float doomAge=Time.time-doomAt,expansion=doomAge<1.4f?Mathf.Sin(Mathf.Clamp01(doomAge/1.4f)*Mathf.PI)*1.8f:0;
+            Camera.orthographicSize=(MapOverview?38:CaptureDoom?11.8f:CaptureCloseup?6.8f:Mathf.Max(9.8f,15.4f/Mathf.Max(.7f,Camera.aspect))-punch)+expansion;Place();
             shake=Mathf.MoveTowards(shake,0,Time.unscaledDeltaTime*.9f);
             kick=Vector3.Lerp(kick,Vector3.zero,1-Mathf.Exp(-Time.unscaledDeltaTime*22));punch=Mathf.MoveTowards(punch,0,Time.unscaledDeltaTime*1.6f);
         }

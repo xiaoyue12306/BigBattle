@@ -1,18 +1,49 @@
-# v0.8.0 validation record
+# v0.9.0 validation record
+
+2026-10-17 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
+
+## Final build and regression
+
+- Final warm Windows build: **0 errors / 0 warnings, 125,138,519 bytes**. No C# or shader compilation diagnostics in the final log; the first new-script import had a transient missing-type diagnostic and refreshed successfully. [Build / package / runtime assembly hashes](Validation/build-v090.json).
+- Final actual standalone acceptance: **212 passed / 0 failed / zero recorded errors**, UTC **2026-10-17T13:10:58.0179917Z**. [Versioned report](Validation/smoke-report-v090.json); the current smoke-report.json is the same report. Earlier iterations also passed 211/0 and 212/0 before final visual refinements; only this final report describes the packaged player.
+- Eight additional checks cover the towering main volume and retained doom shader, forward/side/reverse/diagonal world-up orientation, shared mesh reuse, simultaneous distance-overlapping ground marks, paused emissive clocks, complete effect expiry, warmed material reuse and retry clearing the fracture budget. Existing 204 checks retain the real 13 Mixamo tracks, banana combo/clash/mute, Yueyue motions, three souls / four-second hold / early/control/death interruption, half-stat autonomous summons, exact 500 once per near/distant target, 20s release cooldown and lane objective/respawn rules.
+- Final CheckSource: all three C# compile configurations and **53** input/layout/XInput ABI checks pass. All four physical controller slots are disconnected. PreviewDoom.ps1 and MakeDoomGif.py executed successfully against the final player/capture.
+
+## Full matches
+
+- Final [900-second-cap AI simulation](Validation/lane-simulation-v090.json), UTC **2026-10-17T13:10:04.7785720Z**, completed both matches with zero errors. Banana lead: **Defeat**, 684.86 simulated seconds / 57 waves, hero kills 125:120, enemy core 185.40 HP. Yueyue lead: **Defeat**, 456.27 seconds / 38 waves, kills 82:98, enemy core 794.40 HP.
+- These use the actual combat controllers with fixed 0.1-second simulation steps and drawing disabled. Earlier runs had different winners; completion checks do not establish balance, manual skill or real-time performance. No match parameters or scripted building kills were introduced by this VFX update.
+
+## Actual rendering and package
+
+- Reviewed the final 25-screenshot acceptance contact sheet and full-resolution charge/wave/rift frames. The blade travels as a tall curved slash instead of a horizontal crescent. Fractures now have a broad dark bed, lower-frequency branches, raised stones and animated blue-green flames; ground stamps stop at the map floor while the actual piercing shot continues its original long range.
+- [Real skill recording](Images/yueyue-doom-v090.gif): **157 frames / 9.52s encoded / 8,821,976 bytes**, source last frame **9.46009s**. Captured from the final Windows player at 1600×900 with normal time, then resized to 960×540 and encoded with measured durations. The diagnostic camera uses a wider forward view; three real-defeat fixtures prepare souls before recording. This is a skill showcase, not an unaided battle or gameplay FPS benchmark. No generated or interpolated frames.
+- Actual selected frames: [charge](Images/doom-charge-v090.png), [vertical wave](Images/doom-wave-v090.png), [ground rift](Images/doom-rift-v090.png). Preview log reports DOOM_PREVIEW_OK; preview/smoke/simulation logs contain no runtime exceptions or shader errors.
+- Portable **Builds/BigBattle-v0.9.0-Windows.zip: 44,807,366 bytes / 137 entries**, complete CRC pass, exe/Data present, packaged runtime assembly hash equals the final tested folder. Original captures and executables remain local/ignored. [Media timing record](Validation/doom-preview-v090.json).
+
+## Limits and handoff
+
+- Details and rebuild hooks: [DOOM_VFX.md](DOOM_VFX.md). Main blade and ground stamps use cached meshes and three shared doom materials; native particle clocks follow the existing explicit pause route. Ground marks have a global 192-segment cap and finite fade/destruction; retry also clears the accounting. No extra damage, terrain collision, permanent ground deformation or actual scene lights are added.
+- Reuses the already licensed CC0 texture/flipbook sources; no new store acquisition is claimed. Source artwork, user FBX/texture and local Mixamo exclusions are preserved. Old v0.8 reports are now versioned separately to retain their original observations.
+- One human plus nine lane AI remains the limit. Physical Xbox/rumble/reconnect, television brightness/audio, two physical keyboards, low-end hardware and multiple rendered viewports are **not tested**. The intentionally large HDR effect adds drawing cost and can obscure a nearby target momentarily; target-TV brightness and performance tuning remain next steps.
+
+---
+
+# Historical v0.8.0 validation record
 
 2026-10-17 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
 
 ## Final tested build
 
 - Windows build **0 errors / 0 warnings**, **125,117,879 bytes**; final log has no C# / shader compilation errors. [Build and portable hashes](Validation/build-v080.json), including the actual runtime assembly (the Unity bootstrap exe itself is shared across releases).
-- Final standalone acceptance **204 passed / 0 failed / zero recorded runtime errors/exceptions**, UTC **2026-10-17T10:24:43.1989511Z**. [Report](Validation/smoke-report.json). The 191 prior checks remain, with actual movement driving hip/opposite arm bones, distance-based step phase, idle recovery, paused full skeleton, three normal-attack variants and reset coverage.
+- Final standalone acceptance **204 passed / 0 failed / zero recorded runtime errors/exceptions**, UTC **2026-10-17T10:24:43.1989511Z**. [Report](Validation/smoke-report-v080.json). The 191 prior checks remain, with actual movement driving hip/opposite arm bones, distance-based step phase, idle recovery, paused full skeleton, three normal-attack variants and reset coverage.
 - Imported model still has 13 bones / 24,932 vertices. Actual charge aligns the sword with both skin hand joints above shoulder height; all limb scales remain one. Normal damage, hard-bind/death interruption, early release, three-soul spending, half-stat autonomous summons, 20s cooldown and exactly one 500-damage hit on each near/distant swept target still pass. Banana's original Mixamo/combo/clash/sound/mute rules remain covered.
 - Seven new atlases import at usable sizes; actual charge advances multiple animated layers. Pause freezes atlas frame, native particle time and seal rotation. One early run was 203/1 on the combined pause assertion; explicit emitter Pause/Play in GameRoot's pause path fixes the pending native step, with two later full runs passing 204/0. Final measured particle and seal deltas are both **0.000000**. Resume only plays previously paused active emitters; reset disables reusable effects and repeated impacts reuse shared materials and retire.
 - Final CheckSource passes runtime / Editor-conditional runtime / Editor compilation and **53** pure input/layout/XInput ABI checks. FetchSpiritAssets.ps1 was executed against the pinned cached author archives, hash validation and extraction passed, and its PowerShell syntax parses cleanly.
 
 ## Complete AI matches
 
-- [Final report](Validation/lane-simulation.json), UTC **2026-10-17T10:24:40.6624086Z**, both matches complete normally, zero recorded errors. Banana lead: **Defeat**, 661.38 game seconds / 55 waves, hero kills 104:129, enemy core 155.20 HP. Yueyue lead: **Defeat**, 495.86 seconds / 42 waves, kills 92:96, enemy core 27.60 HP.
+- [Final report](Validation/lane-simulation-v080.json), UTC **2026-10-17T10:24:40.6624086Z**, both matches complete normally, zero recorded errors. Banana lead: **Defeat**, 661.38 game seconds / 55 waves, hero kills 104:129, enemy core 155.20 HP. Yueyue lead: **Defeat**, 495.86 seconds / 42 waves, kills 92:96, enemy core 27.60 HP.
 - An earlier [600-second diagnostic report](Validation/lane-simulation-600s-v080.json) stopped banana at Battle with allied core 97.40 / enemy core 405.00 HP; Yueyue reached defeat. The runner's observation limit was extended to **900 simulated seconds**, recorded in the final report, to observe full core resolution. Actual match rules were not retuned or given scripted building kills. No pass is claimed for that earlier capped run.
 - The fixed 0.1-second simulation disables camera/HUD drawing. It verifies long-match completion and cleanup, not manual skill, real-time frame rate or competitive balance. Initial AI/composition balance and variable match lengths remain open issues.
 
