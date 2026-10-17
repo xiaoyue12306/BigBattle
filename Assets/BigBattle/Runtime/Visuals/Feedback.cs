@@ -214,12 +214,14 @@ namespace BigBattle
             Snap();
         }
         public bool MapOverview;
+        public bool CaptureCloseup;
         Vector3 Target()
         {
+            if(CaptureCloseup)return world.Player.transform.position;
             if(world!=null && world.IsLane){Vector3 lane=FlowerLaneMap.ToLane(world.Player.transform.position);return FlowerLaneMap.ToWorld(new Vector3(lane.x*.45f,0,Mathf.Clamp(lane.z+3,-28,28)));}
             return world.Player.transform.position*.24f;
         }
-        public void Snap(){focus=MapOverview?Vector3.zero:world!=null && world.IsLane?Target():Vector3.zero;kick=Vector3.zero;shake=punch=0;Place();}
+        public void Snap(){focus=MapOverview?Vector3.zero:world!=null && (world.IsLane || CaptureCloseup)?Target():Vector3.zero;kick=Vector3.zero;shake=punch=0;Place();}
         public void Shake(float amount){shake=Mathf.Max(shake,amount);}
         public void Impact(Vector3 direction,float strength)
         {
@@ -231,7 +233,7 @@ namespace BigBattle
             Vector3 target=MapOverview?Vector3.zero:Target();
             focus=Vector3.Lerp(focus,target,1-Mathf.Exp(-Time.unscaledDeltaTime*3));
             // Wider floor coverage on narrower displays, including future viewports.
-            Camera.orthographicSize=MapOverview?38:Mathf.Max(9.8f,15.4f/Mathf.Max(.7f,Camera.aspect))-punch;Place();
+            Camera.orthographicSize=MapOverview?38:CaptureCloseup?6.8f:Mathf.Max(9.8f,15.4f/Mathf.Max(.7f,Camera.aspect))-punch;Place();
             shake=Mathf.MoveTowards(shake,0,Time.unscaledDeltaTime*.9f);
             kick=Vector3.Lerp(kick,Vector3.zero,1-Mathf.Exp(-Time.unscaledDeltaTime*22));punch=Mathf.MoveTowards(punch,0,Time.unscaledDeltaTime*1.6f);
         }

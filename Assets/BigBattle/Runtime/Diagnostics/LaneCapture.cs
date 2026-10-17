@@ -11,7 +11,7 @@ namespace BigBattle
     {
         [Serializable]sealed class Timing {public List<float> seconds=new List<float>();}
         [Serializable]sealed class Run {public string hero,result;public float seconds,enemyCore,alliedCore;public int waves,alliedKills,enemyKills;}
-        [Serializable]sealed class Report {public string utc=DateTime.UtcNow.ToString("o");public List<Run> runs=new List<Run>();public List<string> errors=new List<string>();}
+        [Serializable]sealed class Report {public string utc=DateTime.UtcNow.ToString("o");public int maxGameSeconds=900;public List<Run> runs=new List<Run>();public List<string> errors=new List<string>();}
         GameRoot world;bool simulation;LaneHeroBot brain;Report report=new Report();
         public void Setup(GameRoot game,bool fast){world=game;simulation=fast;}
         void Update(){if(brain!=null && world.Input!=null)world.Input.InjectedFrame=brain.Plan();}
@@ -29,7 +29,7 @@ namespace BigBattle
                 {
                     world.SelectHero(kind);world.StartLaneBattle();brain=world.Player.gameObject.AddComponent<LaneHeroBot>();brain.ExternalInput=true;brain.Setup(world.Lane,world.Player,0);
                     float born=Time.time;
-                    while(world.State==SessionState.Battle && Time.time-born<600)yield return null;
+                    while(world.State==SessionState.Battle && Time.time-born<report.maxGameSeconds)yield return null;
                     var mode=world.Lane;
                     report.runs.Add(new Run{hero=world.Player.HeroName,result=world.State.ToString(),seconds=Time.time-born,enemyCore=mode.Cores[1]!=null?mode.Cores[1].Health:0,alliedCore=mode.Cores[0]!=null?mode.Cores[0].Health:0,waves=mode.WavesSpawned,alliedKills=mode.HeroKills[0],enemyKills=mode.HeroKills[1]});
                     brain=null;world.EnterPractice();yield return null;

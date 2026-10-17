@@ -1,0 +1,18 @@
+Spirit animation artwork used by BigBattle v0.8.0
+
+All three original author pages license these artworks under CC0:
+https://creativecommons.org/publicdomain/zero/1.0/
+
+AuraRays / AuraFlames: Pavel Kutejnikov, Auras
+https://opengameart.org/content/auras
+Original CC0 ReadMe retained in AssetLibrary/VFX/SpiritAnimations/Auras-ReadMe.txt.
+
+ArcaneOrb / ArcaneVortex / ArcaneImpact / ArcaneLightning: Cethiel
+https://opengameart.org/content/arcane-magic-effect
+
+ParaFire: para, Animated particle effects #2
+https://opengameart.org/content/animated-particle-effects-2
+
+Atlas packing/scale adaptation: BigBattle. Source colours are retained; the
+runtime shader applies the hero palette. ParaFire is an unchanged original sheet.
+Full source URLs, layouts and SHA-256: AssetLibrary/VFX/SpiritAnimations/.

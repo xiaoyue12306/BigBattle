@@ -1,0 +1,723 @@
+{
+  "acquired": "2026-10-17",
+  "license": "CC0",
+  "archives": [
+    {
+      "author": "Kutejnikov",
+      "page": "https://opengameart.org/content/auras",
+      "download": "https://opengameart.org/sites/default/files/auras-001-002.7z",
+      "bytes": 91297831,
+      "sha256": "d4fcef093adb33c97fed7d8e6548931bf57b2b404e38d46c3572ed0521419580"
+    },
+    {
+      "author": "Cethiel",
+      "page": "https://opengameart.org/content/arcane-magic-effect",
+      "download": "https://opengameart.org/sites/default/files/Arcane_Effect.zip",
+      "bytes": 647048,
+      "sha256": "e404dd03289e41c87e64a67a781d4c5dc2b91cb1a45eb54883314231f1fd7b8d"
+    },
+    {
+      "author": "para",
+      "page": "https://opengameart.org/content/animated-particle-effects-2",
+      "download": "https://opengameart.org/sites/default/files/para_CC0_particlefx-2.zip",
+      "bytes": 5927098,
+      "sha256": "469676f3fc08509e4ec824147d179a51a9a71c380a3d0fd142cf8e30355f50f8"
+    }
+  ],
+  "atlases": [
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/Flipbooks/AuraRays.png",
+      "sha256": "21fb5ff7f11f881b1cca56efab5da98050209c29b2a5f81a5e959b5ad02d41fb",
+      "size": [
+        2048,
+        2048
+      ],
+      "columns": 8,
+      "rows": 8,
+      "frames": 60,
+      "operation": "centred RGBA frames; max cell minus 4; bilinear runtime; no recolouring",
+      "originals": [
+        {
+          "path": "Auras/001/001_white/001_FX_0000.png",
+          "sha256": "ac475c591cdd5668a2bb57b9434d1ce39bd1b4fc070e4b1435d71514d5c75874"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0001.png",
+          "sha256": "12745f8588f171a21f39d253e6ac843c80871109ecc5ec9f2a58bf834b834fa8"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0002.png",
+          "sha256": "34f1dd4048b31b49d8b52bb2fccac3deb711bbde10ccf1c538bbc67d658ad0eb"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0003.png",
+          "sha256": "fc6f85083b362f8edc16bb91e2cc712abddc8957234222948258ea26eac5ad79"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0004.png",
+          "sha256": "d983096ebdf95f280f7fa538948e2fbf4f7c33ab9f93158dc1c642b8948d44ab"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0005.png",
+          "sha256": "2c48a62aaaf4dd27739c7f2536a76565bd634fb1e209210eeba1820918b6dd60"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0006.png",
+          "sha256": "e63fbf485a1abd28053db81e72852f615f168633dd5c9cfe71ede49c27cde0ea"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0007.png",
+          "sha256": "58f817776977d998ec6e7859a2df1ddfe99acbed16d582d777e2f8a5df9e6733"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0008.png",
+          "sha256": "7220d8f9cecb277645766969da5b6bfdef3cdd55df765cc332afda3b5e3a922d"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0009.png",
+          "sha256": "ed129bd44c40ffa464e1cb2d4024a106c313c33bf9645ed2b4b7ff64063f17f1"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0010.png",
+          "sha256": "7c25df382a7a716e9ed6f94809e13a6d06a0ff019a1f28dd1052fbb4265f8cf5"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0011.png",
+          "sha256": "8c749d227ed91b8a4c6de3a6cfde0ff6f26d3c4df273a572ea6ee7f307eb74ea"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0012.png",
+          "sha256": "1feb1fbf1e104b20abcbe2ac4f8163ad85960a8d91a6c2ba5cfa3be56dc6d372"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0013.png",
+          "sha256": "bbfdb396cc4a69b75feacebbd98a17b7bd8bce441fe73f862833c1e30731c948"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0014.png",
+          "sha256": "9cb981dd811e621bf626dc0bd0f1241aa45913588a6b87f3e6d17961ff74bce7"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0015.png",
+          "sha256": "744b647c1ebcdfac5d99fca15d02977e1ed41a3743453ac0586b4ecf0d27bafd"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0016.png",
+          "sha256": "0090c1304b14e6d1b6c0356fa2a0cdc67e809aeab5a6411c759bdbfcc0e08370"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0017.png",
+          "sha256": "42838314df4bac29ddc3cd174b7e4eede3f4bf33dff929471b7e890e0f8b8cbf"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0018.png",
+          "sha256": "57732cf17dd239839af1ce6f05f7a24ddc93b4dc01a62d9e012205aa0b054e8c"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0019.png",
+          "sha256": "e6da5e30a84cf8663133bdaac25d0aed6321aae6519f2886477856117d7a8151"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0020.png",
+          "sha256": "6f3309f53cf15738869e23f6b3292281e4ec77498cd1366fb98be50a255b6c03"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0021.png",
+          "sha256": "df2d443bf2741015b814d80d892bf7e6db55a1e2f90a38b27dd5130389aa9601"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0022.png",
+          "sha256": "56b5ca9abe91bc37851befc9f6915f3ea2e46fb5592a8f1f63f8c0bca8af1697"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0023.png",
+          "sha256": "40a5488c226ed5be6e1349d21a0618f2299a1e2bd8195d02a943307448043c7d"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0024.png",
+          "sha256": "fac02d34edd78cac8d371929f01d6809167cd337bc849eee0e2fb976f21dcf82"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0025.png",
+          "sha256": "ab3ebd3c6f84903413a24ea3fd64a93a9938d1c90def51268e91b689a3ef5e48"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0026.png",
+          "sha256": "41238129b49bba2420fdd2cc0d25fe86197dcb08ef2d1be6cf28afd17957cb21"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0027.png",
+          "sha256": "32b30897c8233875619a44333ebc032a30b3855fad398c21bbca114a5e71c55e"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0028.png",
+          "sha256": "94cad7b224bc48b8fe2e3ed377a76dc770f3f86048cea23ee0a6699543bf99ce"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0029.png",
+          "sha256": "8407a6afd8744b7a70f54775ef37206831d203cad607fefa2bd67a64c4069c0a"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0030.png",
+          "sha256": "472f059004456de4b0740fb961d5f03fbfe44cebf6f4b79f102a6e2262319979"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0031.png",
+          "sha256": "0aa0de336f804c41b6b405f2f75c815334ddcf04403a5b3f9a138a9be2aa67db"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0032.png",
+          "sha256": "2894fd72db8e91c41eda34bb06bcb4ba511984ce43603f698919b714f59837b7"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0033.png",
+          "sha256": "f4921bdffa6124b598d6aaff5cdf2f63f1094e57268ac4f827dae22212389910"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0034.png",
+          "sha256": "c6113da1fb698f1832ccb3f2998f95a07910d79070dda98d9bd4b9df3b3fb962"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0035.png",
+          "sha256": "a5ef1830e79353182778b090a3f1fb924dad85d688f62e7b984a61b2d24e3490"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0036.png",
+          "sha256": "6464db6ef729ced4be04b3c587719275c7a98bd6a14eb3a605ce091ca18f0dca"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0037.png",
+          "sha256": "436d980af3c68a188dfc103cbab9545e5874117d6ad26e6068272de4c269fb92"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0038.png",
+          "sha256": "75618b3bfa55a53bf0f4b939ee58835af015723b24940977d8031559a6041ade"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0039.png",
+          "sha256": "61dffb9597d4342ac469a7eb3aaddfb32e58b311a5a2c75caa3d2c470067e10d"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0040.png",
+          "sha256": "855480da879a06981a2c7483287f3ca9459e804786d392d95dde0ce40361fcdd"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0041.png",
+          "sha256": "5ec0d88a7390ef331069148263f4d65a8747e22059e7bf571fde9f9187f70459"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0042.png",
+          "sha256": "5a40f6fb57ded46d5b716b96bae49f7d9c44042cdad495790dce71cc34782ba9"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0043.png",
+          "sha256": "9079f91890a09573d13efa021dffa879fcef910784dceb2b917204afcbac8d71"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0044.png",
+          "sha256": "65440cb72c8763af09d6f7b58c7be68bc42bb98d9acfc204abe5edd35cd8e4aa"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0045.png",
+          "sha256": "94cd74a92292c704a79c0e054509e91f491fa4db11f7a7c32537aeb5c5e72fc5"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0046.png",
+          "sha256": "50f569db4324adbd7de48814c0f2df88c9f72df5049aa44b77e2d68119bcc50c"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0047.png",
+          "sha256": "dbe34280119e7e3f0c2d98c60ddb9a76ccd054aa7bbfacb9ad5e7f35b6eb5d63"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0048.png",
+          "sha256": "10a164e61f7cabca76ee5e0c523826a4993ab724001ed525e7d038b153f0bcac"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0049.png",
+          "sha256": "9c5c2f320e39ed54a3e5e400a917be335fa3d90a243e9435a05551423f4284a2"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0050.png",
+          "sha256": "53a53278bb670929812bfad0db8c4d69b0efb67c95a0cc7526f2278a458b2e12"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0051.png",
+          "sha256": "2bf344a34969e52d3fd9b84cf0da919afbb567945dcfe1e0879ed7b8d50a5b30"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0052.png",
+          "sha256": "b005beebc774beb442b2603ca768bf11a97c800d31512cfaa22f830cea8fbbff"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0053.png",
+          "sha256": "12f00c0e1f9c81c6ce429eecae34d0bf3e24d4b7125a5bdf8e72a33ec1523004"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0054.png",
+          "sha256": "a72ca4dce32668ab345bbbbeaf66c9fe56ef4165e932a9736023d8014fbbe30c"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0055.png",
+          "sha256": "57387d744d9af78158b4e70e57ac1d31f0b846cfecdea1cd7ac0d67d168edc25"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0056.png",
+          "sha256": "c13813855a60075c5ac89d763ab16c32e6a78924dc740d5cdf437e2fbbd7a539"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0057.png",
+          "sha256": "5beeddc0cd904f743fa616c3dd7b4c0739da6528b6f94ff88bdcf1edf431fc42"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0058.png",
+          "sha256": "b8701d18699bd95266fd3ac6663e2fb37585f53d9dd315a3229c06bce2d95afb"
+        },
+        {
+          "path": "Auras/001/001_white/001_FX_0059.png",
+          "sha256": "b5dcda02b928240012dd10cb8efba91b8e9d43d627431583286e5ce3065bd123"
+        }
+      ]
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/Flipbooks/AuraFlames.png",
+      "sha256": "2f872c9e3e218d48c92378a24c00767b28530704ad145747f605febdae8351b6",
+      "size": [
+        2048,
+        2048
+      ],
+      "columns": 8,
+      "rows": 8,
+      "frames": 60,
+      "operation": "centred RGBA frames; max cell minus 4; bilinear runtime; no recolouring",
+      "originals": [
+        {
+          "path": "Auras/002/002_white/002_FX_0000.png",
+          "sha256": "85579aa9161ecbd3ed72f7912691b51a3ecb15c4fe7c7b1eae2b22d81ff02ae6"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0001.png",
+          "sha256": "eb2c53b7f966ff0c60c5919d59ac5b1e1acb314f99fb815d7c25266d3f465554"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0002.png",
+          "sha256": "7cd0e0e4f8cdcd17be6fdc5f49288d9b15b81e9f570af13875493d129c4c5077"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0003.png",
+          "sha256": "f960d923831689b55008ca6df4d034e5d034234aba3deeea90769e849e5bfa24"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0004.png",
+          "sha256": "742bd6c671adb96d3ad1bd6697536407c6c3a6a727709cd0bd543ae51668952b"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0005.png",
+          "sha256": "0225bbda4d7dafebb8a55b136fc2b7f81e2cb3a17f7389fc9dad3d171d5d5e7f"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0006.png",
+          "sha256": "ee2816e4aab750ff5264c7c230e265486894c134cdca6a349a353fff4c69bd90"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0007.png",
+          "sha256": "d1081d5f9c2c42d4c3f6553afe1fffa29f1757fb32c1757e1a7b6472b30c5766"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0008.png",
+          "sha256": "1539ad5f79082f7254d85430b04a7ad2e83e38048535fe3e5e379b65c9fe4ba9"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0009.png",
+          "sha256": "69fc10413d47562af7ffc2282010e11e5984f258219a1992a876c2f514ed1844"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0010.png",
+          "sha256": "6a680733e3049defd11d6249213fce85fb759b924b5b327a62c3323fd315a010"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0011.png",
+          "sha256": "73421ee371014434bcdd599c35143458c51a5fc5f0c7a227b7370ba4fb51f991"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0012.png",
+          "sha256": "372c231b729d047b483617993aa7bfd1b048143f0673622b0a665de57d5cccc6"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0013.png",
+          "sha256": "54fd9656caf13c0b883650429930fefe5853e799dd88cafd4d1bc902ed2e6cfa"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0014.png",
+          "sha256": "6f2bd98d29d413224307c01807fcdf6a753b05eb58220aac5da0a2583361abb5"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0015.png",
+          "sha256": "cbc94f9b783d4f554cc5d18e03b90dc12b22f61a52a1f5797aa0f4fee06dc96d"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0016.png",
+          "sha256": "8390fc8e4a90de4b4a4fcd097eaad8417b9204a1075e010682fcb2945e4437e1"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0017.png",
+          "sha256": "98ea89ddbaf8993e8af2266f73f098f481a13afb10c6ac56d535ef62026658ee"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0018.png",
+          "sha256": "43585f361500107693c43f9792da9eec151747e9dee10c00037ed7418d2fdab2"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0019.png",
+          "sha256": "f9450615617d293b5a43eaba9776f3d0345afb978d01773a57359a65d42a46e4"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0020.png",
+          "sha256": "f875f1abaff5079cd45a2bfc1f0d5866846a0b0aa919b346321e29fe0747ee85"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0021.png",
+          "sha256": "178eb9a0635b76f4cd36613025dc6b67c6ad41d85d1bc9cdc75350127fcba71a"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0022.png",
+          "sha256": "31c43a2d3d6a25dc54b0ba3335cad7301f6c40254225242beb73aa413d502725"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0023.png",
+          "sha256": "f4f0ab5b9952dae4e55ad9ad3949f47f0c5b4e268662aa32bfd54bc26e1ceb41"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0024.png",
+          "sha256": "ea6a8d255c7a0b7a067ad497b9f04de514b0c047efd5de53a28a1a8c350eeb77"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0025.png",
+          "sha256": "a9ba08ce242f3f74f608ea7fc36f77d0691cce4d2d3fcd5eae14d0f9071def6e"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0026.png",
+          "sha256": "157a4af05b8c4c0fe63c5cbb1b3adae1c956ad328a5c19cdc0e1394474548499"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0027.png",
+          "sha256": "29a612c65033d35d3a27279adf71dcf4d00068bb33ed65af9f4498a916ef2cce"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0028.png",
+          "sha256": "bea3755ddd6a7ae1056d835658ea4841ca3beb3600b772598c718ca9a3b9808c"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0029.png",
+          "sha256": "a80b97735f227eb6f7e08fcd503a96d4335546fd3e644df1342505f2de853b22"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0030.png",
+          "sha256": "429b1f991888a9b7248bfc57e9f7bf9b1c1c3ba4e4bf64a937f2e8ceacac9e56"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0031.png",
+          "sha256": "88073b0261a49d0dec37eb22a99c334f1103d99a72bdf26b1b2a2c10b3e878f0"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0032.png",
+          "sha256": "556088191a08e83534dfc65eb70598723ef400cd5a1d1ca80755d2522c1cd991"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0033.png",
+          "sha256": "08d69616a3a62869dd8a3c99ba0956adf8420ee1ae1abc35815dda7a0bacbc7c"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0034.png",
+          "sha256": "e0f1334cbcac8ed7912223a9548ae9db6aa9b0a8b5722fb4a870400862b4ed87"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0035.png",
+          "sha256": "ec6c9a050e443a159bcbcf70f4104738eb339083af870a167b4f3b0eeb1b7044"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0036.png",
+          "sha256": "03bf4131d2ae314a4ae0cfc1ce7d376fb8472ac66065a702592f4090aa1dfa9e"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0037.png",
+          "sha256": "96daac8382b3beee1b933cfc42755f07f8c172f0a3cb7b8e6f5edbdafa177620"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0038.png",
+          "sha256": "88b8acc6435a27f529fd6d8b5e36a561e0f6d3b03417bb79134ebc89785f1fcb"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0039.png",
+          "sha256": "1794be0a4110610d525736164725a16d4f74d099540d78d671f8fee2144ac9f9"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0040.png",
+          "sha256": "8f48644fc70dc423ea2298c073082c740384b3b9d521b06724a4c8f968bc4e4b"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0041.png",
+          "sha256": "13c095446d0cabe9d0e6ee8bd11bee36ad70ee2554e3e81eacf700686b8ffa3a"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0042.png",
+          "sha256": "c2d652e50547c1e69f954dd847286805dc23afcb1f812ba4265752881f05eefe"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0043.png",
+          "sha256": "5e4ebeaf40ddba13bdfe061249a43c2a6c0c03a318972e4a04e5f4c42d3300a9"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0044.png",
+          "sha256": "e909c8dfe3110175e0cec26372037298760f3f55587d9fc21596a29172e15c9f"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0045.png",
+          "sha256": "94523d8a8a576a105b4c3ede9281151a980f78abe333ada4d4083fab95b00535"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0046.png",
+          "sha256": "94e5f0b826db6835df465fb5d6fa4c380071f5ffb570221e9e773e76b7d4ae84"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0047.png",
+          "sha256": "136be3b1fd21fc6447cf3366d7e8d12714027132318d7eea6e50f9ec08fc564c"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0048.png",
+          "sha256": "baa4a95e21b33750880a60f164f0daa523cdbde68917dc26ea7e9a6e06ed2fda"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0049.png",
+          "sha256": "f123598c8325b898cea96be82f1cac01cfcc919bddb9a183b8d74bca5ceebd43"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0050.png",
+          "sha256": "911149232cd8cbf0866bc4f94d751cec64606b561495267c61363fbb95283248"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0051.png",
+          "sha256": "4603929432798e2e2fe52927a752808bd727d8bfd51710080ca76e8142c60cf1"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0052.png",
+          "sha256": "c390d737e542fb17105f50a55d6c7df76ed51c1da09e75cdf361f9f0f6983d62"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0053.png",
+          "sha256": "0442ec9f3aefc5c8e386fd35148f7d3f51687484be4bb3a3f6dc5b9f4cc7fcf1"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0054.png",
+          "sha256": "2ee07ebeb6f299c529b77e47c0dc357546f210eec66266db954597ebc1480e07"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0055.png",
+          "sha256": "cedce9851c4a87cbbf248a53070adc319cb6fade9f15ee73dca26b9bf096dbad"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0056.png",
+          "sha256": "9e9ef35ab5ab182742a3871cae4f67fd70cb9acd89a8a9e2da6e15c04bd8c1b6"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0057.png",
+          "sha256": "acaed347db8dc7a1b131e415142a26671298ac075fd510e84223f476ead45015"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0058.png",
+          "sha256": "c6efce4fd1d4f2afa08cc9dcfa6c61b08616ebbcea6ad107f97ac027850703fc"
+        },
+        {
+          "path": "Auras/002/002_white/002_FX_0059.png",
+          "sha256": "2a4fc53d5922628fca2724ac4a49fc364024561ab0879f0a33d26ecd9144b83f"
+        }
+      ]
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/Flipbooks/ArcaneOrb.png",
+      "sha256": "eff626d2662deb7da3994db34fe241755ac4dc6bfa2f505db4e784772081666f",
+      "size": [
+        512,
+        256
+      ],
+      "columns": 4,
+      "rows": 2,
+      "frames": 7,
+      "operation": "centred RGBA frames; max cell minus 4; bilinear runtime; no recolouring",
+      "originals": [
+        {
+          "path": "Arcane/02/Arcane_Effect_1.png",
+          "sha256": "512b511050cc8dd6fc5f7bd6eb1e0aa74b81e7f06db3febc2fe89e2137f61cdf"
+        },
+        {
+          "path": "Arcane/02/Arcane_Effect_2.png",
+          "sha256": "cef87ddde3c3b5b6267c9cbc22738b44651337495e734a331bb176181ce7140c"
+        },
+        {
+          "path": "Arcane/02/Arcane_Effect_3.png",
+          "sha256": "6b86ea631ad098aeb4ed308c0aae0bc0ced65b0cc427f0ba6c0475b2426f4b74"
+        },
+        {
+          "path": "Arcane/02/Arcane_Effect_4.png",
+          "sha256": "36b844e11c70208aa330f9593bf6a36ff6e6fd68a2ab8374da0eaa645a4ea563"
+        },
+        {
+          "path": "Arcane/02/Arcane_Effect_5.png",
+          "sha256": "81b5f36fc31d6d223659031eb4b32c2f42e9809dd94f8b9800a838c080b3e203"
+        },
+        {
+          "path": "Arcane/02/Arcane_Effect_6.png",
+          "sha256": "eceab27e7100cf7c6ce3f390ddcec45d50425b399f12cefe400ac1f1924125bb"
+        },
+        {
+          "path": "Arcane/02/Arcane_Effect_7.png",
+          "sha256": "955806e8098a457d816896d2ec6e4e2476d18e4e801be3979d6618991b8e3352"
+        }
+      ]
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/Flipbooks/ArcaneVortex.png",
+      "sha256": "178988c6ed8d4bb40956bb86ae44e3b1f08d2a784b8163dfad601d66317e6543",
+      "size": [
+        512,
+        256
+      ],
+      "columns": 4,
+      "rows": 2,
+      "frames": 7,
+      "operation": "centred RGBA frames; max cell minus 4; bilinear runtime; no recolouring",
+      "originals": [
+        {
+          "path": "Arcane/04/Arcane_Effect_1.png",
+          "sha256": "0ab0fd972e6e525f0a6db34b491ffa808883a60a5b3f8d517d52f5ed7fddf730"
+        },
+        {
+          "path": "Arcane/04/Arcane_Effect_2.png",
+          "sha256": "76cad8a19c28a4b2c57cdcf5bfb806192b630faadd22841a943a8a58f8ffea1a"
+        },
+        {
+          "path": "Arcane/04/Arcane_Effect_3.png",
+          "sha256": "0b6b919f9de2a7404677d19869c3df16f1b9d1314f67e343976fc7c4e7ef7a0b"
+        },
+        {
+          "path": "Arcane/04/Arcane_Effect_4.png",
+          "sha256": "0baa220e2fdfe2b3a62105a368956e9a8e45332cf30d8df899988a58258e4959"
+        },
+        {
+          "path": "Arcane/04/Arcane_Effect_5.png",
+          "sha256": "6b10852c6482d198f133644fe664720058eab2cafe191a229a7323756d7ac49c"
+        },
+        {
+          "path": "Arcane/04/Arcane_Effect_6.png",
+          "sha256": "1c2b41f2ef2a8e276e58bf0e58487d01963b0135595106d706fc41ae841d2a7a"
+        },
+        {
+          "path": "Arcane/04/Arcane_Effect_7.png",
+          "sha256": "7a8ed6d1d5c8c533c586f440fc98bb3153a500570a677d469a9d3f1c68ea3f6e"
+        }
+      ]
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/Flipbooks/ArcaneImpact.png",
+      "sha256": "b58ccf1e419ac86fe3187cf60156d308e12c693b50db996f43cdfa436582a9cf",
+      "size": [
+        512,
+        256
+      ],
+      "columns": 4,
+      "rows": 2,
+      "frames": 7,
+      "operation": "centred RGBA frames; max cell minus 4; bilinear runtime; no recolouring",
+      "originals": [
+        {
+          "path": "Arcane/05/Arcane_Effect_1.png",
+          "sha256": "b881a03661f4900b5b7afa18aeb663ad38afb3f516e52b157364ff09efcc2856"
+        },
+        {
+          "path": "Arcane/05/Arcane_Effect_2.png",
+          "sha256": "b5d964c07bd060abde2c688033485ee54d77ab1fcaf7b9025f1b1900275917a8"
+        },
+        {
+          "path": "Arcane/05/Arcane_Effect_3.png",
+          "sha256": "c8228061b6d1eafc57b623cd9e382600f7b4c1eb121db2c29723f810c40ce0b0"
+        },
+        {
+          "path": "Arcane/05/Arcane_Effect_4.png",
+          "sha256": "3b979d29fe728175cb97149c022fcd16762d3dae5a90cfc3adae407dcaabd01d"
+        },
+        {
+          "path": "Arcane/05/Arcane_Effect_5.png",
+          "sha256": "4208fb7970f555e1b244cb49c2e030cf5ca7770e3cc7354f075e11286b2a3166"
+        },
+        {
+          "path": "Arcane/05/Arcane_Effect_6.png",
+          "sha256": "ea2a600955e1e679036781c935b56483885be5afe5af2b9e86fcb622a59dc0c8"
+        },
+        {
+          "path": "Arcane/05/Arcane_Effect_7.png",
+          "sha256": "47a54cf7e7bc2ccc9fcea3807ff777418248df48fc82b062f1170da005503905"
+        }
+      ]
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/Flipbooks/ArcaneLightning.png",
+      "sha256": "b4d7c332a210e5d526c3d97bcc29c44012361864e9d8ac977d28dca6c84811a8",
+      "size": [
+        512,
+        256
+      ],
+      "columns": 4,
+      "rows": 2,
+      "frames": 7,
+      "operation": "centred RGBA frames; max cell minus 4; bilinear runtime; no recolouring",
+      "originals": [
+        {
+          "path": "Arcane/06/Arcane_Effect_1.png",
+          "sha256": "97564bdd5409f5ab800f3488fd384615ec876423e696a2353915b56dd7386730"
+        },
+        {
+          "path": "Arcane/06/Arcane_Effect_2.png",
+          "sha256": "29ea7dc81c80a24f6c30d9cbc856a00abf0e4038587b24b3365946ca6fdc26d1"
+        },
+        {
+          "path": "Arcane/06/Arcane_Effect_3.png",
+          "sha256": "14adafa40b5f259cb7a3a3351e96d41dd2238b53804ef738cc644ce38cb4a675"
+        },
+        {
+          "path": "Arcane/06/Arcane_Effect_4.png",
+          "sha256": "9658d8f9fe48adc8307b2677777e0f94247e4882159d72c66d2157611c72029d"
+        },
+        {
+          "path": "Arcane/06/Arcane_Effect_5.png",
+          "sha256": "3dd6f4d7902e39302de24291908c499d5c145ca0af1ba025ad75f99b2ba1f1bb"
+        },
+        {
+          "path": "Arcane/06/Arcane_Effect_6.png",
+          "sha256": "a0e66dda8c69b5b48cb5e21178cd7d1d05971c277be0289ff00654b90230921d"
+        },
+        {
+          "path": "Arcane/06/Arcane_Effect_7.png",
+          "sha256": "9d6bbac2527f68d5d96d96307f32554d4fb79f19717f8c47592023fd23a00a80"
+        }
+      ]
+    },
+    {
+      "file": "Assets/BigBattle/Resources/SoulVfx/Flipbooks/ParaFire.png",
+      "sha256": "1b5ca27c4a36df4b04b0ac5ebab53b231b3fecb9e08bde4921f45b65fb9e44c1",
+      "size": [
+        1024,
+        1024
+      ],
+      "columns": 8,
+      "rows": 8,
+      "frames": 64,
+      "operation": "unmodified original sheet",
+      "originals": [
+        {
+          "path": "Para/fire_02.png",
+          "sha256": "1b5ca27c4a36df4b04b0ac5ebab53b231b3fecb9e08bde4921f45b65fb9e44c1"
+        }
+      ]
+    }
+  ]
+}

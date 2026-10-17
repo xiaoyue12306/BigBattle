@@ -1,4 +1,39 @@
-# v0.7.0 validation record
+# v0.8.0 validation record
+
+2026-10-17 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
+
+## Final tested build
+
+- Windows build **0 errors / 0 warnings**, **125,117,879 bytes**; final log has no C# / shader compilation errors. [Build and portable hashes](Validation/build-v080.json), including the actual runtime assembly (the Unity bootstrap exe itself is shared across releases).
+- Final standalone acceptance **204 passed / 0 failed / zero recorded runtime errors/exceptions**, UTC **2026-10-17T10:24:43.1989511Z**. [Report](Validation/smoke-report.json). The 191 prior checks remain, with actual movement driving hip/opposite arm bones, distance-based step phase, idle recovery, paused full skeleton, three normal-attack variants and reset coverage.
+- Imported model still has 13 bones / 24,932 vertices. Actual charge aligns the sword with both skin hand joints above shoulder height; all limb scales remain one. Normal damage, hard-bind/death interruption, early release, three-soul spending, half-stat autonomous summons, 20s cooldown and exactly one 500-damage hit on each near/distant swept target still pass. Banana's original Mixamo/combo/clash/sound/mute rules remain covered.
+- Seven new atlases import at usable sizes; actual charge advances multiple animated layers. Pause freezes atlas frame, native particle time and seal rotation. One early run was 203/1 on the combined pause assertion; explicit emitter Pause/Play in GameRoot's pause path fixes the pending native step, with two later full runs passing 204/0. Final measured particle and seal deltas are both **0.000000**. Resume only plays previously paused active emitters; reset disables reusable effects and repeated impacts reuse shared materials and retire.
+- Final CheckSource passes runtime / Editor-conditional runtime / Editor compilation and **53** pure input/layout/XInput ABI checks. FetchSpiritAssets.ps1 was executed against the pinned cached author archives, hash validation and extraction passed, and its PowerShell syntax parses cleanly.
+
+## Complete AI matches
+
+- [Final report](Validation/lane-simulation.json), UTC **2026-10-17T10:24:40.6624086Z**, both matches complete normally, zero recorded errors. Banana lead: **Defeat**, 661.38 game seconds / 55 waves, hero kills 104:129, enemy core 155.20 HP. Yueyue lead: **Defeat**, 495.86 seconds / 42 waves, kills 92:96, enemy core 27.60 HP.
+- An earlier [600-second diagnostic report](Validation/lane-simulation-600s-v080.json) stopped banana at Battle with allied core 97.40 / enemy core 405.00 HP; Yueyue reached defeat. The runner's observation limit was extended to **900 simulated seconds**, recorded in the final report, to observe full core resolution. Actual match rules were not retuned or given scripted building kills. No pass is claimed for that earlier capped run.
+- The fixed 0.1-second simulation disables camera/HUD drawing. It verifies long-match completion and cleanup, not manual skill, real-time frame rate or competitive balance. Initial AI/composition balance and variable match lengths remain open issues.
+
+## Actual animation and VFX review
+
+- Reviewed the final 25-screenshot acceptance contact sheet plus walking/casting/charge/release stills and the normal-clock close-up recording. The supplied character still has its original appearance; the back of the magic blade now exposes an onyx face/channel instead of a solid green rectangle. New animated rings, portals, energy bursts and flame particles render without shader errors or missing textures.
+- Skill/motion showcase: **181 actual captured frames / 17.68s encoded timing / 4,879,326 bytes**, [GIF](Images/yueyue-combat-v080.gif). Recorded at 1600×900 with a diagnostic follow/close-up view; actual walking out/back, turning, three basic gestures, chain, summon, moving phase, four-second hold and release. A real-defeat fixture prepares the soul record before recording; this is not an unassisted playthrough.
+- Walking close-up: **37 actual source frames / 3.65s / 496,458 bytes**, [GIF](Images/yueyue-walk-v080.gif). Cropped/scaled from the same captured first 3.6s using recorded actor screen coordinates. No synthetic frames, mocap replacement or reordered animation. Sampling/encoding frame counts are not gameplay FPS measurements.
+- Raw capture ends at 17.583s; GIF rounded durations include the final frame hold. Preview log reports YUEYUE_PREVIEW_OK and no exceptions/errors. Selected actual crops: yueyue-walk-still-v080.png, yueyue-cast-v080.png, yueyue-charge-v080.png and yueyue-doom-v080.png.
+- Portable **Builds/BigBattle-v0.8.0-Windows.zip: 44,800,655 bytes / 137 entries**, full archive CRC pass, exe and Data present. It contains the same final Windows folder used for acceptance/preview/simulation; binaries and raw captures remain local/ignored.
+
+## Provenance and practical limits
+
+- Original user FBX and YueyueColor.png hashes verified unchanged against the v0.5 record. Refined game FBX is 1,972,060 bytes, 6072 arm vertices reweighted; [rig details/hash](Validation/yueyue-rig-v080.json). Original FBX, Blender intermediates and local Mixamo source/baked data remain excluded from public Git.
+- Three actual CC0 author archives total 97,871,977 bytes. Seven integrated atlases contain 212 source frames; selected source and output hashes, CC0 evidence and original Auras ReadMe are in [the asset record](../AssetLibrary/VFX/SpiritAnimations/SOURCE.md). Author artwork is packed/adapted by the project; these are not claimed purchases of store VFX prefabs.
+- Animation is authored for the existing compact rig, with pose blends and two-arm grip IK. No new Mixamo mocap library, professional per-vertex cleanup, planted-foot IK or cloth simulation is claimed. Large-head proportions and overlapping sleeves limit extreme poses; further skin polish remains useful.
+- One human input plus nine lane AI remains the limit. Four XInput slots were disconnected: physical Xbox play/rumble/reconnect, two physical keyboards, television presentation/audio and five-view rendering are **not tested**. Shader/particle caps and a close-up clip do not prove a multiplayer performance budget. Combat stats, ownership and controls were not intentionally retuned.
+
+---
+
+# Historical v0.7.0 validation record
 
 Date: 2026-10-17 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
 

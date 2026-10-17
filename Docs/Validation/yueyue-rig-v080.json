@@ -1,0 +1,83 @@
+{
+  "version": "0.8.0",
+  "vertices": 24932,
+  "bones": 13,
+  "reweightedVertices": 6072,
+  "fbxBytes": 1972060,
+  "fbxSHA256": "23e434f739e8cff99ec14df9ac74294ffb9dbf4dc8ac8b8c34835b45dbdf4eaa",
+  "refinedArmRestPositions": {
+    "LeftUpperArm": [
+      [
+        -0.285,
+        -0.01,
+        1.43
+      ],
+      [
+        -0.34,
+        -0.09,
+        1.15
+      ]
+    ],
+    "LeftForearm": [
+      [
+        -0.34,
+        -0.09,
+        1.15
+      ],
+      [
+        -0.11,
+        -0.29,
+        1.2
+      ]
+    ],
+    "LeftHand": [
+      [
+        -0.11,
+        -0.29,
+        1.2
+      ],
+      [
+        -0.025,
+        -0.33,
+        1.27
+      ]
+    ],
+    "RightUpperArm": [
+      [
+        0.285,
+        0,
+        1.43
+      ],
+      [
+        0.32,
+        -0.015,
+        1.13
+      ]
+    ],
+    "RightForearm": [
+      [
+        0.32,
+        -0.015,
+        1.13
+      ],
+      [
+        0.3,
+        -0.07,
+        0.91
+      ]
+    ],
+    "RightHand": [
+      [
+        0.3,
+        -0.07,
+        0.91
+      ],
+      [
+        0.29,
+        -0.08,
+        0.8
+      ]
+    ]
+  },
+  "source": "same user model; matching raised left forearm and hand; regional weights remain a prototype"
+}

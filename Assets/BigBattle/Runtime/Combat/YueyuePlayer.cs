@@ -91,6 +91,7 @@ namespace BigBattle
             if(skill==4 && (Souls<3 || requireRelease))return false;
             if(skill==4){Charging=true;chargeAt=Time.time;World.Sound.Play(SoundCue.Ultimate,.6f);if(rig!=null)rig.Present(true,0,false);return true;}
             ready[skill]=Time.time+Recovery[skill];uses[skill]++;
+            if(rig!=null)rig.PlayCast(skill);
             if(skill==0){GhostProjectile.Spawn(World,this,GhostShot.Skull,Facing);Visual.PlayMotion(MotionId.Throw,.42f);World.Sound.Play(SoundCue.Toss,.8f);}
             if(skill==1){GhostProjectile.Spawn(World,this,GhostShot.Chain,Facing);Visual.PlayMotion(MotionId.Thrust,.45f);World.Sound.Play(SoundCue.Clash,.55f);}
             if(skill==2)

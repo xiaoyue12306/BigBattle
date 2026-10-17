@@ -116,6 +116,7 @@ namespace BigBattle
         public void SetPaused(bool paused)
         {
             Paused=paused;ApplyClock();MenuSelection=0;
+            foreach(var effect in GetComponentsInChildren<SoulVfx>(true))effect.SetPaused(paused);
             if(paused)Input.StopRumble();
         }
         void ApplyClock(){Time.timeScale=Paused?0:HitPausing?.08f:1;}

@@ -45,7 +45,7 @@ namespace BigBattle
             if(materials.TryGetValue(key,out material))return material;
             material=new Material(Shader.Find("BigBattle/SoulParticle")){name=key,color=Color.white,mainTexture=Resources.Load<Texture2D>("SoulVfx/"+texture)};
             material.SetInt("_DstBlend",glow?(int)UnityEngine.Rendering.BlendMode.One:(int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            material.SetFloat("_Glow",glow?1:0);material.SetFloat("_UvRotate",ribbon?1:0);materials.Add(key,material);owned.Add(material);return material;
+            material.SetFloat("_Glow",glow?1:0);material.SetFloat("_UvRotate",ribbon?1:0);material.SetFloat("_Gray",texture.StartsWith("Flipbooks/")?1:0);materials.Add(key,material);owned.Add(material);return material;
         }
         public static Mesh SoulQuad()
         {

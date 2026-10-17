@@ -1,6 +1,8 @@
-# 越越大王 · v0.7.0
+# 越越大王 · v0.8.0
 
 2026-10-17，团结 1.9.3 / Windows / Built-in。此角色与香蕉刺客均为单人可选英雄。
+
+v0.8.0 修正胸前左手的骨骼 / 蒙皮，新增实际位移驱动的全身行走、三套普通施法手势、独立甩索 / 召唤 / 浮行动作，以及双臂持剑关节求解；新增三位作者的 CC0 帧动画特效。详见 [YUEYUE_MOTION.md](YUEYUE_MOTION.md)。原技能数值与输入保持。
 
 v0.7.0 使用实际从 Kenney 官方下载的 CC0 火焰 / 烟雾 / 闪电 / 法阵贴图重做分层特效，技能规则沿用 v0.5.0。鬼焰骷髅、六虚空锚点、亡魂法阵、虚无尾流、三色聚能与燃烧剑气的实现、素材许可和边界见 [SOUL_VFX.md](SOUL_VFX.md)。
 
@@ -32,7 +34,7 @@ v0.7.0 使用实际从 Kenney 官方下载的 CC0 火焰 / 烟雾 / 闪电 / 法
 - 使用本次自制的行走摆腿、抬手施法、举剑蓄力、挥剑及倒下姿势；没有声称从 Mixamo 下载新动作，也没有把香蕉比例的 Mixamo 姿态直接套到这个人形模型。
 - 骨骼是依据该静态姿势制作的基础游戏骨架与权重，肩部、交叠手臂和头巾不是专业人工逐顶点精修蒙皮。未来可以替换为专业绑定 / 动作，保持运行时骨骼名与动作接口即可。
 
-本机重建素材：先运行 Blender `--background --python Tools/InspectYueyue.py`，再运行 `--background --python Tools/PrepareYueyue.py`。脚本默认读取上述用户原文件；导出到工程 Resources，`.blend` 与检查渲染只写入 Artifacts。普通构建不需要 Blender，直接使用已生成的 FBX。
+本机重建素材：先运行 Blender `--background --python Tools/InspectYueyue.py`，再运行 `--background --python Tools/PrepareYueyue.py`，最后运行 `--background --python Tools/RefineYueyueRig.py` 应用 v0.8.0 非对称手臂修正。脚本默认读取上述用户原文件；导出到工程 Resources，`.blend` 与检查渲染只写入 Artifacts。普通构建不需要 Blender，直接使用已生成的 FBX；v0.8.0 输出 1,972,060 字节，原贴图保持原校验值。
 
 ## 代码与扩展
 

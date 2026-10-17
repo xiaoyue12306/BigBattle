@@ -10,6 +10,9 @@ namespace BigBattle
         public int MotionCount => library!=null && library.Tracks!=null?library.Tracks.Length:0;
         public MotionId CurrentMotion {get;private set;}
         public float ActionFraction=>(Time.time-actionStart)/actionDuration;
+        public bool ExternalBodyPose;
+        public Vector3 PresentationRecoil=>recoil*Mathf.Clamp01(1-(Time.time-recoilStart)/.22f);
+        public bool IsSlipping=>Time.time<slipUntil;
         MixamoMotionLibrary library;
         Transform leftArm,rightArm,leftShin,rightShin;
         TrailRenderer leftTrail,rightTrail;
@@ -194,6 +197,8 @@ namespace BigBattle
         void LateUpdate()
         {
             if(Torso!=null){AnimateBanana();return;}
+            if(!ExternalBodyPose)
+            {
             float bounce = Mathf.Sin(Time.time * (moveAmount > .1f ? 14 : 3)) * (moveAmount > .1f ? .065f : .025f);
             Body.localPosition = new Vector3(0,bounce,0);
             float recoilWeight=Mathf.Clamp01(1-(Time.time-recoilStart)/.22f);
@@ -211,6 +216,7 @@ namespace BigBattle
             float swing = Mathf.Clamp01((swingUntil-Time.time)/.18f);
             if (LeftHand != null) LeftHand.localRotation = Quaternion.Euler(-swing*100,0,-swing*25);
             if (RightHand != null) RightHand.localRotation = Quaternion.Euler(-swing*125,0,swing*25);
+            }
             block.SetColor("_EmissionColor", Time.time < flashUntil ? new Color(.55f,.5f,.4f) : Color.black);
             // A color multiplier flash preserves each original material.
             foreach (Renderer item in Renderers)

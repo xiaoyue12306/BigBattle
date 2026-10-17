@@ -27,8 +27,12 @@ namespace BigBattle
             var sword=new GameObject("Black soul sword");sword.transform.SetParent(parent,false);
             var edge=Art.Shape("Radiant green sword edge",PrimitiveType.Cube,sword.transform,new Vector3(0,.88f,0),new Vector3(.38f,1.78f,.14f),Teal);
             edge.GetComponent<Renderer>().sharedMaterial=Art.FxMat("Soul sword edge",Teal);
-            Art.Shape("Onyx blade",PrimitiveType.Cube,sword.transform,new Vector3(0,.88f,.08f),new Vector3(.29f,1.76f,.08f),Dark);
+            // Dark faces on both sides: the overhead camera often sees the back
+            // of the caster, which previously exposed a solid green rectangle.
+            Art.Shape("Onyx blade",PrimitiveType.Cube,sword.transform,new Vector3(0,.88f,0),new Vector3(.29f,1.76f,.18f),Dark);
             Art.Shape("Green blade channel",PrimitiveType.Cube,sword.transform,new Vector3(0,.88f,.13f),new Vector3(.055f,1.60f,.025f),Teal);
+            Art.Shape("Rear soul channel",PrimitiveType.Cube,sword.transform,new Vector3(0,.88f,-.105f),new Vector3(.045f,1.60f,.025f),Teal);
+            for(int i=0;i<3;i++)for(int side=-1;side<=1;side+=2){var rune=Art.Shape("Etched blade soul rune",PrimitiveType.Cube,sword.transform,new Vector3(0,.44f+i*.38f,side*.113f),new Vector3(.095f,.095f,.018f),Blue);rune.transform.localRotation=Quaternion.Euler(0,0,45);}
             Art.Shape("Iron crossguard",PrimitiveType.Cube,sword.transform,Vector3.zero,new Vector3(.70f,.12f,.18f),Dark);
             Art.Shape("Hilt",PrimitiveType.Cylinder,sword.transform,Vector3.down*.19f,new Vector3(.10f,.17f,.10f),Dark);
             Art.Shape("Soul gem",PrimitiveType.Sphere,sword.transform,Vector3.zero,Vector3.one*.18f,Teal);

@@ -39,7 +39,7 @@ namespace BigBattle
             if(target!=null && delta.magnitude<=range+.15f && Time.time>=nextAttack)
             {
                 nextAttack=Time.time+(style==3?.65f:style==1?1.1f:.65f);
-                if(style==3){GhostProjectile.Spawn(World,this,GhostShot.Skull,delta.normalized);Visual.PlayMotion(MotionId.Throw,.45f);}
+                if(style==3){GhostProjectile.Spawn(World,this,GhostShot.Skull,delta.normalized);Visual.PlayMotion(MotionId.Throw,.45f);var rig=Visual.GetComponent<YueyueVisual>();if(rig!=null)rig.PlayCast(0);}
                 else if(style==0){Visual.PlayMotion(MotionId.Attack1,.34f);World.Melee.Slash(this,delta.normalized,0,.10f);}
                 else{winding=true;contactAt=Time.time+.35f;Visual.Swing();}
             }

@@ -16,6 +16,9 @@ namespace BigBattle
             var soulShader=Shader.Find("BigBattle/SoulParticle");Check(textures && soulShader!=null && soulShader.isSupported,"Thirteen licensed online particle textures and native soul shader are present in the Windows player");
             var bloom=Shader.Find("Hidden/BigBattle/SoulBloom");Check(bloom!=null && bloom.isSupported && world.CameraRig.Camera.allowHDR && world.CameraRig.GetComponent<SoulBloom>()!=null,"Selective HDR soul glow shader and native camera compositor survive player stripping");
             Check(rig!=null && rig.HasModel && rig.BoneCount>=10 && skin!=null && skin.bones.Length>=13 && skin.sharedMaterial.mainTexture!=null,"User FBX imports with authored bones, skin and texture");
+            bool sheets=true;foreach(string name in SoulVfx.SheetNames){var texture=Resources.Load<Texture2D>("SoulVfx/Flipbooks/"+name);sheets&=texture!=null && texture.width>256;}
+            Check(sheets,"Seven new licensed animation atlases survive import at usable resolution");
+            yield return MageMotionChecks(mage,rig,skin);
             mage.transform.position=Vector3.back*3;Frame(new CombatInput{Move=Vector2.up});yield return Wait(.04f);Frame();
             float before=world.Dummy.TotalDamageReceived;
             Frame(new CombatInput{Attack=true});yield return Wait(.12f);Frame();
@@ -75,12 +78,17 @@ namespace BigBattle
             mage.Damage(1,attacker,Vector3.zero);Check(mage.Charging,"Ordinary damage does not interrupt the four-second charge");
             Frame(new CombatInput{UltimateHeld=true});yield return Wait(3.7f);
             Check(mage.Charging && mage.ChargeProgress>=1 && mage.ReleasedWaves==0,"Full four-second charge waits for key release");yield return Shot("17-soul-sword-charge");
+            Check(Vector3.Distance(rig.SwordPosition,rig.HandPosition(true))<.35f && Vector3.Distance(rig.SwordPosition,rig.HandPosition(false))<.35f && rig.SwordPosition.y>mage.transform.position.y+1.7f,"Raised sword follows both actual skinned hand joints above the shoulders");
+            bool unstretched=true;foreach(var bone in skin.bones)unstretched&=Vector3.Distance(bone.localScale,Vector3.one)<.001f;Check(unstretched,"Two-arm sword grip uses joint rotations without stretching limb scales");
             world.SetPaused(true);float charge=mage.ChargeProgress;yield return Wait(.12f);Check(mage.ChargeProgress==charge,"Pause freezes sword charging");world.SetPaused(false);
             var chargeFx=System.Array.Find(mage.GetComponentsInChildren<SoulVfx>(),f=>f.Kind==SoulEffect.Charge);
             var chargeEmitter=chargeFx!=null?chargeFx.GetComponentInChildren<ParticleSystem>():null;
             Check(chargeEmitter!=null && chargeEmitter.particleCount>0,"Full soul charge emits textured gathering sparks and ghost fire");
-            world.SetPaused(true);float particleClock=chargeEmitter!=null?chargeEmitter.time:0;Quaternion rune=chargeFx!=null?chargeFx.transform.GetChild(0).localRotation:Quaternion.identity;yield return Wait(.12f);
-            Check(chargeEmitter!=null && Mathf.Abs(chargeEmitter.time-particleClock)<.001f && rune==chargeFx.transform.GetChild(0).localRotation,"Pause freezes both imported-texture particles and rotating charge seals");world.SetPaused(false);
+            float atlasBefore=chargeFx.AnimationFrame;yield return Wait(.12f);Check(chargeFx.AnimatedLayers>=3 && chargeFx.AnimationFrame!=atlasBefore,"Real charge advances multiple imported flame and arcane flipbooks");
+            world.SetPaused(true);float atlasPaused=chargeFx.AnimationFrame;float particleClock=chargeEmitter!=null?chargeEmitter.time:0;Quaternion rune=chargeFx!=null?chargeFx.transform.GetChild(0).localRotation:Quaternion.identity;yield return Wait(.12f);
+            float particleDelta=chargeEmitter!=null?Mathf.Abs(chargeEmitter.time-particleClock):-1;float sealDelta=Quaternion.Angle(rune,chargeFx.transform.GetChild(0).localRotation);
+            Check(chargeEmitter!=null && particleDelta<.001f && rune==chargeFx.transform.GetChild(0).localRotation,"Pause freezes imported particles and charge seals (particle="+particleDelta.ToString("0.000000")+", seal="+sealDelta.ToString("0.000000")+")");world.SetPaused(false);
+            Check(atlasPaused==chargeFx.AnimationFrame,"Pause freezes the animated atlas sampling clock as well");
             Frame();yield return Wait(.12f);yield return Shot("18-doom-sword-wave");yield return Wait(.6f);
             Check(mage.ReleasedWaves==1 && mage.Souls==0 && mage.Remaining(4)>19,"Releasing full charge spends three souls and starts twenty-second cooldown");
             Check(a.Health==500 && b.Health==500,"Sword wave pierces two enemies for exactly five hundred damage each");
@@ -116,6 +124,20 @@ namespace BigBattle
             Check(world.PracticeFoe is YueyueDuelist,"Practice opponent supports Yueyue as well as banana");yield return Shot("20-yueyue-opponent");
             world.SetOpponent(HeroKind.Banana);world.SelectHero(HeroKind.Banana);yield return Wait(.12f);
             Check(!(world.Player is YueyuePlayer) && world.Player.HeroName=="香蕉刺客" && world.Player.Health==180,"Switching back preserves original banana combat setup");
+        }
+        IEnumerator MageMotionChecks(YueyuePlayer mage,YueyueVisual rig,SkinnedMeshRenderer skin)
+        {
+            mage.transform.position=new Vector3(-4,0,-4);Frame(new CombatInput{Move=Vector2.right});yield return Wait(.4f);
+            var hip=System.Array.Find(skin.bones,b=>b.name=="Pelvis");var arm=System.Array.Find(skin.bones,b=>b.name=="RightUpperArm");
+            Quaternion hipA=hip.localRotation,armA=arm.localRotation;float stride=rig.StridePhase;yield return Wait(.15f);
+            Check(rig.BoneCount==13 && rig.WalkWeight>.6f && stride!=rig.StridePhase && Quaternion.Angle(hipA,hip.localRotation)>1 && Quaternion.Angle(armA,arm.localRotation)>2,"Actual movement drives the pelvis, opposite arm swing and distance-based stride");
+            world.SetPaused(true);stride=rig.StridePhase;hipA=hip.localRotation;armA=arm.localRotation;yield return Wait(.12f);
+            Check(rig.StridePhase==stride && hip.localRotation==hipA && arm.localRotation==armA,"Pause freezes the full caster skeleton and locomotion phase");world.SetPaused(false);Frame();yield return Wait(.4f);
+            stride=rig.StridePhase;yield return Wait(.12f);Check(rig.WalkWeight<.05f && rig.StridePhase==stride,"Stopping blends to idle without continuing a sliding walk cycle");
+            var seen=new System.Collections.Generic.HashSet<int>();
+            for(int i=0;i<3;i++){Check(mage.Cast(0,Vector3.zero),"Cosmetic casting variant starts through normal attack "+i);yield return Wait(.08f);seen.Add(rig.BasicVariant);yield return Wait(.65f);}
+            Check(seen.Count==3,"Three consecutive skull attacks use distinct authored casting gestures");
+            world.EnterPractice();yield return Wait(.08f);Check(rig.WalkWeight==0 && rig.CastingSkill==-1 && !rig.SwordVisible,"Session reset removes locomotion momentum and active casting poses");
         }
     }
 }
