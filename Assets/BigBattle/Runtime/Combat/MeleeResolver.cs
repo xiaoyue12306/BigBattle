@@ -66,7 +66,7 @@ namespace BigBattle
                 if(strike.Thrust)world.HitCapsule(strike.Source,strike.Origin,strike.Source.transform.position+strike.Aim*.95f,.85f,42,.55f);
                 else world.HitArea(strike.Source,strike.Source.transform.position,1.85f,strike.Aim,.32f,damage,strike.Combo==2?.45f:.18f);
                 if(strike.Thrust)world.Fx.Thrust(strike.Origin,strike.Source.transform.position+strike.Aim*.95f,strike.Aim);
-                else world.Fx.Slash(strike.Source.transform.position,strike.Aim,strike.Source==world.Player?Art.Mint:Art.Coral,strike.Combo);
+                else world.Fx.Slash(strike.Source.transform.position,strike.Aim,strike.Source.Team==world.Player.Team?Art.Mint:Art.Coral,strike.Combo);
             }
             strikes.RemoveAll(strike=>!Valid(strike));
         }

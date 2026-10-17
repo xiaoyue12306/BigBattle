@@ -13,7 +13,7 @@ namespace BigBattle
         GameObject marker;
         public void Setup(GameRoot game, Combatant source, Vector3 origin, Vector3 direction)
         {
-            world=game;owner=source;start=origin+Vector3.up;target=GardenArena.Clamp(origin+direction*3.4f);born=Time.time;
+            world=game;owner=source;start=origin+Vector3.up;target=world.Clamp(origin+direction*3.4f);born=Time.time;
             model=new GameObject("Three peel petals").transform; model.SetParent(transform,false);
             for(int i=0;i<3;i++)
             {

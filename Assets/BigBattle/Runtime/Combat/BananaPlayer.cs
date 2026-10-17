@@ -36,9 +36,11 @@ namespace BigBattle
         float attackBufferUntil=-100;bool attackHeld;
 
         public virtual void Setup(GameRoot world)
+        {SetupTeam(world,0);}
+        public virtual void SetupTeam(GameRoot world,int team)
         {
-            Initialize(world,0,180,0);
-            var selection = Art.Ring("Player mint ring",transform,.65f,.075f,Art.Mint);
+            Initialize(world,team,180,0);if(team!=0)Visual.SetAccent(Art.Coral);
+            var selection = Art.Ring("Hero team ring",transform,.65f,.075f,team==0?Art.Mint:Art.Coral);
             selection.transform.localPosition=Vector3.zero;
             var pointer = new GameObject("Facing arrow"); pointer.transform.SetParent(transform,false); arrow = pointer.transform;
             var mesh = new Mesh { name="Facing arrow" };
@@ -46,6 +48,12 @@ namespace BigBattle
             mesh.triangles=new[]{0,1,2}; mesh.RecalculateNormals();
             Art.MeshObject("Facing arrow mesh",arrow,mesh,Art.Mint);
             transform.rotation=Quaternion.LookRotation(Facing);
+        }
+        public void Face(Vector3 direction){direction.y=0;if(direction.sqrMagnitude>.001f)Facing=direction.normalized;}
+        public virtual void RespawnAt(Vector3 point,Vector3 direction)
+        {
+            World.Melee.Cancel(this);dashUntil=spinUntil=0;bufferedSkill=pendingSkill=-1;ComboStep=-1;lastCombo=-100;attackHeld=false;attackBufferUntil=-100;
+            Restore();Visual.gameObject.SetActive(true);Visual.ResetState();transform.position=point;Face(direction);transform.rotation=Quaternion.LookRotation(Facing);InvulnerableUntil=Time.time+1.5f;
         }
 
         public virtual void Tick(CombatInput input)
@@ -59,7 +67,7 @@ namespace BigBattle
             if (Time.time >= dashUntil && Time.time >= StunnedUntil)
             {
                 if (movement.sqrMagnitude>.01f) Facing=movement.normalized;
-                transform.position=GardenArena.Clamp(transform.position+movement*Speed*Time.deltaTime*(Spinning?.8f:1f));
+                transform.position=World.Clamp(transform.position+movement*Speed*Time.deltaTime*(Spinning?.8f:1f));
             }
             int requested=input.Dodge?3:input.Thrust?1:input.Peel?2:input.Ultimate?4:-1;
             if(requested>=0){bufferedSkill=requested;bufferedMove=movement;bufferedUntil=Time.time+.15f;}
@@ -75,7 +83,7 @@ namespace BigBattle
                     if((input.Attack || Time.time<attackBufferUntil) && Cast(0,movement))attackBufferUntil=-100;
                 }
             }
-            if (Time.time<dashUntil) transform.position=GardenArena.Clamp(transform.position+dashDirection*dashSpeed*Time.deltaTime);
+            if (Time.time<dashUntil) transform.position=World.Clamp(transform.position+dashDirection*dashSpeed*Time.deltaTime);
             if(Time.time<dashUntil && Time.time>=nextGhost){nextGhost=Time.time+.045f;World.Fx.Ghost(Visual);}
             if(movement.sqrMagnitude>.1f && Time.time>=nextFootstep && Time.time>=dashUntil)
             {nextFootstep=Time.time+.22f;World.Fx.Dust(transform.position);World.Sound.Play(SoundCue.Step);}

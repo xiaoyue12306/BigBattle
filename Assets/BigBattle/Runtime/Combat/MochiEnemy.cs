@@ -46,7 +46,7 @@ namespace BigBattle
                     if(away.sqrMagnitude<1.4f && away.sqrMagnitude>.001f) separation+=away.normalized*.8f;
                 }
                 Vector3 velocity=(delta.normalized+separation).normalized*(1.65f+World.Wave*.12f);
-                transform.position=GardenArena.Clamp(transform.position+velocity*Time.deltaTime);
+                transform.position=World.Clamp(transform.position+velocity*Time.deltaTime);
             }
             if(delta.sqrMagnitude>.01f) transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(delta),Time.deltaTime*12);
             Visual.Animate(delta.magnitude>1.25f?1:0,false);

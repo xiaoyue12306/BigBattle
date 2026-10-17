@@ -19,6 +19,7 @@ namespace BigBattle
         public float AttackScale=1;
         public virtual float BaseAttackDamage=>this is MochiEnemy?13:24;
         public virtual int VisualStyle=>this is YueyuePlayer?3:this is MochiEnemy?1:0;
+        public virtual bool IsStructure=>false;
         public float LastHitAt { get; private set; } = -100;
         public float TotalDamageReceived { get; private set; }
         Vector3 knockbackVelocity;
@@ -30,7 +31,7 @@ namespace BigBattle
             world.Actors.Add(this);
         }
 
-        public bool Damage(float amount, Combatant source, Vector3 push, float stun = .08f)
+        public virtual bool Damage(float amount, Combatant source, Vector3 push, float stun = .08f)
         {
             if (!Alive || source == null || source.Team == Team || Time.time < InvulnerableUntil || amount <= 0) return false;
             World.Melee.Cancel(this);
@@ -48,7 +49,7 @@ namespace BigBattle
                 World.Sound.Impact(heavy);World.CameraRig.Impact(direction,heavy?1.1f:.5f);
                 if(amount>=20)World.HitPause(heavy);
             }
-            if (!IsDummy)
+            if (!IsDummy && !IsStructure)
             {
                 StunnedUntil = Mathf.Max(StunnedUntil, Time.time+stun);
                 knockbackVelocity+=push*18;
@@ -64,13 +65,14 @@ namespace BigBattle
 
         public bool Bind(float seconds)
         {
-            if(!Alive || Time.time<InvulnerableUntil)return false;
+            if(!Alive || IsStructure || Time.time<InvulnerableUntil)return false;
             BoundUntil=Mathf.Max(BoundUntil,Time.time+seconds);StunnedUntil=Mathf.Max(StunnedUntil,BoundUntil);knockbackVelocity=Vector3.zero;World.Melee.Cancel(this);
             var mage=this as YueyuePlayer;if(mage!=null)mage.InterruptCharge();
             return true;
         }
         public void Cleanse(){StunnedUntil=BoundUntil=0;knockbackVelocity=Vector3.zero;}
         public void Restore() { Health = MaxHealth; InvulnerableUntil = 0;Cleanse(); }
+        public void Heal(float amount){if(Alive && amount>0)Health=Mathf.Min(MaxHealth,Health+amount);}
         public void WeaponRecoil(Vector3 away)
         {
             Visual.React(away,.45f);StunnedUntil=Mathf.Max(StunnedUntil,Time.time+.10f);
@@ -80,12 +82,13 @@ namespace BigBattle
         {
             if(World==null || World.Paused || !Alive)return;
             if(Time.time<BoundUntil){knockbackVelocity=Vector3.zero;return;}
-            transform.position=GardenArena.Clamp(transform.position+knockbackVelocity*Time.deltaTime);
+            transform.position=World.Clamp(transform.position+knockbackVelocity*Time.deltaTime);
             knockbackVelocity*=Mathf.Exp(-18*Time.deltaTime);
         }
         protected virtual void Die()
         {
             World.Fx.Burst(transform.position+Vector3.up*.5f,Art.Coral,9);
+            if(World.IsLane && this is BananaPlayer){World.Lane.HeroDown((BananaPlayer)this);return;}
             if (this == World.Player) { World.Finish(false); Visual.SetDefeated(); }
             else { World.Fx.Ghost(Visual,true);if(Team!=World.Player.Team)World.Score++; World.Sound.Play(SoundCue.Pop); World.Actors.Remove(this); Destroy(gameObject); }
         }

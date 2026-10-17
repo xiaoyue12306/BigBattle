@@ -1,4 +1,39 @@
-# v0.5.0 validation record
+# v0.6.0 validation record
+
+Date: 2026-10-17 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
+
+## Final build and checks
+
+- Final Windows build succeeded with **0 errors / 0 warnings**, 111,683,423 bytes; no C# / shader errors in the final warm log. Tools/CheckSource.ps1 passes runtime / Editor-conditional / Editor compilation and **53** pure input / viewport / XInput ABI checks.
+- Final standalone acceptance: **181 passed / 0 failed / no runtime errors or exceptions**, report UTC 2026-10-17T02:48:13.0048576Z. Copy: Docs/Validation/smoke-report.json. All prior 146 checks remain, with new lane / rendering / objective coverage.
+- Portable Builds/BigBattle-v0.6.0-Windows.zip: **42,064,420 bytes / 137 entries**, verified executable and data directory; packaged from this same tested Windows folder. Artifacts and binaries remain local.
+
+## Objective-mode coverage
+
+- Actual Flower Lane match creates five heroes on each team, six structures and an independent lane boundary; player spawn / movement works beyond the old garden radius, and the following camera keeps the player visible. Separate courtyard / bridge bounds are verified.
+- Real AI sprouts and a hero advance down the route. One explicit wave creates three sprouts per team; pause freezes movement and wave timer. Tower fires a real seed projectile at a nearby sprout, preferring it over an adjacent hero.
+- Inner guardians / cores reject attacks while earlier objectives remain. Unsupported attacks receive 80% reduction; nearby friendly sprouts remove that reduction. Buildings reject bind / stun. Destroying outer then inner guardians exposes the enemy core, which produces victory; losing the allied core produces defeat. Match end stops reinforcement spawning.
+- Actual hero deaths preserve the match, award team hero score and queue both sides for eight-second revival. Pause freezes the timer. Revival restores health at the correct team base while preserving an active skill cooldown and applying temporary spawn protection.
+- Retry recreates the two teams / fresh cores / zero score. Returning to practice clears lane actors, projectiles and respawn data; the old two-enemy first wave and circular garden remain selectable.
+
+## Full AI matches and actual frames
+
+- Final accelerated full-match report: Docs/Validation/lane-simulation.json, UTC 2026-10-17T02:48:20.4551644Z, **two completed core defeats / zero recorded runtime errors**. Banana lead: 386.19 simulated seconds, 32 waves, hero kills 64:76, enemy core 889.60 HP left. Yueyue lead: 431.08 simulated seconds, 36 waves, kills 73:75, enemy core 883.20 HP left. These are actual autonomous objective games, without directly killing buildings in the runner.
+- Simulation uses fixed 0.1s capture-time steps with rendering disabled; it exercises the normal hero / damage / projectile / minion / objective logic. It is **not** a real-time FPS test or a human victory test. Both baseline teams lost; composition and human-play balance remain open for tuning. Earlier development runs also ended, with different timings.
+- A pure no-graphics launch initially could not progress the splash-screen wait. The runner now skips that wait only for simulation, retains a graphics device for shader support and disables drawing. The final simulation log has no errors / exceptions. This harness repair is separate from real rendered gameplay acceptance.
+- Twenty-five numbered 1600×900 acceptance screenshots were checked across the old scenes, full map, guardian defense, revival, lane victory and lane defeat. New normal-time recording starts Yueyue from the actual base and controls it using the same AI planner; it captures traversal, bridge fighting, ranged skills, damage and tactical retreat. No teleported lead hero, directly scripted kills or synthetic frames are inserted into this final clip.
+- Docs/Images/flower-lane-combat-v060.gif: **191 actual frames / 18.01 seconds / 6,575,562 bytes**, preserving measured timestamps. Actual full-map screenshot crop: flower-lane-map-v060.png; defense frame: flower-lane-defense-v060.png. The final preview log completes without errors / exceptions.
+- Visual review corrected the overview focus / camera height / fog so the whole island fits without a near-plane sky band, flattened the lane curb stones, separated objective pips from health bars and kept friendly banana slash colors aligned with their team. Normal gameplay uses the following camera; the full-map view is a capture tool.
+
+## Practical limits
+
+- One real input player plus nine AI. This release does not add local joining, five human viewports, physical keyboard separation or networking. No Xbox is connected; real controller play / rumble / reconnect and TV image / sound remain untested.
+- No equipment / economy / levels / random hero pool. Two repeated hero types, simple planar movement without solid actor / building blocking or full navigation, and initial AI balance remain prototype limits. Old model-rig and locally licensed Mixamo reconstruction limits still apply.
+- Sprout / projectile / transient-effect limits bound activity, but no five-local-viewport performance claim is made. Audio remains the original sixty-variant bank; no newly downloaded store asset is claimed.
+
+---
+
+# Historical v0.5.0 validation record
 
 Date: 2026-10-17 (Asia/Shanghai). Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono, Direct3D 11, NVIDIA GeForce RTX 4060 Ti.
 

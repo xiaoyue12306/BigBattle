@@ -43,7 +43,7 @@ namespace BigBattle
             }
             else if(delta.magnitude>1.6f)
             {
-                transform.position=GardenArena.Clamp(transform.position+delta.normalized*2.2f*Time.deltaTime);
+                transform.position=World.Clamp(transform.position+delta.normalized*2.2f*Time.deltaTime);
                 transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(delta),Time.deltaTime*14);
             }
             Visual.Animate(delta.magnitude>1.6f? .55f:0,false);

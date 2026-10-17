@@ -210,7 +210,9 @@ namespace BigBattle
             Camera.allowHDR=false;Camera.allowMSAA=true;gameObject.AddComponent<AudioListener>();
             Snap();
         }
-        public void Snap(){focus=Vector3.zero;kick=Vector3.zero;shake=punch=0;Place();}
+        public bool MapOverview;
+        Vector3 Target()=>world!=null && world.IsLane?new Vector3(world.Player.transform.position.x*.45f,0,Mathf.Clamp(world.Player.transform.position.z+3,-28,28)):world.Player.transform.position*.24f;
+        public void Snap(){focus=MapOverview?Vector3.zero:world!=null && world.IsLane?Target():Vector3.zero;kick=Vector3.zero;shake=punch=0;Place();}
         public void Shake(float amount){shake=Mathf.Max(shake,amount);}
         public void Impact(Vector3 direction,float strength)
         {
@@ -219,17 +221,18 @@ namespace BigBattle
         void LateUpdate()
         {
             if(world.Player==null)return;
-            Vector3 target=world.Player.transform.position*.24f;
+            Vector3 target=MapOverview?Vector3.zero:Target();
             focus=Vector3.Lerp(focus,target,1-Mathf.Exp(-Time.unscaledDeltaTime*3));
             // Wider floor coverage on narrower displays, including future viewports.
-            Camera.orthographicSize=Mathf.Max(9.8f,15.4f/Mathf.Max(.7f,Camera.aspect))-punch;Place();
+            Camera.orthographicSize=MapOverview?38:Mathf.Max(9.8f,15.4f/Mathf.Max(.7f,Camera.aspect))-punch;Place();
             shake=Mathf.MoveTowards(shake,0,Time.unscaledDeltaTime*.9f);
             kick=Vector3.Lerp(kick,Vector3.zero,1-Mathf.Exp(-Time.unscaledDeltaTime*22));punch=Mathf.MoveTowards(punch,0,Time.unscaledDeltaTime*1.6f);
         }
         void Place()
         {
             Vector3 jitter=world!=null && !world.Paused?new Vector3(Mathf.Sin(Time.unscaledTime*67),Mathf.Sin(Time.unscaledTime*47),0)*shake+kick:Vector3.zero;
-            transform.position=focus+new Vector3(0,18,-14)+jitter;transform.rotation=Quaternion.LookRotation(focus-transform.position);
+            Camera.farClipPlane=MapOverview?220:100;RenderSettings.fog=!MapOverview;
+            transform.position=focus+(MapOverview?new Vector3(0,65,-50.55f):new Vector3(0,18,-14))+jitter;transform.rotation=Quaternion.LookRotation(focus-transform.position);
         }
     }
 }

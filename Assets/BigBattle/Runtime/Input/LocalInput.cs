@@ -17,7 +17,7 @@ namespace BigBattle
     public struct CombatInput
     {
         public Vector2 Move;
-        public bool Attack, Thrust, Peel, Dodge, Ultimate, UltimateHeld, Pause, Session, Confirm, Sparring, PracticeCharge;
+        public bool Attack, Thrust, Peel, Dodge, Ultimate, UltimateHeld, Pause, Session, Confirm, Sparring, PracticeCharge, LaneBattle;
         public int MenuStep;
     }
 
@@ -45,7 +45,7 @@ namespace BigBattle
         {
             if (Injected) return InjectedFrame;
             var frame = Binding.Kind == InputKind.Keyboard || autoSwitch ? ReadKeyboard(Binding.KeyboardLayout) : default(CombatInput);
-            bool keyboardActive = frame.Move.sqrMagnitude > .01f || frame.Attack || frame.Thrust || frame.Peel || frame.Dodge || frame.Ultimate || frame.Pause || frame.Session || frame.Confirm || frame.Sparring;
+            bool keyboardActive = frame.Move.sqrMagnitude > .01f || frame.Attack || frame.Thrust || frame.Peel || frame.Dodge || frame.Ultimate || frame.Pause || frame.Session || frame.Confirm || frame.Sparring || frame.LaneBattle;
             if (keyboardActive) DeviceLabel = "键盘";
             XInput.State state;
             ControllerConnected = false;state = default(XInput.State);
@@ -79,6 +79,7 @@ namespace BigBattle
                 frame.Ultimate |= pressed(XInput.Y);
                 frame.UltimateHeld |= (buttons & XInput.Y) != 0;
                 frame.PracticeCharge |= pressed(XInput.Left);
+                frame.LaneBattle |= pressed(XInput.Up);
                 frame.Pause |= pressed(XInput.Start);
                 frame.Session |= pressed(XInput.Back);
                 frame.Sparring |= pressed(XInput.Right);
@@ -118,6 +119,7 @@ namespace BigBattle
                 Ultimate = Input.GetKeyDown(second ? KeyCode.Keypad5 : KeyCode.I),
                 UltimateHeld = Input.GetKey(second ? KeyCode.Keypad5 : KeyCode.I),
                 PracticeCharge = Input.GetKeyDown(KeyCode.H),
+                LaneBattle = Input.GetKeyDown(KeyCode.N),
                 Pause = Input.GetKeyDown(KeyCode.Escape),
                 Session = Input.GetKeyDown(KeyCode.F),
                 Sparring = Input.GetKeyDown(KeyCode.G),

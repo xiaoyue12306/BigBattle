@@ -27,9 +27,9 @@ namespace BigBattle
             Vector3 goal=target!=null?target.transform.position:Owner.transform.position-Owner.Facing*1.5f;
             Vector3 delta=goal-transform.position;delta.y=0;
             if(delta.sqrMagnitude>.01f)transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(delta),Time.deltaTime*16);
-            float range=style==3?6:style==1?1.35f:1.8f;
+            float range=style==3?6:style==1 || style==6?1.35f:1.8f;
             bool move=delta.magnitude>(target!=null?range:1.2f);
-            if(move)transform.position=GardenArena.Clamp(transform.position+delta.normalized*3.6f*Time.deltaTime);
+            if(move)transform.position=World.Clamp(transform.position+delta.normalized*3.6f*Time.deltaTime);
             if(winding && Time.time>=contactAt)
             {
                 winding=false;
@@ -63,7 +63,7 @@ namespace BigBattle
             bool chain=Time.time>=nextChain;if(chain)nextChain=Time.time+10;
             // Preserve attack aim while retreating; generic movement otherwise sets facing.
             Tick(new CombatInput{Move=Vector2.zero,Attack=true,Thrust=chain});
-            if(!Controlled)transform.position=GardenArena.Clamp(transform.position+new Vector3(move.x,0,move.y)*Speed*Time.deltaTime);
+            if(!Controlled)transform.position=World.Clamp(transform.position+new Vector3(move.x,0,move.y)*Speed*Time.deltaTime);
             Visual.Animate(move.magnitude,false);
         }
     }

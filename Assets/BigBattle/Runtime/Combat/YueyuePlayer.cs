@@ -34,6 +34,8 @@ namespace BigBattle
             return i==0?"按住连发":"就绪";
         }
         public override void Setup(GameRoot world){SetupMage(world,0,155,false);}
+        public override void SetupTeam(GameRoot world,int team){SetupMage(world,team,155,false);}
+        public override void RespawnAt(Vector3 point,Vector3 direction){InterruptCharge();phaseUntil=0;requireRelease=true;base.RespawnAt(point,direction);if(rig!=null)rig.ResetPose();}
         protected void SetupMage(GameRoot world,int team,float health,bool dummy)
         {
             Initialize(world,team,health,3,dummy);Speed=4.8f;
@@ -46,7 +48,7 @@ namespace BigBattle
         {
             if(victim==null || victim.IsDummy || victim.Team==Team || victim is SpiritAlly)return;
             Souls=Mathf.Min(99,Souls+1);
-            Fallen=new FallenRecord{Valid=true,Style=victim.VisualStyle,Health=victim.MaxHealth,Damage=victim.BaseAttackDamage*victim.AttackScale,Name=victim.VisualStyle==3?"越越大王":victim.VisualStyle==0?"香蕉刺客":"团子"};
+            Fallen=new FallenRecord{Valid=true,Style=victim.VisualStyle,Health=victim.MaxHealth,Damage=victim.BaseAttackDamage*victim.AttackScale,Name=victim.VisualStyle==3?"越越大王":victim.VisualStyle==0?"香蕉刺客":victim.VisualStyle==6?"花灵":"团子"};
             if(this==World.Player)World.Fx.Notice(Souls>=3?"三枚魂印已齐 · 按住 I / Y 蓄力魔剑":"收获魂印 · "+Souls+" / 3");
         }
         public void FillPracticeSouls(){if(World.State==SessionState.Practice){Souls=Mathf.Max(3,Souls);ready[4]=0;World.Fx.Notice("练习魂印已充满 · 按住 I / Y 四秒，再松开");}}
@@ -61,12 +63,12 @@ namespace BigBattle
             {
                 if(Time.time<BoundUntil){InterruptCharge();return;}
                 if(move.sqrMagnitude>.01f)Facing=move.normalized;
-                if(!Controlled)transform.position=GardenArena.Clamp(transform.position+move*Speed*.1f*Time.deltaTime);
+                if(!Controlled)transform.position=World.Clamp(transform.position+move*Speed*.1f*Time.deltaTime);
                 if(!held){if(ChargeProgress>=1)ReleaseSword();else InterruptCharge();}
             }
             else
             {
-                if(!Controlled && move.sqrMagnitude>.01f){Facing=move.normalized;transform.position=GardenArena.Clamp(transform.position+move*Speed*Time.deltaTime);}
+                if(!Controlled && move.sqrMagnitude>.01f){Facing=move.normalized;transform.position=World.Clamp(transform.position+move*Speed*Time.deltaTime);}
                 if(!Phasing && !Controlled)
                 {
                     if(input.Dodge)Cast(3,move);
@@ -95,7 +97,7 @@ namespace BigBattle
             {
                 if(Servant!=null){World.Actors.Remove(Servant);Destroy(Servant.gameObject);}
                 Servant=new GameObject("Returned spirit • "+Fallen.Name).AddComponent<SpiritAlly>();Servant.transform.SetParent(World.Transients);
-                Servant.transform.position=GardenArena.Clamp(transform.position-Facing*.9f+Vector3.right*.6f);Servant.Setup(World,this,Fallen);
+                Servant.transform.position=World.Clamp(transform.position-Facing*.9f+Vector3.right*.6f);Servant.Setup(World,this,Fallen);
                 World.Fx.Burst(Servant.transform.position+Vector3.up, GhostArt.Teal,14);World.Sound.Play(SoundCue.Ultimate,.65f);
             }
             if(skill==3){Cleanse();phaseUntil=Time.time+3;InvulnerableUntil=phaseUntil;World.Melee.Cancel(this);World.Sound.Play(SoundCue.Dodge);if(rig!=null)rig.Present(false,0,true);}

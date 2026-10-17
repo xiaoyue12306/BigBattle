@@ -28,7 +28,7 @@ namespace BigBattle
             var visual = root.AddComponent<ActorVisual>();
             visual.Body = new GameObject("Body rig").transform; visual.Body.SetParent(root.transform, false);
             if (style == 0) {visual.BuildBanana();visual.library=Resources.Load<MixamoMotionLibrary>("LocalMixamo/Library");}
-            else if (style == 1) visual.BuildMochi(); else if(style==3)YueyueVisual.Build(visual);else visual.BuildDummy();
+            else if (style == 1) visual.BuildMochi(); else if(style==3)YueyueVisual.Build(visual);else if(style==4 || style==5)visual.BuildGuardian(style==5);else if(style==6)visual.BuildSprout();else visual.BuildDummy();
             visual.Renderers = root.GetComponentsInChildren<Renderer>(); return visual;
         }
 
@@ -92,6 +92,29 @@ namespace BigBattle
             Art.Shape("Hat", PrimitiveType.Cylinder, Body, new Vector3(0,1.59f,0), new Vector3(1.10f,.06f,.90f), Art.Cream);
             Eye(Body, new Vector3(-.17f,1.24f,.32f), .07f); Eye(Body, new Vector3(.17f,1.24f,.32f), .07f);
             Art.Ring("Dummy target", transform, .67f, .065f, new Color(.89f,.67f,.33f));
+        }
+        void BuildSprout()
+        {
+            Art.Shape("Cream flower sprout",PrimitiveType.Sphere,Body,new Vector3(0,.46f,0),new Vector3(.56f,.68f,.52f),Art.Cream);
+            Art.Shape("Mint scarf",PrimitiveType.Capsule,Body,new Vector3(0,.68f,0),new Vector3(.63f,.12f,.59f),Art.Mint);
+            for(int side=-1;side<=1;side+=2)
+            {
+                Art.Shape("Scarf tail",PrimitiveType.Capsule,Body,new Vector3(side*.13f,.93f,0),new Vector3(.16f,.28f,.08f),Art.Mint).transform.localRotation=Quaternion.Euler(0,0,side*-35);
+                Art.Shape("Sprout boot",PrimitiveType.Sphere,Body,new Vector3(side*.15f,.12f,.10f),new Vector3(.21f,.15f,.28f),new Color(.46f,.55f,.34f));Eye(Body,new Vector3(side*.10f,.48f,.25f),.06f);
+            }
+        }
+        void BuildGuardian(bool core)
+        {
+            Art.Shape("Round cream guardian pedestal",PrimitiveType.Cylinder,Body,new Vector3(0,.12f,0),new Vector3(core?3.6f:2.2f,.12f,core?3.6f:2.2f),Art.Cream);
+            Art.Shape("Friendly garden stem",PrimitiveType.Capsule,Body,new Vector3(0,core?.8f:1.1f,0),new Vector3(core?.9f:.70f,core?.8f:1.1f,core?.9f:.70f),new Color(.41f,.64f,.39f));
+            Art.Shape("Flower heart glow",PrimitiveType.Sphere,Body,new Vector3(0,core?1.8f:2.4f,0),Vector3.one*(core?1.9f:1.1f),new Color(1,.86f,.35f));
+            int petals=core?8:5;
+            for(int i=0;i<petals;i++)
+            {
+                float a=i*Mathf.PI*2/petals;var petal=Art.Shape("Mint scarf",PrimitiveType.Sphere,Body,new Vector3(Mathf.Sin(a)*(core?1.15f:.65f),core?1.55f:2.15f,Mathf.Cos(a)*(core?1.15f:.65f)),new Vector3(core?.9f:.6f,.35f,core?.65f:.42f),Art.Mint);petal.transform.localRotation=Quaternion.Euler(0,a*Mathf.Rad2Deg,0);
+            }
+            for(int side=-1;side<=1;side+=2){Eye(Body,new Vector3(side*.18f,core?1.85f:2.4f,core?.88f:.52f),core?.11f:.085f);Art.Shape("Garden cheek",PrimitiveType.Sphere,Body,new Vector3(side*.34f,core?1.63f:2.23f,core?.83f:.45f),new Vector3(.16f,.08f,.035f),new Color(1,.63f,.59f));}
+            Art.Shape("Smile",PrimitiveType.Capsule,Body,new Vector3(0,core?1.58f:2.15f,core?.92f:.55f),new Vector3(.12f,.025f,.025f),Art.Ink).transform.localRotation=Quaternion.Euler(0,0,90);
         }
 
         static void Eye(Transform parent, Vector3 position, float size)

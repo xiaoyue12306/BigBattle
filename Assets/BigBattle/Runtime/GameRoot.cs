@@ -6,7 +6,7 @@ namespace BigBattle
     public enum SessionState { Practice,Battle,Victory,Defeat }
     public enum HeroKind { Banana,Yueyue }
 
-    public sealed class GameRoot : MonoBehaviour
+    public sealed partial class GameRoot : MonoBehaviour
     {
         public readonly List<Combatant> Actors=new List<Combatant>();
         public BananaPlayer Player {get;private set;}
@@ -22,7 +22,7 @@ namespace BigBattle
         public HeroKind OpponentHero {get;private set;}
         public bool Selecting {get;private set;}
         public int HeroSelection {get;private set;}
-        public const int MenuCount=7;
+        public const int MenuCount=8;
         public Transform Transients {get;private set;}
         public SessionState State {get;private set;}
         public bool Paused {get;private set;}
@@ -45,8 +45,11 @@ namespace BigBattle
             bool smoke=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--smoke-test")>=0;
             bool preview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--preview-capture")>=0;
             bool yuePreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--yueyue-preview")>=0;
-            SmokeTesting=smoke || preview || yuePreview;
+            bool laneSim=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--lane-sim")>=0;
+            bool lanePreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--lane-preview")>=0;
+            SmokeTesting=smoke || preview || yuePreview || laneSim || lanePreview;
             var garden=new GameObject("Original garden arena").AddComponent<GardenArena>();garden.transform.SetParent(transform);garden.Build();
+            gardenMap=garden.gameObject;
             Transients=new GameObject("Session objects").transform;Transients.SetParent(transform);
             Fx=new GameObject("Feedback").AddComponent<Feedback>();Fx.transform.SetParent(transform);
             Sound=gameObject.AddComponent<GameSound>();Sound.Setup();
@@ -58,6 +61,7 @@ namespace BigBattle
             EnterPractice();
             Selecting=!SmokeTesting;
             if(smoke)gameObject.AddComponent<SmokeTest>().Setup(this);
+            else if(laneSim || lanePreview)gameObject.AddComponent<LaneCapture>().Setup(this,laneSim);
             else if(yuePreview)gameObject.AddComponent<YueyuePreview>().Setup(this);
             else if(preview)gameObject.AddComponent<CombatPreview>().Setup(this);
         }
@@ -78,6 +82,7 @@ namespace BigBattle
                 if(input.MenuStep!=0)MenuSelection=(MenuSelection+input.MenuStep+MenuCount)%MenuCount;
                 if(input.Confirm)ActivateMenu();return;
             }
+            if(input.LaneBattle){StartLaneBattle();return;}
             if(State==SessionState.Victory || State==SessionState.Defeat)
             {
                 if(input.Confirm || input.Session)StartBattle();return;
@@ -88,7 +93,7 @@ namespace BigBattle
             if(State==SessionState.Battle)
             {
                 BattleSeconds+=Time.deltaTime;
-                if(EnemyCount==0)
+                if(!IsLane && EnemyCount==0)
                 {
                     if(Wave>=3)Finish(true);
                     else if(nextWaveAt==0){nextWaveAt=Time.time+2;Fx.Notice("本波完成 · 下一波即将到来");}
@@ -130,7 +135,8 @@ namespace BigBattle
                 case 3:Sound.Muted=!Sound.Muted;break;
                 case 4:OpenSelection();break;
                 case 5:OpponentHero=OpponentHero==HeroKind.Banana?HeroKind.Yueyue:HeroKind.Banana;break;
-                case 6:
+                case 6:PreferredMode=PreferredMode==MatchMode.FlowerLane?MatchMode.Garden:MatchMode.FlowerLane;break;
+                case 7:
                     Input.StopRumble();
                     #if UNITY_EDITOR
                     UnityEditor.EditorApplication.isPlaying=false;
@@ -142,6 +148,7 @@ namespace BigBattle
         }
         void ClearSession()
         {
+            ClearLane();
             Melee.Clear();Duelist=null;PracticeFoe=null;
             hitPauseUntil=nextHitPause=0;
             SetPaused(false);
@@ -150,7 +157,7 @@ namespace BigBattle
             // Destroy is deferred; disable now so an old projectile cannot tick
             // against the new session's actors later in this same frame.
             foreach(Transform child in Transients){child.gameObject.SetActive(false);Destroy(child.gameObject);}
-            Fx.Clear();Player.ResetCombat();Player.transform.position=new Vector3(0,0,-4);
+            Fx.Clear();Player.gameObject.SetActive(true);Player.ResetCombat();Player.transform.position=new Vector3(0,0,-4);
             Fx.DoomFlashUntil=0;
             Wave=0;Score=0;BattleSeconds=0;nextWaveAt=0;CameraRig.Snap();
         }
@@ -161,7 +168,7 @@ namespace BigBattle
             Dummy.transform.rotation=Quaternion.Euler(0,180,0);Dummy.Initialize(this,1,240,2,true);
             Fx.Notice("欢迎来到香蕉花园 · 靠近木桩试试身手");
         }
-        public void StartBattle(){ClearSession();State=SessionState.Battle;SpawnWave(1);}
+        public void StartBattle(){if(PreferredMode==MatchMode.FlowerLane){StartLaneBattle();return;}ClearSession();State=SessionState.Battle;SpawnWave(1);}
         public void EnterSparring()
         {
             ClearSession();State=SessionState.Practice;
@@ -195,12 +202,13 @@ namespace BigBattle
         }
         public MochiEnemy SpawnEnemy(Vector3 point,float health=60)
         {
-            var enemy=new GameObject("Garden mochi").AddComponent<MochiEnemy>();enemy.transform.SetParent(transform);enemy.transform.position=GardenArena.Clamp(point);enemy.Setup(this,health);return enemy;
+            var enemy=new GameObject("Garden mochi").AddComponent<MochiEnemy>();enemy.transform.SetParent(transform);enemy.transform.position=Clamp(point);enemy.Setup(this,health);return enemy;
         }
         public void Finish(bool victory)
         {
             if(State==SessionState.Victory || State==SessionState.Defeat)return;
             State=victory?SessionState.Victory:SessionState.Defeat;Input.StopRumble();
+            if(IsLane)Lane.StopCombat();
             Player.Visual.Animate(0,false);
             if(victory)Player.Visual.PlayMotion(MotionId.Victory,1);
             if(victory){Sound.Play(SoundCue.Win);Fx.Burst(Player.transform.position+Vector3.up,Art.Yellow,18);}
@@ -211,7 +219,7 @@ namespace BigBattle
             Combatant best=null;float bestDistance=range;
             foreach(var actor in Actors)
             {
-                if(actor==null || actor.Team==source.Team || !actor.Alive)continue;
+                if(actor==null || actor.Team==source.Team || !Targetable(actor))continue;
                 Vector3 offset=actor.transform.position-source.transform.position;offset.y=0;
                 float distance=offset.magnitude;
                 if(distance<bestDistance && distance>.05f && Vector3.Dot(facing,offset.normalized)>.93f){best=actor;bestDistance=distance;}
@@ -222,12 +230,13 @@ namespace BigBattle
         public Combatant FrontTarget(Combatant source,Vector3 facing,float range,float dot)
         {
             Combatant best=null;float distance=range;
-            foreach(var actor in Actors){if(actor==null || !actor.Alive || actor.Team==source.Team)continue;Vector3 delta=actor.transform.position-source.transform.position;delta.y=0;if(delta.magnitude<distance && (delta.sqrMagnitude<.001f || Vector3.Dot(delta.normalized,facing)>dot)){best=actor;distance=delta.magnitude;}}
+            foreach(var actor in Actors){if(actor==null || !Targetable(actor) || actor.Team==source.Team)continue;Vector3 delta=actor.transform.position-source.transform.position;delta.y=0;if(delta.magnitude<distance && (delta.sqrMagnitude<.001f || Vector3.Dot(delta.normalized,facing)>dot)){best=actor;distance=delta.magnitude;}}
             return best;
         }
         public Combatant NearestEnemy(Combatant source,float range)=>FrontTarget(source,Vector3.forward,range,-2);
         public void RecordDefeat(Combatant victim,Combatant killer)
         {
+            if(victim.IsStructure)return;
             var mage=killer as YueyuePlayer;var ally=killer as SpiritAlly;if(ally!=null)mage=ally.Owner;
             if(mage!=null)mage.EarnDefeat(victim);
         }
