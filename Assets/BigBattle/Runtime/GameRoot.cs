@@ -4,6 +4,7 @@ using UnityEngine;
 namespace BigBattle
 {
     public enum SessionState { Practice,Battle,Victory,Defeat }
+    public enum HeroKind { Banana,Yueyue }
 
     public sealed class GameRoot : MonoBehaviour
     {
@@ -16,6 +17,12 @@ namespace BigBattle
         public GameSound Sound {get;private set;}
         public MeleeResolver Melee {get;private set;}
         public BananaDuelist Duelist {get;private set;}
+        public Combatant PracticeFoe {get;private set;}
+        public HeroKind SelectedHero {get;private set;}
+        public HeroKind OpponentHero {get;private set;}
+        public bool Selecting {get;private set;}
+        public int HeroSelection {get;private set;}
+        public const int MenuCount=7;
         public Transform Transients {get;private set;}
         public SessionState State {get;private set;}
         public bool Paused {get;private set;}
@@ -37,7 +44,8 @@ namespace BigBattle
             Cursor.visible=false;Cursor.lockState=CursorLockMode.None;
             bool smoke=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--smoke-test")>=0;
             bool preview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--preview-capture")>=0;
-            SmokeTesting=smoke || preview;
+            bool yuePreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--yueyue-preview")>=0;
+            SmokeTesting=smoke || preview || yuePreview;
             var garden=new GameObject("Original garden arena").AddComponent<GardenArena>();garden.transform.SetParent(transform);garden.Build();
             Transients=new GameObject("Session objects").transform;Transients.SetParent(transform);
             Fx=new GameObject("Feedback").AddComponent<Feedback>();Fx.transform.SetParent(transform);
@@ -48,7 +56,9 @@ namespace BigBattle
             CameraRig=new GameObject("Player 1 camera").AddComponent<ArenaCamera>();CameraRig.transform.SetParent(transform);CameraRig.Setup(this);
             gameObject.AddComponent<GameHud>().Setup(this);
             EnterPractice();
+            Selecting=!SmokeTesting;
             if(smoke)gameObject.AddComponent<SmokeTest>().Setup(this);
+            else if(yuePreview)gameObject.AddComponent<YueyuePreview>().Setup(this);
             else if(preview)gameObject.AddComponent<CombatPreview>().Setup(this);
         }
 
@@ -56,10 +66,16 @@ namespace BigBattle
         {
             ApplyClock();
             var input=Input.Read();
+            if(Selecting)
+            {
+                if(input.MenuStep!=0)HeroSelection=(HeroSelection+1)%2;
+                if(input.Confirm)SelectHero((HeroKind)HeroSelection);
+                return;
+            }
             if(input.Pause){SetPaused(!Paused);return;}
             if(Paused)
             {
-                if(input.MenuStep!=0)MenuSelection=(MenuSelection+input.MenuStep+5)%5;
+                if(input.MenuStep!=0)MenuSelection=(MenuSelection+input.MenuStep+MenuCount)%MenuCount;
                 if(input.Confirm)ActivateMenu();return;
             }
             if(State==SessionState.Victory || State==SessionState.Defeat)
@@ -81,7 +97,16 @@ namespace BigBattle
             }
         }
 
-        void LateUpdate(){if(Melee!=null && (State==SessionState.Practice || State==SessionState.Battle))Melee.Tick();}
+        void LateUpdate(){if(!Selecting && Melee!=null && (State==SessionState.Practice || State==SessionState.Battle))Melee.Tick();}
+        public void OpenSelection(){EnterPractice();Selecting=true;HeroSelection=(int)SelectedHero;}
+        public void SelectHero(HeroKind kind)
+        {
+            if(Player!=null){Player.enabled=false;Actors.Remove(Player);Destroy(Player.gameObject);}
+            SelectedHero=kind;Selecting=false;
+            var go=new GameObject(kind==HeroKind.Yueyue?"越越大王 • P1":"Banana assassin • P1");go.transform.SetParent(transform);
+            Player=kind==HeroKind.Yueyue?(BananaPlayer)go.AddComponent<YueyuePlayer>():go.AddComponent<BananaPlayer>();Player.Setup(this);EnterPractice();
+        }
+        public void SetOpponent(HeroKind kind){OpponentHero=kind;}
 
         public void SetPaused(bool paused)
         {
@@ -103,7 +128,9 @@ namespace BigBattle
                 case 1:SetPaused(false);StartBattle();break;
                 case 2:SetPaused(false);EnterPractice();break;
                 case 3:Sound.Muted=!Sound.Muted;break;
-                case 4:
+                case 4:OpenSelection();break;
+                case 5:OpponentHero=OpponentHero==HeroKind.Banana?HeroKind.Yueyue:HeroKind.Banana;break;
+                case 6:
                     Input.StopRumble();
                     #if UNITY_EDITOR
                     UnityEditor.EditorApplication.isPlaying=false;
@@ -115,13 +142,16 @@ namespace BigBattle
         }
         void ClearSession()
         {
-            Melee.Clear();Duelist=null;
+            Melee.Clear();Duelist=null;PracticeFoe=null;
             hitPauseUntil=nextHitPause=0;
             SetPaused(false);
             for(int i=Actors.Count-1;i>=0;i--)if(Actors[i]!=Player && Actors[i]!=null){Actors[i].enabled=false;Destroy(Actors[i].gameObject);}
             Actors.RemoveAll(actor=>actor!=Player);Dummy=null;
-            foreach(Transform child in Transients)Destroy(child.gameObject);
+            // Destroy is deferred; disable now so an old projectile cannot tick
+            // against the new session's actors later in this same frame.
+            foreach(Transform child in Transients){child.gameObject.SetActive(false);Destroy(child.gameObject);}
             Fx.Clear();Player.ResetCombat();Player.transform.position=new Vector3(0,0,-4);
+            Fx.DoomFlashUntil=0;
             Wave=0;Score=0;BattleSeconds=0;nextWaveAt=0;CameraRig.Snap();
         }
         public void EnterPractice()
@@ -136,9 +166,16 @@ namespace BigBattle
         {
             ClearSession();State=SessionState.Practice;
             Player.transform.position=new Vector3(0,0,-2);
-            Duelist=new GameObject("Banana blade sparring partner").AddComponent<BananaDuelist>();Duelist.transform.SetParent(transform);
-            Duelist.transform.position=new Vector3(0,0,1);Duelist.transform.rotation=Quaternion.Euler(0,180,0);Duelist.Setup(this);
-            Fx.Notice("拼刀陪练 · 对准红圈，在对手出刀前一瞬挥刀 · G / 十字键右重置");
+            if(OpponentHero==HeroKind.Banana)
+            {
+                Duelist=new GameObject("Banana blade sparring partner").AddComponent<BananaDuelist>();Duelist.transform.SetParent(transform);
+                Duelist.transform.position=new Vector3(0,0,1);Duelist.transform.rotation=Quaternion.Euler(0,180,0);Duelist.Setup(this);PracticeFoe=Duelist;
+            }
+            else
+            {
+                var foe=new GameObject("Yueyue practice opponent").AddComponent<YueyueDuelist>();foe.transform.SetParent(transform);foe.transform.position=Vector3.forward*3;foe.Setup(this);PracticeFoe=foe;
+            }
+            Fx.Notice("英雄陪练 · G / 十字键右重置 · 暂停菜单可切换陪练角色");
         }
         public void SpawnWave(int wave)
         {
@@ -148,7 +185,11 @@ namespace BigBattle
             {
                 float a=(i-(count-1)*.5f)*.65f;
                 Vector3 point=new Vector3(Mathf.Sin(a)*7,0,Mathf.Cos(a)*7);
-                SpawnEnemy(point,48+wave*10);
+                if(SelectedHero==HeroKind.Yueyue && i==count-1 && wave==2)
+                {var hero=new GameObject("Enemy banana assassin").AddComponent<BananaDuelist>();hero.transform.SetParent(transform);hero.transform.position=point;hero.SetupEnemy(this);}
+                else if(SelectedHero==HeroKind.Yueyue && i==count-1 && wave==3)
+                {var hero=new GameObject("Enemy Yueyue").AddComponent<YueyueDuelist>();hero.transform.SetParent(transform);hero.transform.position=point;hero.SetupEnemy(this);}
+                else SpawnEnemy(point,48+wave*10);
             }
             Fx.Notice("第 "+wave+" / 3 波 · 小心团子的红色预警圈！");
         }
@@ -177,6 +218,18 @@ namespace BigBattle
             }
             if(best==null)return facing;
             return Vector3.RotateTowards(facing,(best.transform.position-source.transform.position).normalized,.18f,0).normalized;
+        }
+        public Combatant FrontTarget(Combatant source,Vector3 facing,float range,float dot)
+        {
+            Combatant best=null;float distance=range;
+            foreach(var actor in Actors){if(actor==null || !actor.Alive || actor.Team==source.Team)continue;Vector3 delta=actor.transform.position-source.transform.position;delta.y=0;if(delta.magnitude<distance && (delta.sqrMagnitude<.001f || Vector3.Dot(delta.normalized,facing)>dot)){best=actor;distance=delta.magnitude;}}
+            return best;
+        }
+        public Combatant NearestEnemy(Combatant source,float range)=>FrontTarget(source,Vector3.forward,range,-2);
+        public void RecordDefeat(Combatant victim,Combatant killer)
+        {
+            var mage=killer as YueyuePlayer;var ally=killer as SpiritAlly;if(ally!=null)mage=ally.Owner;
+            if(mage!=null)mage.EarnDefeat(victim);
         }
         public int HitArea(Combatant source,Vector3 center,float range,Vector3 direction,float minimumDot,float damage,float push)
         {

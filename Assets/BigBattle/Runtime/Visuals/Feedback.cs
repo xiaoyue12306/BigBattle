@@ -16,6 +16,7 @@ namespace BigBattle
         public int ImpactCount {get;private set;}
         public int SlashCount {get;private set;}
         public int ClashCount {get;private set;}
+        public float DoomFlashUntil;
         public int ActiveEffects=>transform.childCount;
         public void Notice(string message) { NoticeText=message;NoticeUntil=Time.unscaledTime+2.5f; }
         public void Circle(Vector3 position,float radius,Color color,float life)
@@ -173,7 +174,7 @@ namespace BigBattle
             dust.AddComponent<TransientVisual>().Setup(.24f,1.8f,Vector3.up*.12f);
         }
         void Update(){Numbers.RemoveAll(item=>Time.time-item.Born>.75f);}
-        public void Clear(){Numbers.Clear();foreach(Transform child in transform)Destroy(child.gameObject);}
+        public void Clear(){Numbers.Clear();foreach(Transform child in transform){child.gameObject.SetActive(false);Destroy(child.gameObject);}}
     }
 
     public sealed class TransientVisual : MonoBehaviour

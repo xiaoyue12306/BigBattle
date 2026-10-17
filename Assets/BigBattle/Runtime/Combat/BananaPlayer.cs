@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BigBattle
 {
-    public sealed class BananaPlayer : Combatant
+    public class BananaPlayer : Combatant
     {
         public static readonly float[] Cooldowns = { .52f, 3f, 5f, 2.2f, 10f };
         public static readonly string[] ComboNames={"一式 · 起手横斩","二式 · 反手追斩","三式 · 月牙终结"};
@@ -11,12 +11,16 @@ namespace BigBattle
         public static readonly string[] SkillNames = { "普攻", "突刺", "香蕉皮", "闪避", "旋转连斩" };
         readonly float[] readyAt = new float[5];
         readonly float[] casts = new float[5];
-        public Vector3 Facing { get; private set; } = Vector3.back;
+        public Vector3 Facing { get; protected set; } = Vector3.back;
+        public virtual string HeroName=>"香蕉刺客";
+        public virtual string[] ActionNames=>SkillNames;
+        public virtual float Cooldown(int index)=>Cooldowns[index];
+        public virtual string ActionHint(int index)=>index==0?"按住连击":"就绪";
         public bool Spinning => Time.time < spinUntil;
         public float Speed = 5.1f;
         public float Travelled { get; private set; }
-        public float Casts(int index) => casts[index];
-        public float Remaining(int index) => Mathf.Max(0,readyAt[index]-Time.time);
+        public virtual float Casts(int index) => casts[index];
+        public virtual float Remaining(int index) => Mathf.Max(0,readyAt[index]-Time.time);
         float dashUntil, dashSpeed, spinUntil, nextSpinHit;
         Vector3 dashDirection;
         int bufferedSkill=-1;
@@ -31,7 +35,7 @@ namespace BigBattle
         Vector3 pendingAim;
         float attackBufferUntil=-100;bool attackHeld;
 
-        public void Setup(GameRoot world)
+        public virtual void Setup(GameRoot world)
         {
             Initialize(world,0,180,0);
             var selection = Art.Ring("Player mint ring",transform,.65f,.075f,Art.Mint);
@@ -44,7 +48,7 @@ namespace BigBattle
             transform.rotation=Quaternion.LookRotation(Facing);
         }
 
-        public void Tick(CombatInput input)
+        public virtual void Tick(CombatInput input)
         {
             if (!Alive) return;
             Vector3 previous = transform.position;
@@ -87,9 +91,9 @@ namespace BigBattle
             arrow.gameObject.SetActive(!Spinning);
         }
 
-        public bool Cast(int skill, Vector3 movement)
+        public virtual bool Cast(int skill, Vector3 movement)
         {
-            if (skill<0 || skill>=readyAt.Length || Remaining(skill)>.001f || Time.time<dashUntil || !Alive) return false;
+            if (skill<0 || skill>=readyAt.Length || Remaining(skill)>.001f || Time.time<dashUntil || Time.time<StunnedUntil || !Alive) return false;
             if (Spinning && skill!=3) return false;
             readyAt[skill]=Time.time+Cooldowns[skill]; casts[skill]++;
             Vector3 aim = World.Assist(this,Facing,skill==2?5.2f:3f);
@@ -128,7 +132,7 @@ namespace BigBattle
             if(skill==2){World.SpawnPeel(transform.position,pendingAim);return;}
         }
 
-        public void ResetCombat()
+        public virtual void ResetCombat()
         {
             for(int i=0;i<readyAt.Length;i++) readyAt[i]=0;
             dashUntil=spinUntil=0; bufferedSkill=-1;pendingSkill=-1;ComboStep=-1;lastCombo=-100;

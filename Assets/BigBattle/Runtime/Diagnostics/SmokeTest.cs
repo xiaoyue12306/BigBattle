@@ -8,7 +8,7 @@ namespace BigBattle
 {
     // Standalone acceptance runner. Hardware reads are bypassed only when the
     // explicit --smoke-test argument is present; this never claims hardware QA.
-    public sealed class SmokeTest : MonoBehaviour
+    public sealed partial class SmokeTest : MonoBehaviour
     {
         [Serializable] sealed class Report
         {
@@ -255,6 +255,7 @@ namespace BigBattle
             Check(world.Fx.ActiveEffects==0,"All stressed attack particles and crescents are reclaimed");
             world.Fx.Whirlwind(world.Player.transform,.85f);yield return null;world.EnterPractice();yield return Wait(.06f);
             Check(world.Fx.GetComponentInChildren<BladeVortex>()==null,"Retry clears a vortex during its active lifetime");
+            yield return YueyueChecks();
             Check(report.errors.Count==0,"No runtime errors or exceptions");
             report.result=report.failed==0?"PASS":"FAIL";
             File.WriteAllText(Path.Combine(output,"report.json"),JsonUtility.ToJson(report,true));

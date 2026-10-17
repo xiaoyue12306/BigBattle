@@ -1,0 +1,106 @@
+using System.Collections;
+using UnityEngine;
+
+namespace BigBattle
+{
+    public sealed partial class SmokeTest
+    {
+        IEnumerator YueyueChecks()
+        {
+            Frame();world.OpenSelection();Check(world.Selecting,"Hero selection opens without mouse");yield return Shot("12-hero-selection");
+            world.SelectHero(HeroKind.Yueyue);yield return Wait(.15f);
+            var mage=world.Player as YueyuePlayer;
+            Check(mage!=null && mage.HeroName=="越越大王" && mage.MaxHealth==155,"Selecting Yueyue creates the independent hero and HUD action set");
+            var rig=mage.Visual.GetComponent<YueyueVisual>();var skin=mage.Visual.GetComponentInChildren<SkinnedMeshRenderer>();
+            Check(rig!=null && rig.HasModel && rig.BoneCount>=10 && skin!=null && skin.bones.Length>=13 && skin.sharedMaterial.mainTexture!=null,"User FBX imports with authored bones, skin and texture");
+            mage.transform.position=Vector3.back*3;Frame(new CombatInput{Move=Vector2.up});yield return Wait(.04f);Frame();
+            float before=world.Dummy.TotalDamageReceived;
+            Frame(new CombatInput{Attack=true});yield return Wait(.12f);Frame();
+            var skull=world.Transients.GetComponentInChildren<GhostProjectile>();
+            Check(skull!=null && !skull.Flying && world.Dummy.TotalDamageReceived==before,"Skull waits near its caster before launch");
+            yield return Shot("13-yueyue-skull");yield return Wait(.75f);
+            Check(world.Dummy.TotalDamageReceived>=before+28,"Accelerating homing skull hits the forward target");
+            float casts=mage.Casts(0);Frame(new CombatInput{Attack=true});yield return Wait(1.4f);Frame();
+            Check(mage.Casts(0)>=casts+2,"Holding basic attack repeatedly launches skulls");
+            world.EnterPractice();yield return Wait(.08f);mage.transform.position=Vector3.back*3;
+            Frame(new CombatInput{Move=Vector2.up});yield return Wait(.04f);Frame();
+            var enemy=world.SpawnEnemy(Vector3.zero,200);enemy.enabled=false;
+            Check(mage.Cast(1,Vector3.zero),"Iron chain starts a real forward projectile");yield return Wait(.28f);
+            Check(enemy.BoundUntil>Time.time+1.5f && enemy.Controlled,"Chain contact applies a two-second movement and action bind");
+            Check(mage.Remaining(1)>9 && !mage.Cast(1,Vector3.zero),"Chain cooldown begins at cast and rejects repeats");
+            Check(world.Transients.GetComponentInChildren<SoulCage>()!=null,"Void chains surround the bound victim");
+            yield return Shot("14-void-chain-bind");
+            Vector3 frozen=enemy.transform.position;world.SetPaused(true);float left=enemy.BoundUntil-Time.time;yield return Wait(.15f);world.SetPaused(false);
+            Check(Mathf.Abs(enemy.BoundUntil-Time.time-left)<.04f,"Pause freezes remaining chain duration");
+            yield return Wait(2.1f);Check(!enemy.Controlled && enemy.transform.position==frozen,"Bind expires without residual movement");
+            // A killable enemy is deliberately different from an immortal practice dummy.
+            world.EnterPractice();yield return Wait(.08f);Check(!mage.Cast(2,Vector3.zero),"Summon is unavailable before the hero owns a defeated enemy");
+            enemy=world.SpawnEnemy(Vector3.forward*3,80);enemy.enabled=false;enemy.Damage(999,mage,Vector3.zero,0);
+            Check(mage.Souls==1 && mage.Fallen.Valid && mage.Fallen.Style==1,"Personal enemy defeat records its appearance and adds one soul");
+            world.Dummy.Damage(999,mage,Vector3.zero,0);Check(mage.Souls==1,"Immortal dummy resets do not award souls");
+            Check(mage.Cast(2,Vector3.zero),"Recorded enemy can be summoned");yield return Wait(.08f);var ally=mage.Servant;
+            Check(ally!=null && ally.Team==mage.Team && ally.MaxHealth==40 && Mathf.Abs(ally.BaseAttackDamage-6.5f)<.001f,"Returned ally has exactly half the recorded health and attack");
+            Check(ally.GetComponentInChildren<SpiritAura>()!=null && mage.Remaining(2)>24,"Summon has a teal aura, one slot and a 25-second cooldown");
+            before=world.Dummy.TotalDamageReceived;ally.transform.position=world.Dummy.transform.position+Vector3.back;yield return Wait(.95f);
+            Check(world.Dummy.TotalDamageReceived>before,"Returned enemy autonomously attacks an opposing target");yield return Shot("15-returned-spirit");
+            var victim=world.SpawnEnemy(ally.transform.position+Vector3.forward*.7f,1);victim.enabled=false;world.Dummy.transform.position=Vector3.right*8;
+            yield return Wait(1.5f);Check(mage.Souls==2,"Summon's actual autonomous kill awards its owner a soul");
+            Check(!mage.Cast(4,Vector3.zero),"Ultimate rejects fewer than three earned souls");
+            var attacker=world.SpawnEnemy(Vector3.right*6,100);attacker.enabled=false;
+            mage.Bind(2);Check(mage.Controlled && mage.Cast(3,Vector3.zero) && !mage.Controlled,"Ghost form cleanses an existing bind");
+            float hp=mage.Health;Check(!mage.Damage(10,attacker,Vector3.zero,2) && !mage.Bind(2) && mage.Health==hp,"Ghost form rejects both damage and control");
+            Check(!mage.Cast(0,Vector3.zero) && !mage.Cast(1,Vector3.zero) && !mage.Cast(2,Vector3.zero) && !mage.Cast(4,Vector3.zero),"Ghost form disables offensive actions and summoning");
+            Vector3 pos=mage.transform.position;Frame(new CombatInput{Move=Vector2.right});yield return Wait(.25f);Frame();
+            Check(Vector3.Distance(mage.transform.position,pos)>.5f && mage.Remaining(3)>7,"Ghost form retains movement and starts its eight-second cooldown");yield return Shot("16-void-ghost");
+            yield return Wait(2.8f);Check(!mage.Phasing && mage.Damage(1,attacker,Vector3.zero,0),"Ghost invulnerability ends after three seconds");
+            mage.FillPracticeSouls();Frame(new CombatInput{UltimateHeld=true});yield return Wait(.25f);Frame();yield return Wait(.05f);
+            Check(!mage.Charging && mage.Souls==3 && mage.Remaining(4)==0,"Early charge release cancels without spending souls or starting cooldown");
+            Frame(new CombatInput{UltimateHeld=true});yield return Wait(.20f);mage.Bind(2);yield return Wait(.03f);
+            Check(!mage.Charging && mage.Souls==3,"Hard control interrupts sword charging without consuming souls");
+            yield return Wait(2.1f);Check(!mage.Charging,"Held key cannot restart an interrupted charge until released");Frame();yield return Wait(.04f);
+            world.Dummy.transform.position=Vector3.right*8;mage.transform.position=new Vector3(0,0,-4);
+            // Let the actual 20-second lifetime end before creating exact-damage fixtures.
+            if(ally!=null)yield return Wait(Mathf.Max(0,ally.ExpiresAt-Time.time)+.15f);
+            Check(ally==null,"Returned spirit retires after its twenty-second lifetime");
+            var a=world.SpawnEnemy(Vector3.zero,1000);a.enabled=false;var b=world.SpawnEnemy(Vector3.forward*5,1000);b.enabled=false;
+            var distant=world.SpawnEnemy(Vector3.forward*6,1000);distant.enabled=false;distant.transform.position=Vector3.forward*30;
+            pos=mage.transform.position;Frame(new CombatInput{Move=Vector2.up,UltimateHeld=true});yield return Wait(.5f);
+            float travelled=Vector3.Distance(pos,mage.transform.position);Check(mage.Charging && travelled>.10f && travelled<.40f,"Charging sword reduces movement by ninety percent");
+            mage.Damage(1,attacker,Vector3.zero);Check(mage.Charging,"Ordinary damage does not interrupt the four-second charge");
+            Frame(new CombatInput{UltimateHeld=true});yield return Wait(3.7f);
+            Check(mage.Charging && mage.ChargeProgress>=1 && mage.ReleasedWaves==0,"Full four-second charge waits for key release");yield return Shot("17-soul-sword-charge");
+            world.SetPaused(true);float charge=mage.ChargeProgress;yield return Wait(.12f);Check(mage.ChargeProgress==charge,"Pause freezes sword charging");world.SetPaused(false);
+            Frame();yield return Wait(.12f);yield return Shot("18-doom-sword-wave");yield return Wait(.6f);
+            Check(mage.ReleasedWaves==1 && mage.Souls==0 && mage.Remaining(4)>19,"Releasing full charge spends three souls and starts twenty-second cooldown");
+            Check(a.Health==500 && b.Health==500,"Sword wave pierces two enemies for exactly five hundred damage each");
+            Check(!mage.Cast(4,Vector3.zero) && world.Fx.transform.Find("Doom fractured ground")!=null,"Ultimate rejects immediate repeat and leaves temporary ground fissures");
+            yield return Shot("19-doom-ground-cracks");
+            yield return Wait(.9f);Check(distant.Health==500 && a.Health==500 && b.Health==500,"Doom travels beyond the arena and never damages the same target twice");
+            for(int i=0;i<3;i++){var sacrifice=world.SpawnEnemy(Vector3.right*8,1);sacrifice.enabled=false;sacrifice.Damage(10,mage,Vector3.zero,0);}
+            Check(mage.Souls==3 && mage.Remaining(4)>17 && !mage.Cast(4,Vector3.zero),"Twenty-second cooldown blocks ultimate even after earning three new souls");
+            world.EnterPractice();yield return Wait(.12f);Check(mage.Souls==0 && !mage.Fallen.Valid && !mage.Charging && mage.Servant==null && world.Transients.childCount==0,"Session reset clears souls, record, ally, projectiles and charge");
+            mage.FillPracticeSouls();Frame(new CombatInput{UltimateHeld=true});yield return Wait(.1f);world.EnterPractice();Frame();yield return Wait(.08f);
+            Check(!mage.Charging && !rig.SwordVisible,"Reset during active charge removes the raised sword and soul currents");
+            GhostProjectile.Spawn(world,mage,GhostShot.Doom,Vector3.forward);world.EnterPractice();yield return Wait(.1f);
+            Check(world.Dummy.TotalDamageReceived==0 && world.Transients.GetComponentInChildren<GhostProjectile>()==null,"Old projectiles cannot damage new-session actors during deferred destruction");
+            mage.transform.position=Vector3.back*4;
+            var bananaFoe=new GameObject("Killable enemy banana fixture").AddComponent<BananaDuelist>();bananaFoe.transform.SetParent(world.transform);bananaFoe.SetupEnemy(world);bananaFoe.TrainingEnabled=false;bananaFoe.Damage(999,mage,Vector3.zero,0);
+            Check(mage.Fallen.Style==0 && mage.Cast(2,Vector3.zero) && mage.Servant.MaxHealth==60,"Defeated enemy banana returns with its own model and half health");
+            mage.Servant.transform.position=world.Dummy.transform.position-Vector3.forward*1.3f;before=world.Dummy.TotalDamageReceived;yield return Wait(1.0f);
+            Check(world.Dummy.TotalDamageReceived>=before+12 && world.Dummy.TotalDamageReceived<before+24,"Returned banana uses a real half-strength twelve-damage melee attack");
+            world.EnterPractice();yield return Wait(.08f);
+            var mageFoe=new GameObject("Killable enemy mage fixture").AddComponent<YueyueDuelist>();mageFoe.transform.SetParent(world.transform);mageFoe.SetupEnemy(world);mageFoe.TrainingEnabled=false;mageFoe.Damage(999,mage,Vector3.zero,0);
+            Check(mage.Fallen.Style==3 && mage.Cast(2,Vector3.zero) && mage.Servant.MaxHealth==110,"Defeated enemy Yueyue returns with its supplied model and half health");
+            mage.Servant.transform.position=Vector3.back*2;before=world.Dummy.TotalDamageReceived;yield return Wait(1.45f);
+            Check(world.Dummy.TotalDamageReceived>=before+14 && world.Dummy.TotalDamageReceived<before+28,"Returned Yueyue uses a real half-strength fourteen-damage skull");
+            world.EnterPractice();yield return Wait(.08f);mage.FillPracticeSouls();Frame(new CombatInput{UltimateHeld=true});yield return Wait(.1f);
+            attacker=world.SpawnEnemy(Vector3.right*8,100);attacker.enabled=false;mage.Damage(999,attacker,Vector3.zero,0);Frame();
+            Check(!mage.Charging && mage.ReleasedWaves==1 && world.State==SessionState.Defeat,"Death interrupts charge and never releases a stale sword wave");
+            world.EnterPractice();yield return Wait(.08f);
+            world.SetOpponent(HeroKind.Yueyue);world.EnterSparring();yield return Wait(.15f);
+            Check(world.PracticeFoe is YueyueDuelist,"Practice opponent supports Yueyue as well as banana");yield return Shot("20-yueyue-opponent");
+            world.SetOpponent(HeroKind.Banana);world.SelectHero(HeroKind.Banana);yield return Wait(.12f);
+            Check(!(world.Player is YueyuePlayer) && world.Player.HeroName=="香蕉刺客" && world.Player.Health==180,"Switching back preserves original banana combat setup");
+        }
+    }
+}

@@ -1,4 +1,37 @@
-# v0.4.0 validation record
+# v0.5.0 validation record
+
+Date: 2026-10-17 (Asia/Shanghai). Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono, Direct3D 11, NVIDIA GeForce RTX 4060 Ti.
+
+## Final build and acceptance
+
+- Final BuildPipeline succeeded: **0 errors / 0 warnings**, 111,648,167 bytes. Final warm build log has no C# / shader compile errors. Local player: Builds/Windows/BigBattle.exe. Portable: Builds/BigBattle-v0.5.0-Windows.zip, 42,050,835 bytes / 137 entries; executable and data directory verified. The packaged build is the tested build.
+- Standalone acceptance: **146 passed / 0 failed / no runtime errors or exceptions**, report UTC 2026-10-17T02:18:52.0038707Z. Result copy: Docs/Validation/smoke-report.json. Runtime, Editor-conditional runtime and Editor C# compilation plus **53** pure input / viewport / XInput ABI checks pass on the final source.
+- The prior banana movement, attacks, Mixamo tracks, combo / buffering, reciprocal clash timing / cancellation, damage, sound / mute, pause / retry, win / loss, three waves and bounded effect cleanup remain covered. No physical Xbox was connected to the four XInput slots.
+
+## Yueyue evidence
+
+- Hero selection opens without a mouse, creates the new player / action set and can return to the original 180-HP banana. The user's textured FBX loads as a skinned mesh with the authored 13-bone rig. This is a new local rig and procedural pose work, not newly downloaded Mixamo animation.
+- Real held attack creates multiple skulls; each waits beside the caster before launch and its accelerating homing flight damages the forward target. Real chain projectile contact adds a two-second bind and surrounding void-chain assembly; pause freezes the duration and cast immediately starts its ten-second cooldown.
+- Summoning is blocked before a real defeated-enemy record. Personal kills and an actual autonomous summon kill award owner souls; immortal dummy resets do not. A recorded 80-HP / 13-attack mochi returns with 40 HP / 6.5 attack, teal aura, autonomous attack, 25-second cooldown and an actual verified 20-second expiration.
+- Killable enemy banana and Yueyue fixtures can also be returned with their respective models. Real returned-banana melee deals 12 damage; real returned-Yueyue skull deals 14 damage, with 60 / 110 max HP respectively.
+- Ghost form cleanses an existing bind, rejects both damage and control, retains movement, prevents all offensive casts and summoning, starts its eight-second cooldown and loses immunity after three seconds.
+- Ultimate rejects fewer than three souls. Early release and hard control cancel without spending souls or cooldown; a held key does not restart a cancelled charge before release. Ordinary damage preserves the charge. Movement during charging is 10% of normal, full four-second charge waits for release, and pause freezes progress.
+- Actual release consumes three souls and starts a twenty-second cooldown. Two aligned targets each lose exactly 500 HP; a third target beyond the arena at z=30 also loses 500, with no second hit on earlier targets. New kills cannot bypass the active cooldown. Ground fissures are transient visual geometry.
+- Death, active-charge reset, owner / session reset clear stale sword states, records, allies and projectiles. Reset disables old session objects immediately before Unity's deferred Destroy, protecting new actors from old attacks. The new practice opponent and original banana setup both work after switching.
+
+## Visual evidence and practical limits
+
+- Twenty numbered 1600×900 standalone screenshots include the original scenes plus hero selection, hovering skull, void chains, returned spirit, intangible ghost, full charge, piercing doom, cracks and Yueyue opponent. No blank or magenta rendering. Current snapshots: Docs/Images/yueyue-charge-v050.png and yueyue-doom-v050.png.
+- Tools/PreviewYueyue.ps1 records real standalone frames of held skulls, chain, returned banana, moving ghost and a held / released sword. Tools/MakeYueyueGif.py preserves measured timestamps when cropping / enlarging; it does not synthesize animation frames. The capture stages three actual defeated-enemy fixtures before recording; it is a controlled demonstration, not an unassisted full battle or hardware-input test.
+- Final Docs/Images/yueyue-combat-v050.gif: 153 real frames, 11.67 seconds, 3,555,162 bytes. The preview completes without logged errors / exceptions on the same final build. The 500-damage contact is separately evidenced by the standalone acceptance screenshot and exact-health checks.
+- First visual review found that the doom crescent was close to edge-on and its center could be hidden below the floor. Its vertical arc orientation and shared shader progress were corrected; the black arch and three color edges now read from the overhead camera. Charge sword height / tilt, soul currents and phase silhouette were also reviewed in actual rendered frames.
+- Original sixty-variant audio bank is unchanged; sample, playback and mute checks were repeated. The existing audio demo remains v0.3.0 authored audio, not a synchronized track for the new GIF. Reserved store audio remains outside the game.
+- Rig weights and poses are a basic authored adaptation of a static posed mesh; interlocked hands, shoulders and scarf are not a professionally polished animation set. Model provenance / SHA-256 and exact ability rules are in Docs/YUEYUE.md and Docs/Validation/yueyue-assets.json.
+- Real Xbox play / vibration / reconnect, dual physical keyboards and TV output / sound remain **NOT TESTED**. This remains one human player; practice opponents and returned allies are AI. Five-player joining / actual split-screen and a five-player performance benchmark remain future work. Public rebuild of full banana animation still requires the user's local Mixamo library.
+
+---
+
+# Historical v0.4.0 validation record
 
 Date: 2026-10-17 (Asia/Shanghai). Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono, Direct3D 11, NVIDIA GeForce RTX 4060 Ti.
 

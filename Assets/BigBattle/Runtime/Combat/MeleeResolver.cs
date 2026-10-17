@@ -62,7 +62,7 @@ namespace BigBattle
             {
                 if(!Valid(strike) || strike.At>Time.time)continue;
                 strike.Consumed=true;
-                float damage=strike.Combo==2?36:strike.Combo==1?27:24;
+                float damage=(strike.Combo==2?36:strike.Combo==1?27:24)*strike.Source.AttackScale;
                 if(strike.Thrust)world.HitCapsule(strike.Source,strike.Origin,strike.Source.transform.position+strike.Aim*.95f,.85f,42,.55f);
                 else world.HitArea(strike.Source,strike.Source.transform.position,1.85f,strike.Aim,.32f,damage,strike.Combo==2?.45f:.18f);
                 if(strike.Thrust)world.Fx.Thrust(strike.Origin,strike.Source.transform.position+strike.Aim*.95f,strike.Aim);

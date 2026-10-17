@@ -43,12 +43,22 @@ namespace BigBattle
             scale=Mathf.Min(Screen.width/Width,Screen.height/Height);offsetX=(Screen.width-Width*scale)*.5f;offsetY=(Screen.height-Height*scale)*.5f;
             GUI.matrix=Matrix4x4.TRS(new Vector3(offsetX,offsetY,0),Quaternion.identity,new Vector3(scale,scale,1));
             Header();WorldLabels();Bottom();
+            var mage=world.Player as YueyuePlayer;
+            if(mage!=null && mage.Charging)
+            {
+                Fill(new Rect(0,0,1600,9),GhostArt.Teal);Fill(new Rect(0,891,1600,9),GhostArt.Blue);
+                Box(new Rect(480,610,640,64),new Color(.025f,.06f,.09f,.92f));
+                Text(new Rect(490,613,620,35),mage.ChargeProgress>=1?"万魂魔剑已蓄满 · 松开 I / Y 斩出":"万魂归剑 · 按住 I / Y · 可被控制打断",23,mage.ChargeProgress>=1?Art.Yellow:GhostArt.Teal,TextAnchor.MiddleCenter,true);
+                Fill(new Rect(500,658,600*mage.ChargeProgress,5),GhostArt.Teal);
+            }
+            if(Time.unscaledTime<world.Fx.DoomFlashUntil && !world.Paused)Fill(new Rect(0,0,Width,Height),new Color(.03f,.65f,.47f,Mathf.Clamp01((world.Fx.DoomFlashUntil-Time.unscaledTime)/.24f)*.28f));
             if(Time.unscaledTime<world.Fx.NoticeUntil && !world.Paused && (world.State==SessionState.Practice || world.State==SessionState.Battle))
             {
                 Box(new Rect(460,145,680,46),new Color(.12f,.25f,.22f,.90f));
                 Text(new Rect(470,145,660,46),world.Fx.NoticeText,18,Color.white,TextAnchor.MiddleCenter);
             }
-            if(world.Paused)PauseMenu();
+            if(world.Selecting)HeroMenu();
+            else if(world.Paused)PauseMenu();
             else if(world.State==SessionState.Victory || world.State==SessionState.Defeat)Result();
             GUI.matrix=Matrix4x4.identity;
         }
@@ -60,9 +70,9 @@ namespace BigBattle
             Text(new Rect(103,37,250,38),"BANANA BRAWL",26,Art.Ink,TextAnchor.MiddleLeft,true);
             Text(new Rect(104,77,230,25),"香蕉花园   /   战斗原型 01",14,Muted);
             Box(new Rect(650,30,300,71),Paper);
-            string title=world.State==SessionState.Practice?(world.Duelist!=null?"香蕉拼刀陪练":"自由练习"):world.State==SessionState.Battle?"花园守护战":"挑战结束";
+            string title=world.State==SessionState.Practice?(world.PracticeFoe!=null?"英雄陪练":"自由练习"):world.State==SessionState.Battle?"花园守护战":"挑战结束";
             Text(new Rect(650,37,300,28),title,22,Art.Ink,TextAnchor.MiddleCenter,true);
-            string subtitle=world.State==SessionState.Battle?"第 "+world.Wave+" / 3 波    ·    剩余 "+world.EnemyCount+" 只团子":world.State==SessionState.Practice?(world.Duelist!=null?"相向出刀 · 双方免伤 · 金属交锋":"熟悉身手，然后开始三波挑战"):"按 Enter / A 再战一次";
+            string subtitle=world.State==SessionState.Battle?"第 "+world.Wave+" / 3 波    ·    剩余 "+world.EnemyCount+" 名敌人":world.State==SessionState.Practice?(world.Duelist!=null?"相向出刀 · 双方免伤 · 金属交锋":world.PracticeFoe!=null?"追魂骷髅 · 留意幽冥铁索":"熟悉身手，然后开始三波挑战"):"按 Enter / A 再战一次";
             Text(new Rect(650,69,300,22),subtitle,14,Muted,TextAnchor.MiddleCenter);
             Box(new Rect(1270,30,300,70),Paper);
             Text(new Rect(1288,36,268,27),"P1  ·  "+world.Input.DeviceLabel+"控制",18,Art.Ink,TextAnchor.MiddleLeft,true);
@@ -71,7 +81,7 @@ namespace BigBattle
         void Bottom()
         {
             Box(new Rect(30,758,300,111),Paper);
-            Text(new Rect(48,770,260,27),"香蕉刺客",21,Art.Ink,TextAnchor.MiddleLeft,true);
+            Text(new Rect(48,770,260,27),world.Player.HeroName,21,Art.Ink,TextAnchor.MiddleLeft,true);
             Text(new Rect(48,804,260,22),"生命值   "+Mathf.CeilToInt(world.Player.Health)+" / "+world.Player.MaxHealth,14,Muted);
             Box(new Rect(48,837,264,12),new Color(.85f,.89f,.82f));
             float health=world.Player.Health/world.Player.MaxHealth;
@@ -85,15 +95,15 @@ namespace BigBattle
                 Box(new Rect(x+10,759,38,27),i==3?Art.Mint:Art.Yellow);
                 Text(new Rect(x+10,759,38,27),keys[i],14,Art.Ink,TextAnchor.MiddleCenter,true);
                 Text(new Rect(x+56,753,48,40),remaining>.05f?remaining.ToString("0.0"):icons[i],remaining>.05f?21:28,remaining>.05f?Muted:Art.Ink,TextAnchor.MiddleCenter,true);
-                Text(new Rect(x+5,800,106,26),BananaPlayer.SkillNames[i],i==4?16:18,Art.Ink,TextAnchor.MiddleCenter,true);
-                Text(new Rect(x+5,832,106,22),remaining>.05f?"冷却中":i==0?"按住连击":"就绪",13,remaining>.05f?Muted:new Color(.16f,.53f,.39f),TextAnchor.MiddleCenter);
-                if(remaining>0)Fill(new Rect(x+10,862,96*(1-remaining/BananaPlayer.Cooldowns[i]),3),Art.Mint);
+                Text(new Rect(x+5,800,106,26),world.Player.ActionNames[i],16,Art.Ink,TextAnchor.MiddleCenter,true);
+                Text(new Rect(x+5,832,106,22),remaining>.05f?"冷却中":world.Player.ActionHint(i),12,remaining>.05f?Muted:new Color(.16f,.53f,.39f),TextAnchor.MiddleCenter);
+                if(remaining>0)Fill(new Rect(x+10,862,96*(1-remaining/world.Player.Cooldown(i)),3),Art.Mint);
             }
             Box(new Rect(1250,758,320,111),Paper);
             string sessionKey=world.Input.DeviceLabel=="Xbox"?"View":"F";
             Text(new Rect(1270,771,280,28),sessionKey+"  "+(world.State==SessionState.Battle?"返回自由练习":"开始三波挑战"),20,Art.Ink,TextAnchor.MiddleLeft,true);
             Text(new Rect(1270,808,280,22),"方向箭头 = 技能释放方向",15,Muted);
-            Text(new Rect(1270,835,280,20),world.Input.DeviceLabel=="Xbox"?"十字键右：拼刀陪练":"G：拼刀陪练  ·  单人",13,Muted);
+            Text(new Rect(1270,835,280,20),world.Player is YueyuePlayer?(world.Input.DeviceLabel=="Xbox"?"十字键右：陪练 · 左：练习充能":"G：英雄陪练 · H：练习充能"):(world.Input.DeviceLabel=="Xbox"?"十字键右：拼刀陪练":"G：拼刀陪练  ·  单人"),13,Muted);
             if(world.Player.ComboActive)
             {
                 Box(new Rect(619,694,362,39),new Color(.12f,.25f,.22f,.9f));
@@ -114,10 +124,12 @@ namespace BigBattle
                 Vector2 p=Project(actor.transform.position+Vector3.up*(actor.IsDummy?2.1f:1.65f));
                 Box(new Rect(p.x-35,p.y,70,7),new Color(.24f,.32f,.26f,.70f));
                 float health=actor.Health/actor.MaxHealth;
-                if(health>0)Box(new Rect(p.x-33,p.y+2,66*health,3),actor.IsDummy?Art.Yellow:Art.Coral);
+                if(health>0)Box(new Rect(p.x-33,p.y+2,66*health,3),actor.Team==world.Player.Team?GhostArt.Teal:actor.IsDummy?Art.Yellow:Art.Coral);
+                if(actor is SpiritAlly)Text(new Rect(p.x-70,p.y-25,140,22),"归来亡魂 · 半属性",14,new Color(.03f,.4f,.3f),TextAnchor.MiddleCenter,true);
+                if(Time.time<actor.BoundUntil)Text(new Rect(p.x-60,p.y-48,120,22),"幽冥禁锢",16,new Color(.02f,.40f,.32f),TextAnchor.MiddleCenter,true);
                 if(actor.IsDummy)
                 {
-                    Text(new Rect(p.x-90,p.y-30,180,25),actor is BananaDuelist?"香蕉陪练 · 红圈后出刀":"训练木桩",16,Art.Ink,TextAnchor.MiddleCenter,true);
+                    Text(new Rect(p.x-90,p.y-30,180,25),actor is YueyueDuelist?"越越大王 · 幽冥陪练":actor is BananaDuelist?"香蕉陪练 · 红圈后出刀":"训练木桩",16,Art.Ink,TextAnchor.MiddleCenter,true);
                     if(actor.TotalDamageReceived>0)Text(new Rect(p.x-100,p.y+14,200,24),"累计伤害 "+Mathf.RoundToInt(actor.TotalDamageReceived),14,Muted,TextAnchor.MiddleCenter);
                 }
             }
@@ -131,17 +143,35 @@ namespace BigBattle
         void PauseMenu()
         {
             Fill(new Rect(-offsetX/scale,-offsetY/scale,Screen.width/scale,Screen.height/scale),new Color(.09f,.20f,.19f,.65f));
-            Box(new Rect(555,207,490,480),Paper);
-            Text(new Rect(585,232,430,48),"休息一下",32,Art.Ink,TextAnchor.MiddleCenter,true);
-            Text(new Rect(585,285,430,27),"W/S 或方向键选择 · Enter 确认",15,Muted,TextAnchor.MiddleCenter);
-            string[] options={"继续游戏","重新开始挑战","返回自由练习","音效："+(world.Sound.Muted?"关":"开"),"退出游戏"};
+            Box(new Rect(555,122,490,650),Paper);
+            Text(new Rect(585,142,430,48),"休息一下",32,Art.Ink,TextAnchor.MiddleCenter,true);
+            Text(new Rect(585,195,430,27),"W/S 或方向键选择 · Enter 确认",15,Muted,TextAnchor.MiddleCenter);
+            string[] options={"继续游戏","重新开始挑战","返回自由练习","音效："+(world.Sound.Muted?"关":"开"),"选择角色","陪练："+(world.OpponentHero==HeroKind.Banana?"香蕉刺客":"越越大王"),"退出游戏"};
             for(int i=0;i<options.Length;i++)
             {
-                Rect rect=new Rect(592,329+i*58,416,47);
+                Rect rect=new Rect(592,239+i*64,416,47);
                 if(i==world.MenuSelection)Box(rect,Art.Yellow);
                 Text(rect,(i==world.MenuSelection?"›  ":"")+options[i],21,Art.Ink,TextAnchor.MiddleCenter,i==world.MenuSelection);
             }
-            Text(new Rect(575,636,450,26),"Xbox：方向键选择 · A 确认 · Menu 返回",14,Muted,TextAnchor.MiddleCenter);
+            Text(new Rect(575,721,450,26),"Xbox：方向键选择 · A 确认 · Menu 返回",14,Muted,TextAnchor.MiddleCenter);
+        }
+        void HeroMenu()
+        {
+            Fill(new Rect(0,0,1600,900),new Color(.05f,.13f,.16f,.83f));
+            Text(new Rect(300,105,1000,60),"选择你的英雄",42,Art.Cream,TextAnchor.MiddleCenter,true);
+            Text(new Rect(300,167,1000,35),"W/S / 方向键 / 左摇杆选择 · Enter / A 确认",19,Art.Cream,TextAnchor.MiddleCenter);
+            for(int i=0;i<2;i++)
+            {
+                float x=355+i*465;bool selected=world.HeroSelection==i;
+                Box(new Rect(x-5,260,430,365),selected?(i==0?Art.Yellow:GhostArt.Teal):new Color(.3f,.4f,.43f));
+                Box(new Rect(x,265,420,355),Paper);
+                Text(new Rect(x+25,285,370,50),i==0?"香蕉刺客":"越越大王",34,Art.Ink,TextAnchor.MiddleCenter,true);
+                Text(new Rect(x+25,350,370,35),i==0?"灵巧双刀 · 近战连招":"追魂召唤 · 幽冥控制",22,Muted,TextAnchor.MiddleCenter);
+                string[] lines=i==0?new[]{"三段普攻 · 月牙终结","突刺 / 香蕉皮 / 闪避","相向拼刀 · 旋转连斩"}:new[]{"追踪骷髅 · 铁索禁锢","半属性亡魂 · 三秒虚无","三魂充能 · 蓄力万魂魔剑"};
+                for(int j=0;j<3;j++)Text(new Rect(x+25,410+j*48,370,35),lines[j],20,Art.Ink,TextAnchor.MiddleCenter);
+                Text(new Rect(x+25,565,370,35),selected?"›  已选中 · 确认出战":"切换选择",20,selected?new Color(.02f,.48f,.34f):Muted,TextAnchor.MiddleCenter,true);
+            }
+            Text(new Rect(300,680,1000,40),"单人模式 · 暂停菜单可切换英雄及陪练角色",18,Art.Cream,TextAnchor.MiddleCenter);
         }
         void Result()
         {
@@ -150,7 +180,7 @@ namespace BigBattle
             bool win=world.State==SessionState.Victory;
             Text(new Rect(550,284,500,37),win?"BANANA VICTORY!":"再来一根香蕉？",27,win?new Color(.15f,.53f,.39f):Art.Ink,TextAnchor.MiddleCenter,true);
             Text(new Rect(550,340,500,56),win?"花园守护成功":"这次先休息一下",36,Art.Ink,TextAnchor.MiddleCenter,true);
-            Text(new Rect(550,415,500,32),"击败 "+world.Score+" 只团子   ·   用时 "+Mathf.FloorToInt(world.BattleSeconds)+" 秒",20,Muted,TextAnchor.MiddleCenter);
+            Text(new Rect(550,415,500,32),"击败 "+world.Score+" 名敌人   ·   用时 "+Mathf.FloorToInt(world.BattleSeconds)+" 秒",20,Muted,TextAnchor.MiddleCenter);
             Box(new Rect(606,485,388,54),Art.Yellow);
             Text(new Rect(606,485,388,54),"Enter / A  再战一次",22,Art.Ink,TextAnchor.MiddleCenter,true);
             Text(new Rect(550,555,500,26),"Esc / Menu 打开菜单，可返回练习",15,Muted,TextAnchor.MiddleCenter);

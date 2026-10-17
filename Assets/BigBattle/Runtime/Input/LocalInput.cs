@@ -17,7 +17,7 @@ namespace BigBattle
     public struct CombatInput
     {
         public Vector2 Move;
-        public bool Attack, Thrust, Peel, Dodge, Ultimate, Pause, Session, Confirm, Sparring;
+        public bool Attack, Thrust, Peel, Dodge, Ultimate, UltimateHeld, Pause, Session, Confirm, Sparring, PracticeCharge;
         public int MenuStep;
     }
 
@@ -77,6 +77,8 @@ namespace BigBattle
                 frame.Peel |= pressed(XInput.B);
                 frame.Dodge |= pressed(XInput.LB);
                 frame.Ultimate |= pressed(XInput.Y);
+                frame.UltimateHeld |= (buttons & XInput.Y) != 0;
+                frame.PracticeCharge |= pressed(XInput.Left);
                 frame.Pause |= pressed(XInput.Start);
                 frame.Session |= pressed(XInput.Back);
                 frame.Sparring |= pressed(XInput.Right);
@@ -114,6 +116,8 @@ namespace BigBattle
                 Peel = Input.GetKeyDown(second ? KeyCode.Keypad3 : KeyCode.L),
                 Dodge = Input.GetKeyDown(second ? KeyCode.Keypad0 : KeyCode.Space),
                 Ultimate = Input.GetKeyDown(second ? KeyCode.Keypad5 : KeyCode.I),
+                UltimateHeld = Input.GetKey(second ? KeyCode.Keypad5 : KeyCode.I),
+                PracticeCharge = Input.GetKeyDown(KeyCode.H),
                 Pause = Input.GetKeyDown(KeyCode.Escape),
                 Session = Input.GetKeyDown(KeyCode.F),
                 Sparring = Input.GetKeyDown(KeyCode.G),
@@ -135,7 +139,7 @@ namespace BigBattle
 
     public static class XInput
     {
-        public const ushort Up = 0x0001, Down = 0x0002, Right = 0x0008, Start = 0x0010, Back = 0x0020, LB = 0x0100, A = 0x1000, B = 0x2000, X = 0x4000, Y = 0x8000;
+        public const ushort Up = 0x0001, Down = 0x0002, Left = 0x0004, Right = 0x0008, Start = 0x0010, Back = 0x0020, LB = 0x0100, A = 0x1000, B = 0x2000, X = 0x4000, Y = 0x8000;
         [StructLayout(LayoutKind.Sequential)] public struct Pad { public ushort Buttons; public byte LeftTrigger, RightTrigger; public short ThumbLX, ThumbLY, ThumbRX, ThumbRY; }
         [StructLayout(LayoutKind.Sequential)] public struct State { public uint Packet; public Pad Gamepad; }
         [StructLayout(LayoutKind.Sequential)] struct Vibration { public ushort Left, Right; }

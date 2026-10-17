@@ -19,7 +19,7 @@ namespace BigBattle
         {
             if (World==null || World.Paused || World.State!=SessionState.Battle || !Alive || !World.Player.Alive) return;
             if (Time.time<StunnedUntil) { WindingUp=false; warning.SetActive(false); Visual.Animate(0,false); return; }
-            Vector3 delta=World.Player.transform.position-transform.position; delta.y=0;
+            Combatant target=World.NearestEnemy(this,40);if(target==null)return;Vector3 delta=target.transform.position-transform.position; delta.y=0;
             if (WindingUp)
             {
                 if (Time.time>=attackAt)

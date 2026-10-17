@@ -8,9 +8,12 @@ namespace BigBattle
         float nextAttack,contactAt;Vector3 lockedAim;int combo=-1;GameObject warning;bool released;
         public bool WindingUp {get;private set;}
         public bool TrainingEnabled=true;
+        public void SetupEnemy(GameRoot world){SetupInternal(world,false);}
         public void Setup(GameRoot world)
+        {SetupInternal(world,true);}
+        void SetupInternal(GameRoot world,bool dummy)
         {
-            Initialize(world,1,360,0,true);
+            Initialize(world,1,dummy?360:120,0,dummy);
             Visual.SetAccent(Art.Coral);
             var ring=Art.Ring("Coral sparring ring",transform,.68f,.075f,Art.Coral);
             ring.transform.localPosition=Vector3.zero;
@@ -19,9 +22,9 @@ namespace BigBattle
         }
         void Update()
         {
-            if(!TrainingEnabled || World.Paused || World.State!=SessionState.Practice || !World.Player.Alive)return;
+            if(!TrainingEnabled || World.Paused || (World.State!=SessionState.Practice && World.State!=SessionState.Battle) || !World.Player.Alive)return;
             if(Time.time<StunnedUntil){WindingUp=false;warning.SetActive(false);Visual.Animate(0,false);return;}
-            Vector3 delta=World.Player.transform.position-transform.position;delta.y=0;
+            Combatant target=World.NearestEnemy(this,40);if(target==null)return;Vector3 delta=target.transform.position-transform.position;delta.y=0;
             if(WindingUp)
             {
                 if(!released && Time.time>=contactAt-.34f*.27f)

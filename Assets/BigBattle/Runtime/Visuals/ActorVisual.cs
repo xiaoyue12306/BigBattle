@@ -9,6 +9,7 @@ namespace BigBattle
         public bool UsesMixamo => library!=null && library.Tracks!=null && library.Tracks.Length>=13;
         public int MotionCount => library!=null && library.Tracks!=null?library.Tracks.Length:0;
         public MotionId CurrentMotion {get;private set;}
+        public float ActionFraction=>(Time.time-actionStart)/actionDuration;
         MixamoMotionLibrary library;
         Transform leftArm,rightArm,leftShin,rightShin;
         TrailRenderer leftTrail,rightTrail;
@@ -27,7 +28,7 @@ namespace BigBattle
             var visual = root.AddComponent<ActorVisual>();
             visual.Body = new GameObject("Body rig").transform; visual.Body.SetParent(root.transform, false);
             if (style == 0) {visual.BuildBanana();visual.library=Resources.Load<MixamoMotionLibrary>("LocalMixamo/Library");}
-            else if (style == 1) visual.BuildMochi(); else visual.BuildDummy();
+            else if (style == 1) visual.BuildMochi(); else if(style==3)YueyueVisual.Build(visual);else visual.BuildDummy();
             visual.Renderers = root.GetComponentsInChildren<Renderer>(); return visual;
         }
 
