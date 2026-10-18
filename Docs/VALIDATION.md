@@ -1,4 +1,33 @@
-# v0.10.0 validation record
+# v0.11.0 validation record
+
+2026-10-18 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
+
+## Model, build and source
+
+- User-supplied xgx.fbx is a static 24,800-vertex mesh with zero bones/actions. Original SHA-256 is unchanged. Blender preparation adds a 17-bone skin, three baked Idle / Walk / Greeting clips and a 2048² original-color texture. No downloaded/Mixamo Witch animation or invented skills. [Asset facts and hashes](Validation/witch-assets-v0110.json); [implementation / rebuild / limits](WITCH.md).
+- Final warm Windows build: **0 errors / 0 warnings, 132,011,455 bytes**. Final log has no C# / shader errors or exceptions; `WITCH_IMPORT_OK clips=3` and the existing `BIGBATTLE_TIMELINES_OK assets=10 clips=44 editorScrub=PASS` both pass. Runtime, Editor-conditional runtime and Editor C# compilation plus **53** pure input/layout/XInput ABI checks pass.
+- Three-card selection includes Witch as **preview only**. Walking/facing is supported; attacks are disabled, damage is rejected, and arena/lane/sparring entry is blocked. The preview's internal placeholder HP/speed are not confirmed combat stats. Existing two combat heroes, lane rosters, resources, damage and effects remain intact.
+
+## Standalone and full matches
+
+- Final standalone: **236 passed / 0 failed / zero errors**, UTC **2026-10-18T11:40:42.0702802Z**, [smoke-report-v0110.json](Validation/smoke-report-v0110.json). New coverage includes backwards three-card wrapping, actual Witch mesh / texture / FBX clips, animated leg movement, stop blending, paused pose/clock/position, no inherited skills/damage, all battle-entry guards, shared map clamp, reset and switching back to each combat hero. The report also retains the prior two-hero combat, Timeline, soul/charge/summon and lane checks.
+- [Final full-match simulation](Validation/lane-simulation-v0110.json), UTC **2026-10-18T11:40:39.5770672Z**: Banana lead **Defeat**, 438.12 simulated seconds / 37 waves / kills 75:88 / enemy core 1292 HP; Yueyue lead **Victory**, 352.57 seconds / 30 waves / kills 69:61 / allied core 900 HP. Both end normally, zero errors.
+- Simulation retains fixed 0.1-second steps, drawing disabled and a 900-game-second observation cap. Outcomes vary and are not manual gameplay, balance or real-time performance evidence. Witch intentionally has no simulated battle.
+
+## Actual rendering and package
+
+- Reviewed three-card selection, the rendered textured Witch and actual-motion contact sheet. [Actual Witch recording](Images/witch-motion-v0110.gif): **140 captured/encoded frames / 11.87 seconds encoded / 3,151,166 bytes**, raw clock 0 → 11.79385s. Shows entry greeting, forward/side/back walking, turning and idle; no generated or interpolated frames. First rendering is warmed before resetting the clip/capture clock so the greeting is included. [Timing/hash record](Validation/witch-preview-v0110.json).
+- Capture uses a diagnostic portrait camera, cropped from actual 1600×900 player frames; normal gameplay keeps its overhead camera. Frame count is not a game-FPS measurement. The final preview log ends `WITCH_PREVIEW_OK frames=140` without errors.
+- Portable **Builds/BigBattle-v0.11.0-Windows.zip: 47,194,610 bytes / 137 entries**. Full CRC passes; launcher/Data are present, and gameplay / Timeline assembly hashes equal the final tested folder. [Build/package hashes](Validation/build-v0110.json). Raw source, Blender intermediate files, captures and generated binaries stay local/ignored.
+
+## Limits and next steps
+
+- Witch's initial authored motions use region-based weights, with the long skirt mainly attached to the pelvis. No professional cloth simulation, foot IK, finger/facial animation, attack, hit or death clips are claimed; skill poses will need further weight/animation refinement after the user's skill design.
+- Four physical XInput slots were disconnected. Physical Xbox/rumble/reconnection, two physical keyboards, television brightness/audio, low-end hardware and five-player split screen remain untested/unimplemented as previously recorded. Automated injected input does not replace that testing.
+
+---
+
+# Historical v0.10.0 validation record
 
 2026-10-18 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
 

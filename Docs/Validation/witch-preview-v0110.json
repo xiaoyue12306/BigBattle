@@ -1,0 +1,11 @@
+{
+  "source": "Actual Windows player; diagnostic portrait camera; no generated/interpolated frames",
+  "rawFrames": 140,
+  "rawFirstSeconds": 0.0,
+  "rawLastSeconds": 11.793851852416992,
+  "encodedFrames": 140,
+  "encodedMilliseconds": 11870,
+  "bytes": 3151166,
+  "SHA256": "8d5d05474975f87c0f19360c22d16a124a924bd44313df4e854dcd444ae0e792",
+  "previewLogErrors": 0
+}

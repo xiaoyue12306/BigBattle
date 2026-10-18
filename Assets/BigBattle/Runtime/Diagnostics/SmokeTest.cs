@@ -257,6 +257,7 @@ namespace BigBattle
             Check(world.Fx.GetComponentInChildren<BladeVortex>()==null,"Retry clears a vortex during its active lifetime");
             yield return YueyueChecks();
             yield return TimelineChecks();
+            yield return WitchChecks();
             yield return LaneChecks();
             Check(report.errors.Count==0,"No runtime errors or exceptions");
             report.result=report.failed==0?"PASS":"FAIL";

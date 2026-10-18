@@ -25,6 +25,7 @@ namespace BigBattle.Editor
         {
             SkillTimelineBuilder.EnsureAssets();
             SkillTimelineBuilder.ValidatePreview();
+            WitchModelImporter.Ensure();
             Configure();
             if(!File.Exists(ScenePath))CreateScene();
             Directory.CreateDirectory("Builds/Windows");
@@ -37,7 +38,7 @@ namespace BigBattle.Editor
         public static void Build(){MixamoBaker.Bake();CreateScene();BuildWindows();}
         static void Configure()
         {
-            PlayerSettings.companyName="BigBattle";PlayerSettings.productName="Banana Brawl";PlayerSettings.bundleVersion="0.10.0";
+            PlayerSettings.companyName="BigBattle";PlayerSettings.productName="Banana Brawl";PlayerSettings.bundleVersion="0.11.0";
             PlayerSettings.defaultScreenWidth=1600;PlayerSettings.defaultScreenHeight=900;
             PlayerSettings.fullScreenMode=FullScreenMode.FullScreenWindow;PlayerSettings.resizableWindow=true;PlayerSettings.runInBackground=true;
             PlayerSettings.colorSpace=ColorSpace.Linear;

@@ -14,6 +14,7 @@ namespace BigBattle
         public bool Targetable(Combatant actor)=>actor!=null && actor.Alive && actor.gameObject.activeInHierarchy && (!(actor is LaneStructure) || !((LaneStructure)actor).Protected);
         public void StartLaneBattle()
         {
+            if(PreviewOnly){Fx.Notice("女巫当前为外观预览 · 选择其他英雄可开启花溪");return;}
             PreferredMode=MatchMode.FlowerLane;ClearSession();ActiveMode=MatchMode.FlowerLane;State=SessionState.Battle;
             if(laneMap==null){laneMap=new GameObject("Flower creek • original single-lane map");laneMap.transform.SetParent(transform);laneMap.AddComponent<FlowerLaneMap>().Build();}
             gardenMap.SetActive(false);laneMap.SetActive(true);

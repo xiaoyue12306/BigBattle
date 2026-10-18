@@ -31,7 +31,7 @@ namespace BigBattle
             var visual = root.AddComponent<ActorVisual>();
             visual.Body = new GameObject("Body rig").transform; visual.Body.SetParent(root.transform, false);
             if (style == 0) {visual.BuildBanana();visual.library=Resources.Load<MixamoMotionLibrary>("LocalMixamo/Library");}
-            else if (style == 1) visual.BuildMochi(); else if(style==3)YueyueVisual.Build(visual);else if(style==4 || style==5)visual.BuildGuardian(style==5);else if(style==6)visual.BuildSprout();else visual.BuildDummy();
+            else if (style == 1) visual.BuildMochi(); else if(style==3)YueyueVisual.Build(visual);else if(style==7)WitchVisual.Build(visual);else if(style==4 || style==5)visual.BuildGuardian(style==5);else if(style==6)visual.BuildSprout();else visual.BuildDummy();
             visual.Renderers = System.Array.FindAll(root.GetComponentsInChildren<Renderer>(),r=>r.GetComponentInParent<SoulVfx>()==null); return visual;
         }
 
