@@ -23,6 +23,8 @@ namespace BigBattle.Editor
         [MenuItem("Tools/BigBattle/2. Build Windows x64")]
         public static void BuildWindows()
         {
+            SkillTimelineBuilder.EnsureAssets();
+            SkillTimelineBuilder.ValidatePreview();
             Configure();
             if(!File.Exists(ScenePath))CreateScene();
             Directory.CreateDirectory("Builds/Windows");
@@ -35,7 +37,7 @@ namespace BigBattle.Editor
         public static void Build(){MixamoBaker.Bake();CreateScene();BuildWindows();}
         static void Configure()
         {
-            PlayerSettings.companyName="BigBattle";PlayerSettings.productName="Banana Brawl";PlayerSettings.bundleVersion="0.9.0";
+            PlayerSettings.companyName="BigBattle";PlayerSettings.productName="Banana Brawl";PlayerSettings.bundleVersion="0.10.0";
             PlayerSettings.defaultScreenWidth=1600;PlayerSettings.defaultScreenHeight=900;
             PlayerSettings.fullScreenMode=FullScreenMode.FullScreenWindow;PlayerSettings.resizableWindow=true;PlayerSettings.runInBackground=true;
             PlayerSettings.colorSpace=ColorSpace.Linear;
@@ -68,7 +70,7 @@ namespace BigBattle.Editor
                         included.DeleteArrayElementAtIndex(i);
                     }
                 }
-                foreach(string shaderName in new[]{"Standard","Unlit/Color","BigBattle/CombatFX","BigBattle/BladeEnergy","BigBattle/DoomEnergy","BigBattle/SoulParticle","Hidden/BigBattle/SoulBloom"})
+                foreach(string shaderName in new[]{"Standard","Unlit/Color","BigBattle/CombatFX","BigBattle/BladeEnergy","BigBattle/DoomEnergy","BigBattle/SequenceEnergy","BigBattle/SoulParticle","Hidden/BigBattle/SoulBloom"})
                 {
                     Shader shader=Shader.Find(shaderName);if(shader==null)continue;
                     bool found=false;for(int i=0;i<included.arraySize;i++)if(included.GetArrayElementAtIndex(i).objectReferenceValue==shader)found=true;

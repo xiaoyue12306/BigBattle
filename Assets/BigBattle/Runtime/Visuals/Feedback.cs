@@ -52,6 +52,8 @@ namespace BigBattle
         public void Slash(Vector3 position,Vector3 direction,Color color,int combo=0)
         {
             SlashCount++;bool hostile=color==Art.Coral;
+            // Cosmetic playback starts at the same resolved weapon contact as the blade/audio.
+            SkillSequence.Burst(GetComponentInParent<GameRoot>(),combo==2?"BananaFinisher":"BananaSlash",position,direction);
             Color accent=hostile?Art.Coral:combo==2?Gold:combo==1?Azure:Jade;
             Quaternion facing=Quaternion.LookRotation(direction);
             Quaternion plane=facing*Quaternion.Euler(combo==2?14:combo==1?-12:8,combo==1?24:-24,0);
@@ -128,6 +130,7 @@ namespace BigBattle
         public void Clash(Vector3 position)
         {
             ClashCount++;
+            SkillSequence.Burst(GetComponentInParent<GameRoot>(),"SteelClash",position,Vector3.forward);
             Numbers.Add(new FloatingNumber{Position=position+Vector3.up*.35f,Text="拼刀！",Born=Time.time,Color=Art.Cream});
             if(Numbers.Count>32)Numbers.RemoveAt(0);
             Star(position,Hot,.95f);Burst(position,Gold,14);Burst(position,Hot,8);

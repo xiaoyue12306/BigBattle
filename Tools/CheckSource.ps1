@@ -8,6 +8,9 @@ $taskCompiler = Join-Path $EditorData 'MonoBleedingEdge\lib\mono\4.5\csc.exe'
 $taskReferences = @(Get-ChildItem -LiteralPath (Join-Path $EditorData 'Managed\UnityEngine') -Filter '*.dll')
 $taskReferences += Get-Item -LiteralPath (Join-Path $EditorData 'MonoBleedingEdge\lib\mono\4.8-api\Facades\netstandard.dll')
 $taskReferences += @(Get-ChildItem -LiteralPath (Join-Path $EditorData 'Managed') -Filter 'UnityEditor*.dll')
+$taskTimelineAssembly=Join-Path $taskRoot 'Library/ScriptAssemblies/Unity.Timeline.dll'
+if(-not (Test-Path -LiteralPath $taskTimelineAssembly)){throw 'Resolve the Timeline package with Tools/Build.ps1 before source checks.'}
+$taskReferences += Get-Item -LiteralPath $taskTimelineAssembly
 $taskReferences = $taskReferences | Group-Object Name | ForEach-Object { $_.Group[0] }
 $taskRuntime = @(Get-ChildItem -LiteralPath (Join-Path $taskRoot 'Assets\BigBattle\Runtime') -Filter '*.cs' -Recurse)
 $taskArgs = @('/nologo','/target:library','/langversion:9.0',('/out:' + (Join-Path $taskOutput 'BigBattle.Runtime.dll')))
@@ -32,7 +35,7 @@ $taskCheckArgs += Join-Path $taskRoot 'Tools\Checks\SourceChecks.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Source logic checks failed to compile.' }
 $taskPreviousMonoPath = $env:MONO_PATH
 try {
-    $env:MONO_PATH = (Join-Path $EditorData 'Managed\UnityEngine') + ';' + $taskOutput
+    $env:MONO_PATH = (Join-Path $EditorData 'Managed\UnityEngine') + ';' + $taskOutput + ';' + (Join-Path $taskRoot 'Library/ScriptAssemblies')
     & $taskMono (Join-Path $taskOutput 'SourceChecks.exe')
     if ($LASTEXITCODE -ne 0) { throw 'Source logic checks failed.' }
 } finally { $env:MONO_PATH = $taskPreviousMonoPath }

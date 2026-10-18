@@ -1,0 +1,18 @@
+[
+  {
+    "hero": "yueyue",
+    "frames": 183,
+    "milliseconds": 17620,
+    "rawLastSecond": 17.51605796813965,
+    "bytes": 8987074,
+    "sha256": "c7b914f16fb3c297e9be95a433686433b19405853487b1b555c839223f3c4e84"
+  },
+  {
+    "hero": "banana",
+    "frames": 97,
+    "milliseconds": 6220,
+    "rawLastSecond": 6.167479515075684,
+    "bytes": 2279449,
+    "sha256": "3a64d439f4cb00ee20f377f8f5f62cbafb45af0234f813dc98ddcdcd5d0ee252"
+  }
+]

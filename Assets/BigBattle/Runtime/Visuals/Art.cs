@@ -81,6 +81,35 @@ namespace BigBattle
             return EnergyObject("Banana moonblade",parent,mesh,color);
         }
         // Both meshes are authored once; every travelling blade and ground stamp shares them.
+        public static GameObject SequenceSurface(Transform parent,SequenceShape shape)
+        {
+            const string materialKey="Timeline sequence energy";Material material;
+            if(!materials.TryGetValue(materialKey,out material)){material=new Material(Shader.Find("BigBattle/SequenceEnergy")){name=materialKey};materials.Add(materialKey,material);owned.Add(material);}
+            if(shape==SequenceShape.Arc){var arc=Crescent(parent,GhostArt.Teal,220,.25f);arc.GetComponent<Renderer>().sharedMaterial=material;return arc;}
+            Mesh mesh=SoulQuad();
+            if(shape==SequenceShape.Spiral || shape==SequenceShape.Shards)
+            {
+                string key="sequence "+shape;
+                if(!rings.TryGetValue(key,out mesh))
+                {
+                    var vertices=new List<Vector3>();var uv=new List<Vector2>();var indices=new List<int>();
+                    if(shape==SequenceShape.Spiral)for(int arm=0;arm<2;arm++)for(int j=0;j<=96;j++)
+                    {
+                        float t=j/96f,a=t*Mathf.PI*4+arm*Mathf.PI,radius=1-t*.82f;
+                        Vector3 radial=new Vector3(Mathf.Sin(a),0,Mathf.Cos(a));Vector3 p=radial*radius+Vector3.up*t*3.2f;
+                        int n=vertices.Count;vertices.Add(p-radial*.07f);vertices.Add(p+radial*.07f);uv.Add(new Vector2(t,0));uv.Add(new Vector2(t,1));
+                        if(j<96)indices.AddRange(new[]{n,n+1,n+2,n+1,n+3,n+2});
+                    }
+                    else for(int j=0;j<14;j++)
+                    {
+                        float a=j*2.39996f,radius=.5f+j%4*.16f;Vector3 p=new Vector3(Mathf.Sin(a)*radius,.15f+j%5*.17f,Mathf.Cos(a)*radius);float size=.06f+j%3*.025f;int n=vertices.Count;
+                        vertices.AddRange(new[]{p+Vector3.up*size*3,p+Vector3.right*size,p-Vector3.up*size*3,p-Vector3.right*size});uv.AddRange(new[]{Vector2.up,Vector2.one,Vector2.right,Vector2.zero});indices.AddRange(new[]{n,n+1,n+2,n,n+2,n+3});
+                    }
+                    mesh=new Mesh{name=key};mesh.SetVertices(vertices);mesh.SetUVs(0,uv);mesh.SetTriangles(indices,0);mesh.RecalculateBounds();rings.Add(key,mesh);owned.Add(mesh);
+                }
+            }
+            var go=new GameObject("Timeline "+shape);go.transform.SetParent(parent,false);go.AddComponent<MeshFilter>().sharedMesh=mesh;var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;return go;
+        }
         public static GameObject DoomSurface(Transform parent,bool ground,int variant=0)
         {
             string key=ground?"doom rift "+variant:"doom upright blade";Mesh mesh;

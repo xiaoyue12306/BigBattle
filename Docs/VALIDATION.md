@@ -1,4 +1,39 @@
-# v0.9.0 validation record
+# v0.10.0 validation record
+
+2026-10-18 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
+
+## Final build and authoring
+
+- Official Timeline **1.7.7** resolves through the Tuanjie package registry. Ten real TimelineAssets contain **44 custom clips**; the Windows player includes Unity.Timeline.dll (127,488 bytes), and no editor Timeline assembly. Built-in rendering remains active; no VFX Graph / Shader Graph or SRP migration is claimed.
+- Final warm build: **0 errors / 0 warnings, 125,343,511 bytes**. Final log has no C# / shader errors or authoring-preview exceptions. Editor evaluation at 0.07 → 0.9 → 0.07 seconds verifies multiple visible layers, inactive-clip clearing and backwards restoration. Log: `BIGBATTLE_TIMELINES_OK assets=10 clips=44 editorScrub=PASS`.
+- The authoring check initially exposed a material-parameter initialization exception; lazy MaterialPropertyBlock creation fixes it. The validation now captures error/exception logs and rejects the build if any occur, even if the underlying director callback swallows an exception. This is batch editor evaluation, not a claim of manual Timeline-window or hardware testing.
+- All ten authored file hashes remain identical across repeated builds; EnsureAssets creates missing files only. [Asset hashes / authoring record](Validation/timeline-assets-v0100.json). Existing artist curves are preserved.
+- Runtime, Editor-conditional runtime and Editor source compilation pass; **53** pure input/layout/XInput ABI checks pass. CheckSource now references the resolved Timeline assembly; a fresh checkout must resolve/build the official package first.
+
+## Standalone and full-match regression
+
+- Final actual standalone acceptance: **222 passed / 0 failed / zero recorded errors**, UTC **2026-10-18T03:33:11.5569848Z**. [Versioned report](Validation/smoke-report-v0100.json). Adds real resource/clip survival, manual Director staging, clock advancement, paused sampling/shader clocks, effect expiry, director/root budgets, shared material reuse, reset cleanup and a held full-charge crown without automatic gameplay release.
+- All prior 212 checks remain: both heroes, 13 actual local Mixamo tracks, movement/bones, combo/clash/audio mute, summons, real-kill souls, cancellation on early release/control/death, exactly 500 once per near/distant doom target, 20s cooldown, upright blade/fracture cleanup and lane objectives/respawn rules.
+- [Final AI simulation](Validation/lane-simulation-v0100.json), UTC **2026-10-18T03:33:09.0927029Z**, both matches end normally with zero errors. Banana lead: **Defeat**, 317.01 simulated seconds / 27 waves, kills 45:59, enemy core 1800 HP. Yueyue lead: **Defeat**, 337.54 seconds / 28 waves, kills 52:77, enemy core 1583.20 HP.
+- Simulation uses actual controllers, a fixed 0.1-second step, drawing disabled and a 900-second observation cap. Winners/lengths vary between runs; this does not establish balance, manual skill or real-time performance. Match stats, damage and input rules were not retuned for the presentation update.
+
+## Actual preview and package
+
+- Reviewed the final 25 acceptance screenshots, both captured-motion contact sheets and charge/summon/release stills. New rune seals, spiral soul winds, orbiting fragments, staged shock rings and contact glints render alongside existing licensed flame/arcane particles. The main doom blade stays upright and its original swept damage remains covered.
+- [Yueyue recording](Images/timeline-yueyue-v0100.gif): **183 actual frames / 17.62s encoded / 8,987,074 bytes**, raw last frame **17.51606s**. The final player captures real walking, normal casts, bind, summon, moving phase, full charge and release. The diagnostic close-up camera follows the actor; real defeat fixtures prepare three souls before recording. This is a showcase, not an unaided match.
+- [Banana recording](Images/timeline-banana-v0100.gif): **97 actual frames / 6.22s encoded / 2,279,449 bytes**, raw last frame **6.16748s**. Includes normal three-step contacts, thrust/whirlwind, a deliberately timed real weapon clash and further contacts. Cropped/scaled from the actual 1600×900 player capture.
+- GIFs retain measured frame timing, rounding and final-frame hold; no synthesized or interpolated frames. Capture counts are not game FPS. Both preview logs end successfully without errors. [Media hashes/timing](Validation/timeline-previews-v0100.json).
+- Portable **Builds/BigBattle-v0.10.0-Windows.zip: 44,878,588 bytes / 138 entries**, CRC passes; exe/Data and the Timeline runtime assembly are present. Packaged gameplay assembly equals the final tested folder. [Build / package / runtime hashes](Validation/build-v0100.json). Executables, raw frames and package caches remain local/ignored.
+
+## Scope and limits
+
+- [TIMELINE_VFX.md](TIMELINE_VFX.md) documents the ten assets, custom tracks, editable fields and menus. Visual tracks do not deal damage or play audio. Manual directors follow scaled game time, and fully charged holds sample the completed visual frame until combat releases or cancels it. Shared meshes/materials and 96-instance / 220-feedback-root caps bound creation; previous 192-fracture and projectile limits remain.
+- Original user model/texture/meta, local-only Mixamo exclusions and CC0 provenance are unchanged. New Timeline stages/geometry/shader are original project work; Riot's official shape/value/color/timing and gameplay-clarity principles are references, not extracted game assets.
+- One human plus nine lane AI remains the mode limit. Physical Xbox, rumble/reconnection, two physical keyboards, television brightness/audio, low-end hardware and multiple viewports are **not tested**. Caps and native recordings do not prove a multiplayer performance budget. Further artist timing/shape refinement is now possible in Timeline; GPU VFX or pipeline migration remains separate future work.
+
+---
+
+# Historical v0.9.0 validation record
 
 2026-10-17 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 Mono / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
 

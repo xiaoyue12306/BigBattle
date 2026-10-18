@@ -89,6 +89,8 @@ namespace BigBattle
             float particleDelta=chargeEmitter!=null?Mathf.Abs(chargeEmitter.time-particleClock):-1;float sealDelta=Quaternion.Angle(rune,chargeFx.transform.GetChild(0).localRotation);
             Check(chargeEmitter!=null && particleDelta<.001f && rune==chargeFx.transform.GetChild(0).localRotation,"Pause freezes imported particles and charge seals (particle="+particleDelta.ToString("0.000000")+", seal="+sealDelta.ToString("0.000000")+")");world.SetPaused(false);
             Check(atlasPaused==chargeFx.AnimationFrame,"Pause freezes the animated atlas sampling clock as well");
+            var chargeSequence=chargeFx.GetComponentInChildren<SkillSequence>();
+            Check(chargeSequence!=null && chargeSequence.SequenceName=="SoulCharge" && chargeSequence.VisibleLayers>=4 && chargeSequence.Director.time>3.9 && mage.Charging,"Fully charged held input keeps the authored soul crown alive without auto-releasing gameplay");
             Frame();yield return Wait(.12f);yield return Shot("18-doom-sword-wave");
             var waveVisual=world.Transients.GetComponentInChildren<DoomWaveVisual>();var upright=waveVisual!=null?waveVisual.GetComponentInChildren<MeshFilter>():null;
             Check(upright!=null && upright.GetComponent<Renderer>().bounds.size.y>8 && upright.sharedMesh.bounds.size.y>upright.sharedMesh.bounds.size.x*5,"Doom is a towering world-up volume rather than a horizontal slash card");

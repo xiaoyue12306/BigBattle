@@ -1,0 +1,62 @@
+{
+  "version": "0.10.0",
+  "package": "com.unity.timeline@1.7.7",
+  "registry": "https://packages.tuanjie.cn",
+  "assets": 10,
+  "clips": 44,
+  "manualDirector": true,
+  "forwardBackwardPreview": "PASS",
+  "assetHashesUnchangedAcrossBuilds": true,
+  "files": [
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/BananaFinisher.playable",
+      "clips": 5,
+      "sha256": "ded6867f9e8ecb476ae4b1945b75d1f9267feaccf287c72dc7b6330e0c2107ed"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/BananaSlash.playable",
+      "clips": 3,
+      "sha256": "5c062469044bb8790c0ea101af8c460c9e6a61eee670007bd14f4ae15b38483c"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/SoulCage.playable",
+      "clips": 3,
+      "sha256": "4fa715cc8ed2b4aa55d9655bc5083c257515c9c2c41634da6fba5c9e5c728cf6"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/SoulCharge.playable",
+      "clips": 8,
+      "sha256": "b56cfc29b353673a4bb714987b195600299eb825461cfdc105033a5acadc757a"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/SoulImpact.playable",
+      "clips": 3,
+      "sha256": "cdd8b8977833542395e8cd37659664aa52f023af7b72a63f5f9fa8a66f54e1e1"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/SoulPhase.playable",
+      "clips": 3,
+      "sha256": "f64cc5256045780b286ff12f75bf94bee5d4aa949f32a27d9da039b8209a66d4"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/SoulRelease.playable",
+      "clips": 8,
+      "sha256": "3f7917dc5c6844b89dbe7d59c763d1e737b53e52f561e0fdc2c8946a7f5d8cb4"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/SoulSkull.playable",
+      "clips": 3,
+      "sha256": "bff69198e351c0ca5c4285355c8de16a7cc9da544e43946f302aaefe702efcf0"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/SoulSummon.playable",
+      "clips": 5,
+      "sha256": "912f65300badd322103dcfa0581d6b7a40dfa873a3d46e1384696a83c5fba0bb"
+    },
+    {
+      "path": "Assets/BigBattle/Resources/SkillTimelines/SteelClash.playable",
+      "clips": 3,
+      "sha256": "0ebbc4d40671263a4e113247e0b284148cb542f2fecd04509412a36564363b5c"
+    }
+  ]
+}

@@ -19,7 +19,7 @@ namespace BigBattle
         }
         readonly List<Card> cards=new List<Card>();readonly List<ParticleSystem> emitters=new List<ParticleSystem>();
         readonly MaterialPropertyBlock block=new MaterialPropertyBlock();
-        GameRoot world;SoulEffect kind;float born,life;bool initialized;
+        GameRoot world;SoulEffect kind;float born,life;bool initialized;SkillSequence sequence;
         ParticleSystem gathering;readonly ParticleSystem.Particle[] gatheringParticles=new ParticleSystem.Particle[120];
         readonly List<LineRenderer> currents=new List<LineRenderer>(),currentEdges=new List<LineRenderer>();
         public float Progress;public Vector3 Tip=new Vector3(.18f,3.7f,-.85f);
@@ -159,6 +159,7 @@ namespace BigBattle
                 var ps=Emitter("star_04",Hot,0,release?.26f:.17f,.5f,release?6:3,.15f);ps.Emit(release?42:18);
                 ps=Emitter("fire_01",Mint,0,release?1.3f:.75f,.6f,release?3:1,.25f);ps.Emit(release?16:7);
             }
+            if(kind==SoulEffect.Charge || kind==SoulEffect.Release || kind==SoulEffect.Cage || kind==SoulEffect.Summon || kind==SoulEffect.Phase || kind==SoulEffect.Impact || kind==SoulEffect.Skull)sequence=SkillSequence.Attach(transform,world,"Soul"+kind);
             initialized=true;Animate();
         }
         public void Visible(bool value)
@@ -208,7 +209,7 @@ namespace BigBattle
             }
             for(int i=0;i<cards.Count;i++)
             {
-                Card c=cards[i];Vector3 p=c.position,scale=c.scale;float alpha=fade;
+                Card c=cards[i];Vector3 p=c.position,scale=c.scale;float alpha=fade*(sequence!=null?sequence.Exposure:1);
                 if(kind==SoulEffect.Charge)
                 {
                     if(c.role==0){scale*=.9f+Progress*.35f;alpha*=.5f+Progress*.5f;}

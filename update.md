@@ -358,3 +358,35 @@
 - 新增 Docs/DOOM_VFX.md、PreviewDoom.ps1、MakeDoomGif.py，更新 README、DESIGN、YUEYUE、SOUL_VFX、VALIDATION、AGENTS 与本记录。v0.8 / v0.9 验收报告分别保留版本副本；保留原用户模型 / 贴图 / .meta 和本地 Mixamo 排除约定。完成条件为将本轮源码、实际预览和交接记录提交并推送 GitHub main，再比对本地与远端提交 SHA。
 - 已知限制：地裂是贴地美术与装饰碎岩，不是真实地形破坏。大型 HDR 效果增加绘制成本，近处目标可能被瞬间遮挡；真实 Xbox / 震动 / 重连、双物理键盘、电视亮度 / 音频、低配置与多视口负载仍未测，四个 XInput 槽均未连接。当前仍只有一位真人输入加九名花溪 AI。
 - 下一步：在目标电视实机试玩，调整巨刃比例、亮度、遮挡和性能预算；随后继续模型权重 / 动作精修与本地多人输入、分屏，不将数量保护当作多人性能验收。
+
+## 2026-10-18 — v0.10.0「Timeline 分层技能特效」
+
+### 技术和实际接入
+
+- 按用户要求采用 **官方 Timeline 1.7.7** 制作更丰富技能特效，新增 Director 模块与固定包锁，继续团结 1.9.3 / Built-in / Windows x64。VFX Graph 的官方兼容路径以 URP / HDRP 为主，本轮选用无需迁移场景的 Timeline；没有声称接入 VFX Graph / Shader Graph，也没有提取英雄联盟素材。参考 Riot 官方的形状、明暗、色彩、时序和游戏清晰度原则，保留自然明亮卡通场景。
+- 新增 **10 份真实可编辑 TimelineAsset / 44 个自定义片段**：SoulSkull、SoulCage、SoulSummon、SoulPhase、SoulImpact、SoulCharge、SoulRelease、BananaSlash、BananaFinisher、SteelClash。不是只安装包或给程序计时器换名；独立玩家实际使用 PlayableDirector / PlayableGraph / TrackAsset / PlayableAsset。
+- 越越大王增加聚魂出膛、锁定冲击 / 符文 / 魂晶、召唤门扉 / 上升双螺旋 / 成形亮芯、虚无轮廓和短促命中余波。魔剑四秒蓄力逐步加入向内涟漪、螺旋魂风、悬浮碎魂、剑尖亮核和蓄满外弧，释放按高光、内冲击、延迟外冲击、魂柱、碎魂、法阵和红色余波错时展开；曝光轨同时控制原 SoulVfx 贴片强度。
+- 香蕉普通攻击 / 第三段和拼刀在原统一接触事件启动正反刃缘回响、叶形碎光、重击地环与金白冲击。原主要刀光、音效、75ms 拼刀、三段伤害 / 接触时机保持；Timeline 不安排额外伤害、音频或输入事件。
+- SkillSequence 使用 Manual Director 按缩放游戏时钟 Evaluate；蓄力取真实技能进度，在四秒末保持视觉，持续按住不会自动释放、扣魂或开冷却。硬控 / 死亡 / 提前松开 / 重开仍由原战斗逻辑处理。I 保持竖向 3D 巨刃、不追踪贯穿、每目标一次 500、三魂 / 四秒 / 20 秒释放冷却及既有地裂回收。
+
+### 作者工作流、预算和修复
+
+- 新增 SkillTimelineBuilder：菜单 4 只补缺失 Timeline，现有 .playable 美术修改不被 Build 覆盖；菜单 5 创建绑定 Director 的场景预览，菜单 6 验证前后拖动求值。构建前后 **10 个资产 SHA-256 一致**，详情 Docs/Validation/timeline-assets-v0100.json。参数包括颜色、透明度、位置、大小、旋转、锚点及 Envelope / Expansion 曲线；改变形状后重建预览网格。
+- Git 将 .playable 作为 Unity 文本资产处理，沿用 .asset / .unity 对空 YAML 字段行尾空格的规则，保留引擎序列化原文及已经验证的资产哈希。
+- 混合器清理不活动片段，支持向前和向后拖动。作者预览初检发现材质参数块初始化异常，改为实例首次使用时分配；验证同时捕获日志中的 Error / Exception，不能只凭可见层数或构建返回码宣称成功。最终批处理编辑器在 0.07 → 0.9 → 0.07 秒求值通过且无异常；未冒充人工操作了 Timeline 窗口。
+- 新 SequenceEnergy Shader 与共享环 / 符文 / 星芒 / 弧带 / 双螺旋 / 魂晶网格，由 MPB 驱动颜色、时钟和曲线，显式保留 Shader。最多 96 个序列实例（含暂时关闭的复用持有效果），保留反馈 220、弹体 48、地裂 192 上限；短效到时间轴末尾销毁 Director / 图，暂停 / 重开清理通过。当前原生粒子仍由 SoulVfx / GameRoot 显式暂停，无新增永久逐次命中材质 / 网格。
+
+### 最终验证与真实预览
+
+- 团结 Windows x64 最终暖构建 **0 错误 / 0 警告，125,343,511 字节**；日志无 C# / Shader 错误或作者预览异常，并输出 **assets=10 clips=44 editorScrub=PASS**。首次新脚本导入的暂时缺类型诊断已在最终暖构建消除。
+- 最终 CheckSource 三类 C# 编译与 **53** 项输入 / 布局 / XInput ABI 检查通过，增加已解析 Unity.Timeline.dll 引用。四个真实手柄槽均未连接，自动检查不等于硬件游玩。
+- 最终独立玩家验收 **222 通过 / 0 失败 / 无运行错误**，UTC **2026-10-18T03:33:11.5569848Z**，Docs/Validation/smoke-report-v0100.json。保留原 212 项，新增真实时间轴 / Clip / Shader 导入、分层 Director 求值、随游戏时钟推进、暂停 Director / MPB、蓄满继续持剑、短效销毁、密集预算、材质复用及重开无残留。两位英雄、Mixamo、声音 / 静音、召唤、资源、打断、一次 500 贯穿、原地裂与花溪规则均通过。
+- 最终两场完整 AI 对局正常结算且无错误，UTC **2026-10-18T03:33:09.0927029Z**：香蕉主控失败 **317.01 游戏秒 / 27 波 / 击败 45:59，敌核心 1800**；越越大王主控失败 **337.54 秒 / 28 波 / 52:77，敌核心 1583.20**。固定 0.1 秒、关闭绘制、900 秒观察上限沿用；早期对局时长不同，不作为平衡 / 人工胜利 / 实时帧率证明。
+- 检查最终二十五张验收截图、两份动作接触图及技能静帧，重录最终玩家真实画面。越越大王 **183 帧 / 17.62 秒编码 / 8,987,074 字节**（源末帧 17.51606 秒），香蕉 **97 帧 / 6.22 秒 / 2,279,449 字节**（源末帧 6.16748 秒）。按实际时间戳编码，无生成 / 插值帧。越越大王展示前用真实击败夹具准备三魂，采用诊断近景；香蕉包含真实统一结算的拼刀。采样帧数不当作游戏 FPS，两段预览日志无异常。
+- 便携包 **Builds/BigBattle-v0.10.0-Windows.zip：44,878,588 字节 / 138 项**，CRC、exe / Data、Unity.Timeline.dll 与最终玩法程序集哈希验证通过；不包含编辑器 Timeline 程序集。原生启动器、玩法与 Timeline DLL / ZIP 的哈希见 Docs/Validation/build-v0100.json；预览时钟 / 哈希另存 timeline-previews-v0100.json。二进制、原始帧、PackageCache 均不进 Git。
+
+### 交接、已知边界和下一步
+
+- 新增 Docs/TIMELINE_VFX.md、10 份 .playable / .meta、自定义轨道 / 实例 / 共享 Shader、作者验证、TimelineChecks、PreviewCombat.ps1、MakeTimelineGif.py；更新 README、DESIGN、YUEYUE、SOUL_VFX、DOOM_VFX、BANANA_VFX、VALIDATION、AGENTS 和本记录。保留原用户 FBX / 贴图 / .meta、CC0 来源校验和本地 Mixamo 排除规则。源码、时间轴和实际预览提交 / 推送 GitHub main，以本地与远端提交 SHA 一致作为同步完成条件。
+- 当前仍是一人输入加九名花溪 AI。真实 Xbox / 重连 / 震动、双物理键盘、电视亮度 / 音频、低配与五视口负载未实测。Timeline 是编排工具，不是 GPU 粒子图；图和根节点上限不等于性能验收。现在只覆盖表中事件，现有 Shuriken / 竖刃 / 地裂仍由各自组件显示，不宣称已全部迁移到节点图。
+- 下一步：美术在 Timeline 继续调整轮廓、明暗、时序与余波，结合目标电视试玩检查重要角色 / 范围可读性及图预算；若要 VFX Graph，单独评估 URP 迁移 / GPU 与多人视口开销，再继续本地多人输入和分屏。

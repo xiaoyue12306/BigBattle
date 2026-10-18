@@ -2,6 +2,8 @@
 
 v0.7.0，2026-10-17，团结 1.9.3 / Windows x64 / Built-in。
 
+v0.10.0 正式接入 Timeline 1.7.7，以可编辑轨道编排技能的亮芯、符文、魂晶、螺旋与冲击余波，仍复用本页及 v0.8 的贴图 / 图集。不是安装 VFX Graph / Shader Graph；详情见 [TIMELINE_VFX.md](TIMELINE_VFX.md)。
+
 v0.9.0 的万魂魔剑进一步改成 8.8 单位立体竖斩，重做连续宽地裂 / 焦痕 / 碎岩 / 鬼焰，并加强蓄力和释放；共享 Shader / 网格、192 段地裂预算与回收见 [DOOM_VFX.md](DOOM_VFX.md)。
 
 v0.8.0 在这些基础上加入三位作者的 7 张连续帧动画图集、212 源帧，并结合新动作重做魂核、入口、流焰法阵和魔剑爆发。详情 / 原始许可见 [YUEYUE_MOTION.md](YUEYUE_MOTION.md) 和 [新素材记录](../AssetLibrary/VFX/SpiritAnimations/SOURCE.md)；下面保留 v0.7.0 基础实现记录。

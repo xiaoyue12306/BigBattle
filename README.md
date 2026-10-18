@@ -2,7 +2,7 @@
 
 面向 Windows 电视聚会场景的卡通 3D 俯视角战斗游戏。使用**团结引擎 1.9.3 / 2022.3.62t11**，可选择香蕉刺客或越越大王。
 
-当前版本为 **0.9.0 单人 MVP**：越越大王 I 技能改为立体竖向巨刃，重做连续裂地、焦痕、碎岩与鬼焰，并加强聚能风暴、释放爆发和镜头冲击。详见 [灭世竖斩](Docs/DOOM_VFX.md)。花溪大乱斗保留**左下角 → 右上角**路线，一名真人与四名 AI 对抗五名 AI，依次突破两座花朵守卫并摧毁敌方花心。浅蓝湖水、奶油色步道、圆树、花丛与荷叶延续明亮治愈风格。进入练习后按 **N / 十字键上**开局，暂停菜单也可选择模式。详见 [花溪规则与交接](Docs/FLOWER_LANE.md)。
+当前版本为 **0.10.0 单人 MVP**：接入官方 **Timeline 1.7.7**，用 10 份可编辑时间轴 / 44 个片段编排越越大王的聚魂、禁锢、召唤、鬼影、魔剑蓄力 / 释放，以及香蕉连招与拼刀。符文、双螺旋、魂晶、亮芯和冲击环按阶段出现，详见 [Timeline 特效与编辑](Docs/TIMELINE_VFX.md)。I 技能保持立体竖向巨刃与连续裂地。花溪大乱斗保留**左下角 → 右上角**路线，一名真人与四名 AI 对抗五名 AI，依次突破两座花朵守卫并摧毁敌方花心。浅蓝湖水、奶油色步道、圆树、花丛与荷叶延续明亮治愈风格。进入练习后按 **N / 十字键上**开局，暂停菜单也可选择模式。详见 [花溪规则与交接](Docs/FLOWER_LANE.md)。
 
 两位英雄均可用：香蕉刺客与越越大王。越越大王使用用户 FBX、自制骨骼和动作，拥有追踪骷髅、幽冥铁索、亡魂召唤、三秒虚无，以及三魂充能、四秒蓄力、500 伤害的贯穿魔剑。原训练木桩、英雄陪练与三波挑战仍可选择。
 
@@ -11,6 +11,10 @@
 香蕉刺客保留“金月双刃”三段连招、突刺流光、旋转刃环和金白拼刀星爆，使用 13 个本地 Mixamo 动作。全局音效仍为 60 个原创变体，相向武器在 75ms 窗口内拼刀取消双方本次伤害。无需鼠标。后续目标是最多 **5 人同机分屏、合作与对战**；多人加入尚未实现。
 
 Windows x64 构建与独立玩家检查、两类主控的完整 AI 对局、真实画面记录见 [VALIDATION.md](Docs/VALIDATION.md)。真实 Xbox 手柄和电视操作体验仍待实机确认。角色规则 / 素材 / 交接见 [YUEYUE.md](Docs/YUEYUE.md)，香蕉特效见 [BANANA_VFX.md](Docs/BANANA_VFX.md)。5 对 5 指 AI 团队规模，当前仍只有一位真人输入。
+
+![Timeline 越越大王实际技能预览](Docs/Images/timeline-yueyue-v0100.gif)
+
+![Timeline 香蕉刺客实际连招与拼刀预览](Docs/Images/timeline-banana-v0100.gif)
 
 ![万魂魔剑实际竖斩与裂地预览](Docs/Images/yueyue-doom-v090.gif)
 
@@ -32,7 +36,7 @@ Windows x64 构建与独立玩家检查、两类主控的完整 AI 对局、真�
 
 本机构建完成后，启动 `Builds/Windows/BigBattle.exe`。完整 `Builds/Windows` 文件夹可以复制到其他 Windows 电脑；不能只复制 exe。生成的 Windows 文件不进入源码仓库。
 
-本机另有便携压缩包 `Builds/BigBattle-v0.9.0-Windows.zip`，解压后运行 `BigBattle.exe`。GitHub 保存源码和预览图，运行包保留在本机。
+本机另有便携压缩包 `Builds/BigBattle-v0.10.0-Windows.zip`，解压后运行 `BigBattle.exe`。GitHub 保存源码和预览图，运行包保留在本机。
 
 ### 在编辑器中
 
@@ -40,7 +44,7 @@ Windows x64 构建与独立玩家检查、两类主控的完整 AI 对局、真�
 2. 打开 `Assets/BigBattle/Scenes/BananaGarden.unity`，按 Play。
 3. 进入角色选择，用 W/S 或方向键选择、Enter 确认。如需重新生成场景，使用 `Tools > BigBattle > 1. Generate and open garden scene`。
 
-本机编辑器路径：`E:\Unity\2022.3.62t11\Editor\Tuanjie.exe`。无外部插件或外部 Unity 包下载。完整动画需要本地 Mixamo 下载包，重建步骤见 [Docs/MIXAMO.md](Docs/MIXAMO.md)；原始素材与烘焙动作数据不公开分发。没有本地库时可以使用程序动画回退，但不能当作完整动画版本验收。
+本机编辑器路径：`E:\Unity\2022.3.62t11\Editor\Tuanjie.exe`。工程解析官方 Timeline 1.7.7 包，继续使用 Built-in 渲染管线。完整动画需要本地 Mixamo 下载包，重建步骤见 [Docs/MIXAMO.md](Docs/MIXAMO.md)；原始素材与烘焙动作数据不公开分发。没有本地库时可以使用程序动画回退，但不能当作完整动画版本验收。
 
 ## 操作
 
