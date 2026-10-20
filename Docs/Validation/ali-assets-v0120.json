@@ -1,0 +1,21 @@
+{
+  "source": "C:\\Users\\xy\\Pictures\\bb\\ali.fbx",
+  "sourceBytes": 22613100,
+  "sourceSHA256": "cf7165ed67c4a266d6516288164bcbde784850b91112cac1cc793719eff7db7b",
+  "sourceVertices": 24987,
+  "sourceBones": 0,
+  "sourceActions": 0,
+  "removedPlinthVertices": 1851,
+  "vertices": 23136,
+  "bones": 19,
+  "height": 2.194999933242798,
+  "authoredActions": [
+    "Idle",
+    "Walk",
+    "Place",
+    "Defeat"
+  ],
+  "fbxBytes": 2331740,
+  "fbxSHA256": "2ae28938fe259bdf3347cb65e49587e64408d865eee4fea36f908b0797bb4c81",
+  "textureSHA256": "670a64889c09cbf6bbd66fd17ecde94c2829bd8b35305a2b3f1fc32d53edb038"
+}

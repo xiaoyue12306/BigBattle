@@ -1,4 +1,38 @@
-# v0.11.0 validation record
+# v0.12.0 validation record
+
+2026-10-20 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
+
+## Final build and source
+
+- Final warm build: **0 errors / 0 warnings, 138,021,555 bytes**, no C# / shader errors or exceptions in the final build log. `ALI_IMPORT_OK clips=4` and existing Timeline **10 assets / 44 clips / editorScrub=PASS** succeed. Earlier first-import missing-new-type diagnostics disappear after refresh/warm build.
+- Runtime, Editor-conditional runtime and Editor C# compilation pass, as do **53** pure input/layout/XInput ABI checks. Four physical controller slots are disconnected; this is automated input validation.
+- Supplied Ali source: **24,987 vertices / zero bones / zero animations**, unchanged SHA-256 `cf7165ed67c4a266d6516288164bcbde784850b91112cac1cc793719eff7db7b`. Blender derivative: **23,136 vertices / 19 bones / four authored FBX clips / 2048² original color**. The 1,851-vertex figurine plinth is removed; exposed sole boundary is flattened/capped after near-view inspection. [Asset hashes](Validation/ali-assets-v0120.json).
+- Gold cross reference is the user's local baozha.png, used as a visual reference for original meshes/shader, with no distributed reference pixels. [Reference hash and usage](Validation/ali-reference-v0120.json). Bubble placement/burst add eight original sound variants; all **68** clips are finite and peak-limited to 0.76.
+
+## Standalone regression
+
+- Final **274 passed / 0 failed / zero recorded runtime errors**, report UTC **2026-10-20T13:53:50.7157598Z**, [versioned report](Validation/smoke-report-v0120.json). Existing banana / Yueyue combat, Mixamo, soul/charge interruption, exact doom damage, Timeline, Witch preview-only guards and lane objective checks remain.
+- New coverage verifies four-card wrapping, Ali mesh/four clips/shader, one-frame attack input and .22s rejection, fixed-position breathing, paused fuse/pose/shader/expansion, five pending per owner, independent owners, full 1.8s fuse, immediate slot return, once-per-bubble center/four-arm damage, diagonal/out-of-range/friendly/self/invulnerability filtering, early multi-hop chains and cross-owner team/damage attribution.
+- A **200ms simulation step** deliberately jumps across the entire .15s propagation; all four distant targets and the center still each receive exactly 80 once. Afterglow cannot hit again. Dense pending reservations obey 96, finite visuals retire, warmed material count stays stable, mute suppresses new sounds, retry removes pending/wave accounting, and a lethal enemy bubble immediately clears effects when combat ends.
+- Ali enters both arena and lane; two explicit Ali bots join only Ali-led rosters (one human + nine AI), bombs use the rotated map axes and bounded arms, and lane respawn retains placement cooldown/armed bombs. Real defeated Ali returns as a 90-health / 40-damage autonomous bubble summon; restored Ali training opponents award no souls.
+- First run was 271/1 with zero errors: a screenshot stall made a realtime-duration held-attack assertion unreliable. The final test uses one attack-input frame and separately checks movement/cooldown, avoiding timing ambiguity while still exercising the actual input path. Final report above is authoritative.
+
+## Complete matches, actual preview and package
+
+- [Final three-hero AI simulation](Validation/lane-simulation-v0120.json), UTC **2026-10-20T13:52:18.2478437Z**, all conclude normally, zero errors. Banana: **Defeat**, 465.27 game seconds / 39 waves / kills 69:94 / enemy core 1261.20 HP. Yueyue: **Victory**, 418.45 seconds / 35 waves / kills 86:69 / allied core 1095 HP. Ali: **Victory**, 674.66 seconds / 56 waves / kills 162:142 / allied core 146.60 HP.
+- Fixed 0.1s steps, drawing disabled, 900-game-second cap; these verify completion, not real-time performance, balance or unaided human wins. Prior runs had different outcomes/timings.
+- Reviewed the actual model close-up, four-card UI, bubble/cross screenshots and captured-motion contact sheet. [Final actual recording](Images/ali-bubble-v0120.gif): **164 actual frames / 11.83s encoded / 7,401,652 bytes**, raw clock 0 → 11.76344s. Includes moving placement, five-bubble rows, breathing and multiple directional chains. The final gold/cream billows have less white noise than the first visual iteration. [Timing/hash record](Validation/ali-preview-v0120.json).
+- Video frames are real 1600×900 player output resized to 960×540, encoded at measured timings with rounding/final hold; no generated/interpolated frames. Diagnostic close-up follows the hero, injected input demonstrates the ability. Counts are not game FPS. Preview log has no errors and ends `ALI_PREVIEW_OK frames=164`.
+- Portable **Builds/BigBattle-v0.12.0-Windows.zip: 49,798,850 bytes / 137 entries**, complete CRC passes; launcher/Data and gameplay/Timeline assembly hashes equal the final tested folder. [Build/package/runtime hashes](Validation/build-v0120.json). Binaries, original models, Blender intermediates and raw frames remain local/ignored.
+
+## Scope and limits
+
+- [ALI.md](ALI.md) records confirmed controls, damage, range, ownership and rebuild hooks. Ali has exactly one designed ability; other action slots stay disabled. Witch remains preview-only. Real-time clocks, shared meshes/materials, 96 combined pending/wave reservations and finish/reset cleanup are bounded, without claiming multiplayer performance.
+- The model uses basic region weights/authored motions, no professional cloth/foot IK/finger/facial work. Concurrent gold crosses may obscure targets momentarily; brightness, composition and throughput need target-TV testing. Physical Xbox/rumble/reconnection, two physical keyboards, television audio/brightness, low-end systems and five-player split screen remain untested/unimplemented as previously recorded.
+
+---
+
+# Historical v0.11.0 validation record
 
 2026-10-18 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
 

@@ -1,0 +1,11 @@
+{
+  "source": "Actual final Windows player; diagnostic close-up overhead camera; injected input; no generated/interpolated frames",
+  "rawFrames": 164,
+  "rawFirstSeconds": 0.0,
+  "rawLastSeconds": 11.763437271118164,
+  "encodedFrames": 164,
+  "encodedMilliseconds": 11830,
+  "bytes": 7401652,
+  "SHA256": "2193d9301268f099380bdc10e21f45b030e6785b9d5ec86bf24863b577dbd43b",
+  "previewLogErrors": 0
+}

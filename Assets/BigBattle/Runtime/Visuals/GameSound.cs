@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BigBattle
 {
-    public enum SoundCue { Slash,Thrust,Toss,Dodge,Ultimate,Hurt,Pop,Slip,Win,ImpactLight,ImpactHeavy,Step,SlashBack,SlashFinish,Clash }
+    public enum SoundCue { Slash,Thrust,Toss,Dodge,Ultimate,Hurt,Pop,Slip,Win,ImpactLight,ImpactHeavy,Step,SlashBack,SlashFinish,Clash,BubblePlace,BubbleBurst }
 
     public sealed class GameSound : MonoBehaviour
     {
@@ -14,6 +14,7 @@ namespace BigBattle
         public int GeneratedClipCount=>clips.Count;
         public int ImpactPlays {get;private set;}
         public int ClashPlays {get;private set;}
+        public int BubblePlays {get;private set;}
         public float MaximumSample {get;private set;}
         public bool SamplesFinite {get;private set;}=true;
         const int Rate=44100,Variants=4;
@@ -31,7 +32,7 @@ namespace BigBattle
             for(int cue=0;cue<lastPlayed.Length;cue++)for(int variant=0;variant<Variants;variant++)
             {
                 SoundCue id=(SoundCue)cue;
-                float duration=id==SoundCue.Win?.72f:id==SoundCue.Ultimate?.70f:id==SoundCue.Clash?.48f:id==SoundCue.SlashFinish?.27f:id==SoundCue.Slip?.30f:id==SoundCue.ImpactHeavy?.25f:id==SoundCue.Step?.075f:.20f;
+                float duration=id==SoundCue.BubbleBurst?.40f:id==SoundCue.Win?.72f:id==SoundCue.Ultimate?.70f:id==SoundCue.Clash?.48f:id==SoundCue.SlashFinish?.27f:id==SoundCue.Slip?.30f:id==SoundCue.ImpactHeavy?.25f:id==SoundCue.Step?.075f:.20f;
                 float[] samples=Synthesize(id,variant,duration);
                 foreach(float value in samples){MaximumSample=Mathf.Max(MaximumSample,Mathf.Abs(value));if(float.IsNaN(value)||float.IsInfinity(value))SamplesFinite=false;}
                 var clip=AudioClip.Create("Original clean "+id+" "+variant,samples.Length,1,Rate,false);clip.SetData(samples,0);clips.Add(clip);
@@ -46,7 +47,15 @@ namespace BigBattle
                 float t=i/(float)Rate,u=t/duration;
                 float noise=(float)(random.NextDouble()*2-1);low+=.025f*(noise-low);mid+=.22f*(noise-mid);
                 float band=mid-low;float attack=Mathf.Min(1,t/.003f);float fade=1-u;float value;
-                if(cue==SoundCue.Clash)
+                if(cue==SoundCue.BubblePlace || cue==SoundCue.BubbleBurst)
+                {
+                    bool burst=cue==SoundCue.BubbleBurst;float frequency=(burst?230:720)*Mathf.Exp(-t*(burst?13:22))+(burst?65:160);
+                    phase+=frequency*6.283185f*pitch/Rate;
+                    value=Mathf.Sin(phase)*Mathf.Exp(-t*(burst?13:23))*.72f;
+                    value+=band*Mathf.Exp(-t*(burst?12:42))*(burst?.30f:.06f);
+                    value+=Mathf.Sin(t*(burst?1420:1850)*6.283185f)*Mathf.Exp(-t*35)*.14f;value*=attack*Mathf.Min(1,fade/.2f);
+                }
+                else if(cue==SoundCue.Clash)
                 {
                     // Inharmonic, exponentially damped steel resonances: bright
                     // attack, clear "ting" tail, very little broadband noise.
@@ -114,6 +123,7 @@ namespace BigBattle
             voice.volume=.44f*Mathf.Clamp(strength,.1f,1.1f)*(cue==SoundCue.Step?.24f:cue==SoundCue.Ultimate?.72f:cue==SoundCue.Clash?1.16f:1);voice.Play();
             if(cue==SoundCue.ImpactLight || cue==SoundCue.ImpactHeavy)ImpactPlays++;
             if(cue==SoundCue.Clash)ClashPlays++;
+            if(cue==SoundCue.BubblePlace || cue==SoundCue.BubbleBurst)BubblePlays++;
         }
         public void Impact(bool heavy){Play(heavy?SoundCue.ImpactHeavy:SoundCue.ImpactLight,heavy?1.08f:.88f);}
         public void ExportDemo(string path)

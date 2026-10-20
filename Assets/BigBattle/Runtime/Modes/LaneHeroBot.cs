@@ -15,7 +15,7 @@ namespace BigBattle
             if(hero.Health<hero.MaxHealth*.25f)retreat=true;else if(hero.Health>hero.MaxHealth*.82f)retreat=false;
             var target=match.PickFight(hero,10);if(target==null)target=match.Goal(hero.Team);if(target==null)return default(CombatInput);
             Vector3 delta=target.transform.position-transform.position;delta.y=0;float distance=delta.magnitude;
-            var mage=hero as YueyuePlayer;float attackRange=mage!=null?6.2f:1.65f;
+            var mage=hero as YueyuePlayer;var ali=hero as AliPlayer;float attackRange=ali!=null?2.6f:mage!=null?6.2f:1.65f;
             Vector3 goal=target.transform.position;
             if(retreat)goal=FlowerLaneMap.Spawn(hero.Team)+FlowerLaneMap.Across*offset;
             else if(target is LaneStructure && !match.MinionSupport(hero.Team,target.transform.position))goal=target.transform.position-FlowerLaneMap.Forward(hero.Team)*8.5f+FlowerLaneMap.Across*offset;
@@ -32,6 +32,18 @@ namespace BigBattle
                 input.UltimateHeld=mage.Charging?mage.ChargeProgress<1:!retreat && distance<11 && mage.Souls>=3 && mage.Remaining(4)==0;
                 if(input.UltimateHeld || mage.Charging)input.Move=Vector2.zero;
             }
+            else if(ali!=null)
+            {
+                // Align to a map axis so a cross can actually reach the target.
+                Vector3 local=FlowerLaneMap.ToLane(delta);bool along=Mathf.Abs(local.z)>=Mathf.Abs(local.x);
+                Vector3 axis=along?FlowerLaneMap.Forward(0):FlowerLaneMap.Across;
+                Vector3 line=target.transform.position-axis*(2.4f*((along?local.z:local.x)>=0?1:-1));
+                if(!retreat && !(target is LaneStructure && !match.MinionSupport(hero.Team,target.transform.position)))
+                {
+                    Vector3 align=WorldPoint(line)-hero.transform.position;input.Move=align.magnitude>.35f?new Vector2(align.normalized.x,align.normalized.z):Vector2.zero;
+                    input.Attack=distance<4.2f && (Mathf.Abs(local.x)<.75f || Mathf.Abs(local.z)<.75f);
+                }
+            }
             else
             {
                 input.Thrust=!retreat && distance>2.1f && distance<4 && hero.Remaining(1)==0;
@@ -41,5 +53,6 @@ namespace BigBattle
             }
             return input;
         }
+        Vector3 WorldPoint(Vector3 point)=>hero.World.Clamp(point);
     }
 }

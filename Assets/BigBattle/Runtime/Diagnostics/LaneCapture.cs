@@ -25,7 +25,7 @@ namespace BigBattle
             {
                 Time.captureFramerate=10;QualitySettings.vSyncCount=0;Application.targetFrameRate=-1;
                 world.CameraRig.Camera.enabled=false;world.GetComponent<GameHud>().enabled=false;
-                foreach(HeroKind kind in new[]{HeroKind.Banana,HeroKind.Yueyue})
+                foreach(HeroKind kind in new[]{HeroKind.Banana,HeroKind.Yueyue,HeroKind.Ali})
                 {
                     world.SelectHero(kind);world.StartLaneBattle();brain=world.Player.gameObject.AddComponent<LaneHeroBot>();brain.ExternalInput=true;brain.Setup(world.Lane,world.Player,0);
                     float born=Time.time;

@@ -9,7 +9,9 @@ namespace BigBattle
         {
             Frame();world.SelectHero(HeroKind.Banana);yield return Wait(.08f);world.OpenSelection();
             Frame(new CombatInput{MenuStep=-1});yield return null;Frame();yield return Wait(.05f);
-            Check(GameRoot.HeroCount==3 && world.HeroSelection==2,"Three-character selection wraps backwards from banana to Witch");yield return Shot("26-witch-selection");
+            Check(GameRoot.HeroCount==4 && world.HeroSelection==3,"Four-character selection wraps backwards from banana to Ali");
+            Frame(new CombatInput{MenuStep=-1});yield return null;Frame();yield return Wait(.05f);
+            Check(world.HeroSelection==2,"Reverse selection from Ali reaches preview-only Witch");yield return Shot("26-witch-selection");
             world.SelectHero(HeroKind.Witch);yield return Wait(.12f);var witch=world.Player as WitchPlayer;var model=world.Player.Visual.GetComponent<WitchVisual>();var skin=world.Player.Visual.GetComponentInChildren<SkinnedMeshRenderer>();
             Check(witch!=null && world.PreviewOnly && world.State==SessionState.Practice && witch.VisualStyle==7,"Selecting Witch enters a distinct preview-only character in practice");
             Check(model!=null && model.HasModel && model.ClipCount>=3 && model.BoneCount>=11 && skin!=null && skin.sharedMaterial.mainTexture!=null,"User Witch FBX imports as a textured skin with authored Idle Walk Greeting clips");

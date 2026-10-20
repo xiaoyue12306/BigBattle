@@ -48,7 +48,7 @@ namespace BigBattle
         {
             if(victim==null || victim.IsDummy || victim.Team==Team || victim is SpiritAlly)return;
             Souls=Mathf.Min(99,Souls+1);
-            Fallen=new FallenRecord{Valid=true,Style=victim.VisualStyle,Health=victim.MaxHealth,Damage=victim.BaseAttackDamage*victim.AttackScale,Name=victim.VisualStyle==3?"越越大王":victim.VisualStyle==0?"香蕉刺客":victim.VisualStyle==6?"花灵":"团子"};
+            Fallen=new FallenRecord{Valid=true,Style=victim.VisualStyle,Health=victim.MaxHealth,Damage=victim.BaseAttackDamage*victim.AttackScale,Name=victim.VisualStyle==8?"阿狸":victim.VisualStyle==3?"越越大王":victim.VisualStyle==0?"香蕉刺客":victim.VisualStyle==6?"花灵":"团子"};
             if(this==World.Player)World.Fx.Notice(Souls>=3?"三枚魂印已齐 · 按住 I / Y 蓄力魔剑":"收获魂印 · "+Souls+" / 3");
         }
         public void FillPracticeSouls(){if(World.State==SessionState.Practice){Souls=Mathf.Max(3,Souls);ready[4]=0;World.Fx.Notice("练习魂印已充满 · 按住 I / Y 四秒，再松开");}}

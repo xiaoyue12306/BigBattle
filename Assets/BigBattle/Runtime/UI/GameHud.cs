@@ -74,7 +74,7 @@ namespace BigBattle
             Box(new Rect(650,30,300,71),Paper);
             string title=world.IsLane?"花溪大乱斗 · 5 对 5":world.State==SessionState.Practice?(world.PracticeFoe!=null?"英雄陪练":"自由练习"):world.State==SessionState.Battle?"花园守护战":"挑战结束";
             Text(new Rect(650,37,300,28),title,22,Art.Ink,TextAnchor.MiddleCenter,true);
-            string subtitle=world.State==SessionState.Battle?"第 "+world.Wave+" / 3 波    ·    剩余 "+world.EnemyCount+" 名敌人":world.State==SessionState.Practice?(world.Duelist!=null?"相向出刀 · 双方免伤 · 金属交锋":world.PracticeFoe!=null?"追魂骷髅 · 留意幽冥铁索":"熟悉身手，然后开始三波挑战"):"按 Enter / A 再战一次";
+            string subtitle=world.State==SessionState.Battle?"第 "+world.Wave+" / 3 波    ·    剩余 "+world.EnemyCount+" 名敌人":world.State==SessionState.Practice?(world.Duelist!=null?"相向出刀 · 双方免伤 · 金属交锋":world.PracticeFoe is AliPlayer?"十字爆泡 · 留意连锁范围":world.PracticeFoe!=null?"追魂骷髅 · 留意幽冥铁索":"熟悉身手，然后开始三波挑战"):"按 Enter / A 再战一次";
             if(world.IsLane)subtitle="英雄击败 "+world.Lane.HeroKills[0]+" : "+world.Lane.HeroKills[1]+"    "+Mathf.FloorToInt(world.BattleSeconds/60).ToString("00")+":"+Mathf.FloorToInt(world.BattleSeconds%60).ToString("00");
             Text(new Rect(650,69,300,22),subtitle,14,Muted,TextAnchor.MiddleCenter);
             Box(new Rect(1270,30,300,70),Paper);
@@ -97,7 +97,7 @@ namespace BigBattle
                 Box(new Rect(x,748,116,123),Paper);
                 Box(new Rect(x+10,759,38,27),i==3?Art.Mint:Art.Yellow);
                 Text(new Rect(x+10,759,38,27),keys[i],14,Art.Ink,TextAnchor.MiddleCenter,true);
-                Text(new Rect(x+56,753,48,40),world.PreviewOnly?"—":remaining>.05f?remaining.ToString("0.0"):icons[i],remaining>.05f?21:28,world.PreviewOnly || remaining>.05f?Muted:Art.Ink,TextAnchor.MiddleCenter,true);
+                Text(new Rect(x+56,753,48,40),world.PreviewOnly || world.Player is AliPlayer && i>0?"—":remaining>.05f?remaining.ToString("0.0"):world.Player is AliPlayer?"●":icons[i],remaining>.05f?21:28,world.PreviewOnly || remaining>.05f?Muted:Art.Ink,TextAnchor.MiddleCenter,true);
                 Text(new Rect(x+5,800,106,26),world.Player.ActionNames[i],16,Art.Ink,TextAnchor.MiddleCenter,true);
                 Text(new Rect(x+5,832,106,22),remaining>.05f?"冷却中":world.Player.ActionHint(i),12,remaining>.05f?Muted:new Color(.16f,.53f,.39f),TextAnchor.MiddleCenter);
                 if(remaining>0)Fill(new Rect(x+10,862,96*(1-remaining/world.Player.Cooldown(i)),3),Art.Mint);
@@ -105,14 +105,14 @@ namespace BigBattle
             Box(new Rect(1250,758,320,111),Paper);
             string sessionKey=world.Input.DeviceLabel=="Xbox"?"View":"F";
             Text(new Rect(1270,771,280,28),world.PreviewOnly?"女巫 · 技能待设计":sessionKey+"  "+(world.State==SessionState.Battle?"返回自由练习":world.PreferredMode==MatchMode.FlowerLane?"开始花溪大乱斗":"开始三波挑战"),20,Art.Ink,TextAnchor.MiddleLeft,true);
-            Text(new Rect(1270,808,280,22),world.PreviewOnly?"WASD / 左摇杆 · 移动与转向":world.IsLane?"花灵支援 · 逐座推进 · 摧毁花心":"方向箭头 = 技能释放方向",15,Muted);
-            Text(new Rect(1270,835,280,20),world.PreviewOnly?"Esc / Menu · 切换角色":world.IsLane?"按住普攻 · 阵亡 8 秒后在基地复活":world.Player is YueyuePlayer?(world.Input.DeviceLabel=="Xbox"?"十字键右：陪练 · 左：练习充能":"G：英雄陪练 · H：练习充能"):(world.Input.DeviceLabel=="Xbox"?"十字键右：拼刀陪练":"G：拼刀陪练  ·  单人"),13,Muted);
+            Text(new Rect(1270,808,280,22),world.PreviewOnly?"WASD / 左摇杆 · 移动与转向":world.Player is AliPlayer?"J / X · 原地放泡 · 最多五枚":world.IsLane?"花灵支援 · 逐座推进 · 摧毁花心":"方向箭头 = 技能释放方向",15,Muted);
+            Text(new Rect(1270,835,280,20),world.PreviewOnly?"Esc / Menu · 切换角色":world.Player is AliPlayer?"1.8 秒引爆 · 地图四向触泡连锁":world.IsLane?"按住普攻 · 阵亡 8 秒后在基地复活":world.Player is YueyuePlayer?(world.Input.DeviceLabel=="Xbox"?"十字键右：陪练 · 左：练习充能":"G：英雄陪练 · H：练习充能"):(world.Input.DeviceLabel=="Xbox"?"十字键右：拼刀陪练":"G：拼刀陪练  ·  单人"),13,Muted);
             if(world.Player.ComboActive)
             {
                 Box(new Rect(619,694,362,39),new Color(.12f,.25f,.22f,.9f));
                 Text(new Rect(619,694,362,39),BananaPlayer.ComboNames[world.Player.ComboStep],19,world.Player.ComboStep==2?Art.Yellow:Art.Mint,TextAnchor.MiddleCenter,true);
             }
-            Text(new Rect(480,879,650,18),world.PreviewOnly?"女巫 · 当前仅开放模型与基础动作预览，普攻和技能待设计":"向前挥刃  ·  留意红圈  ·  闪避穿梭  ·  享受一场香蕉乱斗",12,new Color(.17f,.31f,.29f),TextAnchor.MiddleCenter);
+            Text(new Rect(480,879,650,18),world.PreviewOnly?"女巫 · 当前仅开放模型与基础动作预览，普攻和技能待设计":world.Player is AliPlayer?"原地放泡  ·  五枚上限  ·  十字扩散  ·  串起金色连锁":"向前挥刃  ·  留意红圈  ·  闪避穿梭  ·  享受一场香蕉乱斗",12,new Color(.17f,.31f,.29f),TextAnchor.MiddleCenter);
         }
         Vector2 Project(Vector3 point)
         {
@@ -151,7 +151,7 @@ namespace BigBattle
             Box(new Rect(555,122,490,650),Paper);
             Text(new Rect(585,142,430,48),"休息一下",32,Art.Ink,TextAnchor.MiddleCenter,true);
             Text(new Rect(585,195,430,27),"W/S 或方向键选择 · Enter 确认",15,Muted,TextAnchor.MiddleCenter);
-            string[] options={"继续游戏","重新开始所选模式","返回自由练习","音效："+(world.Sound.Muted?"关":"开"),"选择角色","陪练："+(world.OpponentHero==HeroKind.Banana?"香蕉刺客":"越越大王"),"模式："+(world.PreferredMode==MatchMode.FlowerLane?"花溪大乱斗":"三波挑战"),"退出游戏"};
+            string[] options={"继续游戏","重新开始所选模式","返回自由练习","音效："+(world.Sound.Muted?"关":"开"),"选择角色","陪练："+(world.OpponentHero==HeroKind.Banana?"香蕉刺客":world.OpponentHero==HeroKind.Ali?"阿狸":"越越大王"),"模式："+(world.PreferredMode==MatchMode.FlowerLane?"花溪大乱斗":"三波挑战"),"退出游戏"};
             for(int i=0;i<options.Length;i++)
             {
                 Rect rect=new Rect(592,239+i*55,416,47);
@@ -167,14 +167,14 @@ namespace BigBattle
             Text(new Rect(300,167,1000,35),"W/S / 方向键 / 左摇杆选择 · Enter / A 确认",19,Art.Cream,TextAnchor.MiddleCenter);
             for(int i=0;i<GameRoot.HeroCount;i++)
             {
-                float x=230+i*390;bool selected=world.HeroSelection==i;
-                Box(new Rect(x-5,260,370,365),selected?(i==0?Art.Yellow:i==1?GhostArt.Teal:new Color(.67f,.53f,.83f)):new Color(.3f,.4f,.43f));
-                Box(new Rect(x,265,360,355),Paper);
-                Text(new Rect(x+20,285,320,50),i==0?"香蕉刺客":i==1?"越越大王":"女巫",32,Art.Ink,TextAnchor.MiddleCenter,true);
-                Text(new Rect(x+20,350,320,35),i==0?"灵巧双刀 · 近战连招":i==1?"追魂召唤 · 幽冥控制":"模型与动作 · 外观预览",20,Muted,TextAnchor.MiddleCenter);
-                string[] lines=i==0?new[]{"三段普攻 · 月牙终结","突刺 / 香蕉皮 / 闪避","相向拼刀 · 旋转连斩"}:i==1?new[]{"追踪骷髅 · 铁索禁锢","半属性亡魂 · 三秒虚无","三魂充能 · 蓄力万魂魔剑"}:new[]{"原始外观 · 新制骨骼","待机 / 行走 / 入场招呼","普攻与技能等待设计"};
-                for(int j=0;j<3;j++)Text(new Rect(x+20,410+j*48,320,35),lines[j],18,Art.Ink,TextAnchor.MiddleCenter);
-                Text(new Rect(x+20,565,320,35),selected?(i==2?"›  已选中 · 确认预览":"›  已选中 · 确认出战"):"切换选择",19,selected?new Color(.02f,.48f,.34f):Muted,TextAnchor.MiddleCenter,true);
+                float x=170+i*320;bool selected=world.HeroSelection==i;
+                Box(new Rect(x-5,260,310,365),selected?(i==0 || i==3?Art.Yellow:i==1?GhostArt.Teal:new Color(.67f,.53f,.83f)):new Color(.3f,.4f,.43f));
+                Box(new Rect(x,265,300,355),Paper);
+                Text(new Rect(x+10,285,280,50),i==0?"香蕉刺客":i==1?"越越大王":i==2?"女巫":"阿狸",30,Art.Ink,TextAnchor.MiddleCenter,true);
+                Text(new Rect(x+10,350,280,35),i==0?"灵巧双刀 · 近战连招":i==1?"追魂召唤 · 幽冥控制":i==2?"模型与动作 · 外观预览":"爆泡达人 · 十字连锁",19,Muted,TextAnchor.MiddleCenter);
+                string[] lines=i==0?new[]{"三段普攻 · 月牙终结","突刺 / 香蕉皮 / 闪避","相向拼刀 · 旋转连斩"}:i==1?new[]{"追踪骷髅 · 铁索禁锢","半属性亡魂 · 三秒虚无","三魂充能 · 蓄力万魂魔剑"}:i==2?new[]{"原始外观 · 新制骨骼","待机 / 行走 / 入场招呼","普攻与技能等待设计"}:new[]{"J / X · 原地放下泡泡","1.8 秒呼吸 · 最多五枚","十字爆炸 · 碰泡连锁"};
+                for(int j=0;j<3;j++)Text(new Rect(x+10,410+j*48,280,35),lines[j],17,Art.Ink,TextAnchor.MiddleCenter);
+                Text(new Rect(x+10,565,280,35),selected?(i==2?"›  已选中 · 确认预览":"›  已选中 · 确认出战"):"切换选择",18,selected?new Color(.02f,.48f,.34f):Muted,TextAnchor.MiddleCenter,true);
             }
             Text(new Rect(300,680,1000,40),world.HeroSelection==2?"女巫当前仅支持移动与外观预览 · 技能确定后开放战斗":"单人模式 · 进入练习后按 N / 十字键上开启花溪大乱斗",18,Art.Cream,TextAnchor.MiddleCenter);
         }

@@ -25,7 +25,7 @@ namespace BigBattle
             {
                 for(int i=0;i<2;i++)Towers[team,i]=Structure(team,false,i,new Vector3(0,0,(team==0?-1:1)*(i==0?12:22)));
                 Cores[team]=Structure(team,true,2,new Vector3(0,0,team==0?-31:31));
-                for(int i=team==0?1:0;i<TeamSize;i++)SpawnHero(team,(i+team)%2==0?HeroKind.Banana:HeroKind.Yueyue,i);
+                for(int i=team==0?1:0;i<TeamSize;i++)SpawnHero(team,world.SelectedHero==HeroKind.Ali && i==2?HeroKind.Ali:(i+team)%2==0?HeroKind.Banana:HeroKind.Yueyue,i);
             }
             nextWave=Time.time+2;
         }
@@ -36,8 +36,8 @@ namespace BigBattle
         }
         void SpawnHero(int team,HeroKind kind,int slot)
         {
-            var go=new GameObject((team==0?"Meadow ally • ":"Peach rival • ")+(kind==HeroKind.Banana?"Banana":"Yueyue")+" "+slot);go.transform.SetParent(transform);
-            BananaPlayer hero=kind==HeroKind.Banana?go.AddComponent<BananaPlayer>():go.AddComponent<YueyuePlayer>();hero.SetupTeam(World,team);
+            var go=new GameObject((team==0?"Meadow ally • ":"Peach rival • ")+(kind==HeroKind.Ali?"Ali":kind==HeroKind.Banana?"Banana":"Yueyue")+" "+slot);go.transform.SetParent(transform);
+            BananaPlayer hero=kind==HeroKind.Ali?(BananaPlayer)go.AddComponent<AliPlayer>():kind==HeroKind.Banana?go.AddComponent<BananaPlayer>():go.AddComponent<YueyuePlayer>();hero.SetupTeam(World,team);
             hero.RespawnAt(FlowerLaneMap.Spawn(team)+FlowerLaneMap.Across*((slot-2)*1.1f),FlowerLaneMap.Forward(team));
             Heroes.Add(hero);go.AddComponent<LaneHeroBot>().Setup(this,hero,(slot-2)*.8f);
         }

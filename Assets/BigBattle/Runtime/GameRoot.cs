@@ -4,7 +4,7 @@ using UnityEngine;
 namespace BigBattle
 {
     public enum SessionState { Practice,Battle,Victory,Defeat }
-    public enum HeroKind { Banana,Yueyue,Witch }
+    public enum HeroKind { Banana,Yueyue,Witch,Ali }
 
     public sealed partial class GameRoot : MonoBehaviour
     {
@@ -22,7 +22,7 @@ namespace BigBattle
         public HeroKind OpponentHero {get;private set;}
         public bool Selecting {get;private set;}
         public int HeroSelection {get;private set;}
-        public const int HeroCount=3;
+        public const int HeroCount=4;
         public bool PreviewOnly=>SelectedHero==HeroKind.Witch;
         public const int MenuCount=8;
         public Transform Transients {get;private set;}
@@ -49,9 +49,10 @@ namespace BigBattle
             bool yuePreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--yueyue-preview")>=0;
             bool doomPreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--doom-preview")>=0;
             bool witchPreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--witch-preview")>=0;
+            bool aliPreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--ali-preview")>=0;
             bool laneSim=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--lane-sim")>=0;
             bool lanePreview=System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"--lane-preview")>=0;
-            SmokeTesting=smoke || preview || yuePreview || doomPreview || witchPreview || laneSim || lanePreview;
+            SmokeTesting=smoke || preview || yuePreview || doomPreview || witchPreview || aliPreview || laneSim || lanePreview;
             var garden=new GameObject("Original garden arena").AddComponent<GardenArena>();garden.transform.SetParent(transform);garden.Build();
             gardenMap=garden.gameObject;
             Transients=new GameObject("Session objects").transform;Transients.SetParent(transform);
@@ -67,6 +68,7 @@ namespace BigBattle
             if(smoke)gameObject.AddComponent<SmokeTest>().Setup(this);
             else if(laneSim || lanePreview)gameObject.AddComponent<LaneCapture>().Setup(this,laneSim);
             else if(witchPreview)gameObject.AddComponent<WitchPreview>().Setup(this);
+            else if(aliPreview)gameObject.AddComponent<AliPreview>().Setup(this);
             else if(doomPreview)gameObject.AddComponent<DoomPreview>().Setup(this);
             else if(yuePreview)gameObject.AddComponent<YueyuePreview>().Setup(this);
             else if(preview)gameObject.AddComponent<CombatPreview>().Setup(this);
@@ -114,10 +116,10 @@ namespace BigBattle
         {
             if(Player!=null){Player.enabled=false;Actors.Remove(Player);Destroy(Player.gameObject);}
             SelectedHero=kind;Selecting=false;
-            var go=new GameObject(kind==HeroKind.Witch?"女巫 • 外观预览":kind==HeroKind.Yueyue?"越越大王 • P1":"Banana assassin • P1");go.transform.SetParent(transform);
-            Player=kind==HeroKind.Witch?(BananaPlayer)go.AddComponent<WitchPlayer>():kind==HeroKind.Yueyue?go.AddComponent<YueyuePlayer>():go.AddComponent<BananaPlayer>();Player.Setup(this);EnterPractice();
+            var go=new GameObject(kind==HeroKind.Ali?"阿狸 • P1":kind==HeroKind.Witch?"女巫 • 外观预览":kind==HeroKind.Yueyue?"越越大王 • P1":"Banana assassin • P1");go.transform.SetParent(transform);
+            Player=kind==HeroKind.Ali?(BananaPlayer)go.AddComponent<AliPlayer>():kind==HeroKind.Witch?go.AddComponent<WitchPlayer>():kind==HeroKind.Yueyue?go.AddComponent<YueyuePlayer>():go.AddComponent<BananaPlayer>();Player.Setup(this);EnterPractice();
         }
-        public void SetOpponent(HeroKind kind){OpponentHero=kind;}
+        public void SetOpponent(HeroKind kind){OpponentHero=kind==HeroKind.Witch?HeroKind.Banana:kind;}
 
         public void SetPaused(bool paused)
         {
@@ -141,7 +143,7 @@ namespace BigBattle
                 case 2:SetPaused(false);EnterPractice();break;
                 case 3:Sound.Muted=!Sound.Muted;break;
                 case 4:OpenSelection();break;
-                case 5:OpponentHero=OpponentHero==HeroKind.Banana?HeroKind.Yueyue:HeroKind.Banana;break;
+                case 5:OpponentHero=OpponentHero==HeroKind.Banana?HeroKind.Yueyue:OpponentHero==HeroKind.Yueyue?HeroKind.Ali:HeroKind.Banana;break;
                 case 6:PreferredMode=PreferredMode==MatchMode.FlowerLane?MatchMode.Garden:MatchMode.FlowerLane;break;
                 case 7:
                     Input.StopRumble();
@@ -156,6 +158,7 @@ namespace BigBattle
         void ClearSession()
         {
             ClearLane();
+            if(bubbles!=null){bubbles.Clear();bubbles=null;}
             Melee.Clear();Duelist=null;PracticeFoe=null;
             hitPauseUntil=nextHitPause=0;
             SetPaused(false);
@@ -187,6 +190,10 @@ namespace BigBattle
             {
                 Duelist=new GameObject("Banana blade sparring partner").AddComponent<BananaDuelist>();Duelist.transform.SetParent(transform);
                 Duelist.transform.position=new Vector3(0,0,1);Duelist.transform.rotation=Quaternion.Euler(0,180,0);Duelist.Setup(this);PracticeFoe=Duelist;
+            }
+            else if(OpponentHero==HeroKind.Ali)
+            {
+                var foe=new GameObject("Ali bubble sparring partner").AddComponent<AliDuelist>();foe.transform.SetParent(transform);foe.transform.position=Vector3.forward*2;foe.Setup(this);PracticeFoe=foe;
             }
             else
             {

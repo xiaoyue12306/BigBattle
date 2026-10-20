@@ -39,6 +39,12 @@ namespace BigBattle
             material=new Material(Shader.Find("BigBattle/CombatFX")){name=key,color=color};materials.Add("fx"+key,material);owned.Add(material);return material;
         }
         public static int SharedMaterialCount=>materials.Count;
+        public static void Own(Object asset){owned.Add(asset);}
+        public static Material BubbleMaterial()
+        {
+            Material m;if(materials.TryGetValue("bubble energy",out m))return m;
+            m=new Material(Shader.Find("BigBattle/BubbleEnergy")){name="Shared golden bubble energy"};materials.Add("bubble energy",m);owned.Add(m);return m;
+        }
         public static Material SoulMaterial(string texture,bool glow,bool ribbon=false)
         {
             string key="soul:"+texture+":"+glow+":"+ribbon;Material material;

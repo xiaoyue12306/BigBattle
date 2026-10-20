@@ -60,7 +60,7 @@ namespace BigBattle
             var energyShader=Shader.Find("BigBattle/BladeEnergy");
             Check(energyShader!=null && energyShader.isSupported,"Moonblade energy shader is retained and supported in the player");
             Check(world.Player.Visual.UsesMixamo && world.Player.Visual.MotionCount==13,"Thirteen real Mixamo motion tracks loaded");
-            Check(world.Sound.GeneratedClipCount==60 && world.Sound.SamplesFinite && world.Sound.MaximumSample<=.761f,"Clean sound bank has 60 finite headroom-limited variants including steel clashes");
+            Check(world.Sound.GeneratedClipCount==68 && world.Sound.SamplesFinite && world.Sound.MaximumSample<=.761f,"Clean sound bank has 68 finite headroom-limited variants including steel clashes and bubble cues");
             world.Sound.ExportDemo(Path.Combine(output,"combat-audio-demo.wav"));
             yield return Shot("01-practice");
             Vector3 initial=world.Player.transform.position;
@@ -258,6 +258,7 @@ namespace BigBattle
             yield return YueyueChecks();
             yield return TimelineChecks();
             yield return WitchChecks();
+            yield return AliChecks();
             yield return LaneChecks();
             Check(report.errors.Count==0,"No runtime errors or exceptions");
             report.result=report.failed==0?"PASS":"FAIL";

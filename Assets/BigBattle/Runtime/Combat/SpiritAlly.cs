@@ -14,7 +14,7 @@ namespace BigBattle
             Owner=owner;style=record.Style;damage=record.Damage*.5f;ExpiresAt=Time.time+20;
             Initialize(world,owner.Team,record.Health*.5f,style);
             // Fixed snapshot: never halve again when a returned spirit defeats a foe.
-            AttackScale=style==3?damage/28:damage/24;
+            AttackScale=style==8?damage/80:style==3?damage/28:damage/24;
             var aura=new GameObject("Teal returned-spirit aura");aura.transform.SetParent(transform,false);aura.AddComponent<SpiritAura>().Setup(this);
             nextAttack=Time.time+.5f;
         }
@@ -27,7 +27,7 @@ namespace BigBattle
             Vector3 goal=target!=null?target.transform.position:Owner.transform.position-Owner.Facing*1.5f;
             Vector3 delta=goal-transform.position;delta.y=0;
             if(delta.sqrMagnitude>.01f)transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(delta),Time.deltaTime*16);
-            float range=style==3?6:style==1 || style==6?1.35f:1.8f;
+            float range=style==8?2.4f:style==3?6:style==1 || style==6?1.35f:1.8f;
             bool move=delta.magnitude>(target!=null?range:1.2f);
             if(move)transform.position=World.Clamp(transform.position+delta.normalized*3.6f*Time.deltaTime);
             if(winding && Time.time>=contactAt)
@@ -40,12 +40,27 @@ namespace BigBattle
             {
                 nextAttack=Time.time+(style==3?.65f:style==1?1.1f:.65f);
                 if(style==3){GhostProjectile.Spawn(World,this,GhostShot.Skull,delta.normalized);Visual.PlayMotion(MotionId.Throw,.45f);var rig=Visual.GetComponent<YueyueVisual>();if(rig!=null)rig.PlayCast(0);}
+                else if(style==8){if(World.Bubbles.Place(this,transform.position,damage)){var rig=Visual.GetComponent<AliVisual>();if(rig!=null)rig.PlayPlace();}}
                 else if(style==0){Visual.PlayMotion(MotionId.Attack1,.34f);World.Melee.Slash(this,delta.normalized,0,.10f);}
                 else{winding=true;contactAt=Time.time+.35f;Visual.Swing();}
             }
             Visual.Animate(move?1:0,false);
         }
         protected override void Die(){World.Fx.Burst(transform.position+Vector3.up,GhostArt.Teal,10);World.Actors.Remove(this);Destroy(gameObject);}
+    }
+    public sealed class AliDuelist : AliPlayer
+    {
+        public bool TrainingEnabled=true;
+        public override void Setup(GameRoot world){SetupAli(world,1,220,true);}
+        void Update()
+        {
+            if(!TrainingEnabled || World.Paused || !Alive || (World.State!=SessionState.Practice && World.State!=SessionState.Battle))return;
+            var target=World.NearestEnemy(this,20);if(target==null)return;Vector3 delta=target.transform.position-transform.position;
+            Vector2 move=delta.magnitude>2.3f?new Vector2(delta.x,delta.z).normalized*.65f:Vector2.zero;
+            Tick(new CombatInput{Move=move,Attack=delta.magnitude<4});
+        }
+        protected override void Die()
+        {if(World.State==SessionState.Practice){Restore();World.Fx.Notice("阿狸陪练已恢复");}else base.Die();}
     }
     public sealed class YueyueDuelist : YueyuePlayer
     {
