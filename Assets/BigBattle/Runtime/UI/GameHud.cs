@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BigBattle
 {
-    public sealed class GameHud : MonoBehaviour
+    public sealed partial class GameHud : MonoBehaviour
     {
         GameRoot world;
         Font font;
@@ -43,8 +43,8 @@ namespace BigBattle
             scale=Mathf.Min(Screen.width/Width,Screen.height/Height);offsetX=(Screen.width-Width*scale)*.5f;offsetY=(Screen.height-Height*scale)*.5f;
             GUI.matrix=Matrix4x4.TRS(new Vector3(offsetX,offsetY,0),Quaternion.identity,new Vector3(scale,scale,1));
             Header();WorldLabels();Bottom();
-            if(world.IsLane)LaneOverlay();
-            else if(!world.Paused && !world.Selecting && !world.PreviewOnly){Box(new Rect(30,693,300,45),Paper);Text(new Rect(44,693,280,45),world.Input.DeviceLabel=="Xbox"?"十字键 ↑  花溪大乱斗":"N  花溪大乱斗 · 全新单路地图",16,Art.Ink,TextAnchor.MiddleCenter,true);}
+            if(world.IsLane){LaneOverlay();AugmentStrip();}
+            else if(!world.Paused && !world.Selecting && !world.PreviewOnly){Box(new Rect(30,693,300,45),Paper);Text(new Rect(44,693,280,45),world.Input.DeviceLabel=="Xbox"?"十字键 ↑  海克斯大乱斗":"N  海克斯大乱斗 · 随机角色与强化",16,Art.Ink,TextAnchor.MiddleCenter,true);}
             var mage=world.Player as YueyuePlayer;
             if(mage!=null && mage.Charging)
             {
@@ -59,7 +59,8 @@ namespace BigBattle
                 Box(new Rect(460,145,680,46),new Color(.12f,.25f,.22f,.90f));
                 Text(new Rect(470,145,660,46),world.Fx.NoticeText,18,Color.white,TextAnchor.MiddleCenter);
             }
-            if(world.Selecting)HeroMenu();
+            if(world.MayhemLobby || world.ChoosingAugment)MayhemPanel();
+            else if(world.Selecting)HeroMenu();
             else if(world.Paused)PauseMenu();
             else if(world.State==SessionState.Victory || world.State==SessionState.Defeat)Result();
             GUI.matrix=Matrix4x4.identity;
@@ -72,7 +73,7 @@ namespace BigBattle
             Text(new Rect(103,37,250,38),"BANANA BRAWL",26,Art.Ink,TextAnchor.MiddleLeft,true);
             Text(new Rect(104,77,230,25),"香蕉花园   /   战斗原型 01",14,Muted);
             Box(new Rect(650,30,300,71),Paper);
-            string title=world.IsLane?"花溪大乱斗 · 5 对 5":world.State==SessionState.Practice?(world.PracticeFoe!=null?"英雄陪练":"自由练习"):world.State==SessionState.Battle?"花园守护战":"挑战结束";
+            string title=world.IsLane?"海克斯大乱斗 · 5 对 5":world.State==SessionState.Practice?(world.PracticeFoe!=null?"英雄陪练":"自由练习"):world.State==SessionState.Battle?"花园守护战":"挑战结束";
             Text(new Rect(650,37,300,28),title,22,Art.Ink,TextAnchor.MiddleCenter,true);
             string subtitle=world.State==SessionState.Battle?"第 "+world.Wave+" / 3 波    ·    剩余 "+world.EnemyCount+" 名敌人":world.State==SessionState.Practice?(world.Duelist!=null?"相向出刀 · 双方免伤 · 金属交锋":world.PracticeFoe is AliPlayer?"十字爆泡 · 留意连锁范围":world.PracticeFoe!=null?"追魂骷髅 · 留意幽冥铁索":"熟悉身手，然后开始三波挑战"):"按 Enter / A 再战一次";
             if(world.IsLane)subtitle="英雄击败 "+world.Lane.HeroKills[0]+" : "+world.Lane.HeroKills[1]+"    "+Mathf.FloorToInt(world.BattleSeconds/60).ToString("00")+":"+Mathf.FloorToInt(world.BattleSeconds%60).ToString("00");
@@ -104,9 +105,9 @@ namespace BigBattle
             }
             Box(new Rect(1250,758,320,111),Paper);
             string sessionKey=world.Input.DeviceLabel=="Xbox"?"View":"F";
-            Text(new Rect(1270,771,280,28),world.PreviewOnly?"女巫 · 技能待设计":sessionKey+"  "+(world.State==SessionState.Battle?"返回自由练习":world.PreferredMode==MatchMode.FlowerLane?"开始花溪大乱斗":"开始三波挑战"),20,Art.Ink,TextAnchor.MiddleLeft,true);
-            Text(new Rect(1270,808,280,22),world.PreviewOnly?"WASD / 左摇杆 · 移动与转向":world.Player is AliPlayer?"J / X · 原地放泡 · 最多五枚":world.IsLane?"花灵支援 · 逐座推进 · 摧毁花心":"方向箭头 = 技能释放方向",15,Muted);
-            Text(new Rect(1270,835,280,20),world.PreviewOnly?"Esc / Menu · 切换角色":world.Player is AliPlayer?"1.8 秒引爆 · 地图四向触泡连锁":world.IsLane?"按住普攻 · 阵亡 8 秒后在基地复活":world.Player is YueyuePlayer?(world.Input.DeviceLabel=="Xbox"?"十字键右：陪练 · 左：练习充能":"G：英雄陪练 · H：练习充能"):(world.Input.DeviceLabel=="Xbox"?"十字键右：拼刀陪练":"G：拼刀陪练  ·  单人"),13,Muted);
+            Text(new Rect(1270,771,280,28),world.PreviewOnly?"女巫 · 技能待设计":sessionKey+"  "+(world.State==SessionState.Battle?"返回自由练习":world.PreferredMode==MatchMode.FlowerLane?"开始海克斯大乱斗":"开始三波挑战"),20,Art.Ink,TextAnchor.MiddleLeft,true);
+            Text(new Rect(1270,808,280,22),world.PreviewOnly?"WASD / 左摇杆 · 移动与转向":world.Player is AliPlayer?"J / X · 原地放泡 · 最多"+(((AliPlayer)world.Player).HasAugment(26)?"七":"五")+"枚":world.IsLane?"E / 十字键右 · 基地传送门":"方向箭头 = 技能释放方向",15,Muted);
+            Text(new Rect(1270,835,280,20),world.PreviewOnly?"Esc / Menu · 切换角色":world.Player is AliPlayer?(world.Player.HasAugment(29)?"1.35":"1.8")+" 秒引爆 · 地图四向触泡连锁":world.IsLane?"当前复活等待 "+world.Lane.CurrentRespawnDelay.ToString("0")+" 秒 · 跟随兵线推进":world.Player is YueyuePlayer?(world.Input.DeviceLabel=="Xbox"?"十字键右：陪练 · 左：练习充能":"G：英雄陪练 · H：练习充能"):(world.Input.DeviceLabel=="Xbox"?"十字键右：拼刀陪练":"G：拼刀陪练  ·  单人"),13,Muted);
             if(world.Player.ComboActive)
             {
                 Box(new Rect(619,694,362,39),new Color(.12f,.25f,.22f,.9f));
@@ -123,7 +124,7 @@ namespace BigBattle
         {
             foreach(var actor in world.Actors)
             {
-                if(actor==null || !actor.Alive || actor==world.Player)continue;
+                if(actor==null || !actor.Alive || actor==world.Player || world.IsLane && !world.Lane.VisibleTo(world.Player.Team,actor))continue;
                 Vector2 p=Project(actor.transform.position+Vector3.up*(actor.IsStructure?3.4f:actor is LaneMinion?1.2f:actor.IsDummy?2.1f:1.65f));
                 if(p.x<0 || p.x>Width || p.y<110 || p.y>740)continue;
                 Box(new Rect(p.x-35,p.y,70,7),new Color(.24f,.32f,.26f,.70f));
@@ -131,7 +132,7 @@ namespace BigBattle
                 if(health>0)Box(new Rect(p.x-33,p.y+2,66*health,3),actor.Team==world.Player.Team?GhostArt.Teal:actor.IsDummy?Art.Yellow:Art.Coral);
                 if(actor is SpiritAlly)Text(new Rect(p.x-70,p.y-25,140,22),"归来亡魂 · 半属性",14,new Color(.03f,.4f,.3f),TextAnchor.MiddleCenter,true);
                 if(Time.time<actor.BoundUntil)Text(new Rect(p.x-60,p.y-48,120,22),"幽冥禁锢",16,new Color(.02f,.40f,.32f),TextAnchor.MiddleCenter,true);
-                if(actor is LaneStructure){var building=(LaneStructure)actor;Text(new Rect(p.x-90,p.y-28,180,24),building.Core?"花心核心":building.Protected?"内侧守卫 · 保护中":"花灵守卫",15,Art.Ink,TextAnchor.MiddleCenter,true);}
+                if(actor is LaneStructure){var building=(LaneStructure)actor;Text(new Rect(p.x-90,p.y-28,180,24),(building.Core?"基地水晶":building.Inhibitor?"抑制水晶":"防御塔")+(building.Protected?" · 保护中":""),15,new Color(.87f,.94f,1),TextAnchor.MiddleCenter,true);}
                 if(actor.IsDummy)
                 {
                     Text(new Rect(p.x-90,p.y-30,180,25),actor is YueyueDuelist?"越越大王 · 幽冥陪练":actor is BananaDuelist?"香蕉陪练 · 红圈后出刀":"训练木桩",16,Art.Ink,TextAnchor.MiddleCenter,true);
@@ -151,7 +152,7 @@ namespace BigBattle
             Box(new Rect(555,122,490,650),Paper);
             Text(new Rect(585,142,430,48),"休息一下",32,Art.Ink,TextAnchor.MiddleCenter,true);
             Text(new Rect(585,195,430,27),"W/S 或方向键选择 · Enter 确认",15,Muted,TextAnchor.MiddleCenter);
-            string[] options={"继续游戏","重新开始所选模式","返回自由练习","音效："+(world.Sound.Muted?"关":"开"),"选择角色","陪练："+(world.OpponentHero==HeroKind.Banana?"香蕉刺客":world.OpponentHero==HeroKind.Ali?"阿狸":"越越大王"),"模式："+(world.PreferredMode==MatchMode.FlowerLane?"花溪大乱斗":"三波挑战"),"退出游戏"};
+            string[] options={"继续游戏","重新开始所选模式","返回自由练习","音效："+(world.Sound.Muted?"关":"开"),"选择角色","陪练："+(world.OpponentHero==HeroKind.Banana?"香蕉刺客":world.OpponentHero==HeroKind.Ali?"阿狸":"越越大王"),"模式："+(world.PreferredMode==MatchMode.FlowerLane?"海克斯大乱斗":"三波挑战"),"退出游戏"};
             for(int i=0;i<options.Length;i++)
             {
                 Rect rect=new Rect(592,239+i*55,416,47);
@@ -176,7 +177,7 @@ namespace BigBattle
                 for(int j=0;j<3;j++)Text(new Rect(x+10,410+j*48,280,35),lines[j],17,Art.Ink,TextAnchor.MiddleCenter);
                 Text(new Rect(x+10,565,280,35),selected?(i==2?"›  已选中 · 确认预览":"›  已选中 · 确认出战"):"切换选择",18,selected?new Color(.02f,.48f,.34f):Muted,TextAnchor.MiddleCenter,true);
             }
-            Text(new Rect(300,680,1000,40),world.HeroSelection==2?"女巫当前仅支持移动与外观预览 · 技能确定后开放战斗":"单人模式 · 进入练习后按 N / 十字键上开启花溪大乱斗",18,Art.Cream,TextAnchor.MiddleCenter);
+            Text(new Rect(300,680,1000,40),world.HeroSelection==2?"女巫当前仅支持移动与外观预览 · 技能确定后开放战斗":"单人模式 · 进入练习后按 N / 十字键上开启海克斯大乱斗",18,Art.Cream,TextAnchor.MiddleCenter);
         }
         void Result()
         {
@@ -184,8 +185,8 @@ namespace BigBattle
             Box(new Rect(530,258,540,350),Paper);
             bool win=world.State==SessionState.Victory;
             Text(new Rect(550,284,500,37),world.IsLane?"FLOWER CREEK":win?"BANANA VICTORY!":"再来一根香蕉？",27,win?new Color(.15f,.53f,.39f):Art.Ink,TextAnchor.MiddleCenter,true);
-            Text(new Rect(550,340,500,56),world.IsLane?(win?"花溪守护成功！":"花心需要休息啦"):win?"花园守护成功":"这次先休息一下",36,Art.Ink,TextAnchor.MiddleCenter,true);
-            Text(new Rect(550,415,500,32),world.IsLane?"摧毁花心决胜 · 英雄击败 "+world.Lane.HeroKills[0]+" : "+world.Lane.HeroKills[1]:"击败 "+world.Score+" 名敌人   ·   用时 "+Mathf.FloorToInt(world.BattleSeconds)+" 秒",20,Muted,TextAnchor.MiddleCenter);
+            Text(new Rect(550,340,500,56),world.IsLane?(win?"冰桥推进成功！":"基地水晶已失守"):win?"花园守护成功":"这次先休息一下",36,Art.Ink,TextAnchor.MiddleCenter,true);
+            Text(new Rect(550,415,500,32),world.IsLane?"摧毁基地水晶决胜 · 英雄击败 "+world.Lane.HeroKills[0]+" : "+world.Lane.HeroKills[1]:"击败 "+world.Score+" 名敌人   ·   用时 "+Mathf.FloorToInt(world.BattleSeconds)+" 秒",20,Muted,TextAnchor.MiddleCenter);
             Box(new Rect(606,485,388,54),Art.Yellow);
             Text(new Rect(606,485,388,54),"Enter / A  再战一次",22,Art.Ink,TextAnchor.MiddleCenter,true);
             Text(new Rect(550,555,500,26),"Esc / Menu 打开菜单，可返回练习",15,Muted,TextAnchor.MiddleCenter);
@@ -195,29 +196,30 @@ namespace BigBattle
         {
             var mode=world.Lane;
             Box(new Rect(30,145,280,133),Paper);
-            Text(new Rect(47,154,246,29),"花心守护 · 逐座推进",18,Art.Ink,TextAnchor.MiddleLeft,true);
+            Text(new Rect(47,154,246,29),"冰桥战线 · 推进基地",18,Art.Ink,TextAnchor.MiddleLeft,true);
             for(int team=0;team<2;team++)
             {
                 var core=mode.Cores[team];float health=core!=null?core.Health/core.MaxHealth:0;float y=192+team*38;
                 Text(new Rect(47,y-5,64,24),team==0?"我方":"敌方",14,Muted);
-                Fill(new Rect(110,y+3,132,9),new Color(.79f,.84f,.74f));Fill(new Rect(110,y+3,132*health,9),team==0?Art.Mint:Art.Coral);
-                for(int i=0;i<2;i++){bool alive=mode.Towers[team,i]!=null && mode.Towers[team,i].Alive;Box(new Rect(280-i*19,y-1,12,15),alive?(team==0?Art.Mint:Art.Coral):new Color(.7f,.74f,.67f));}
+                Fill(new Rect(110,y+3,81,9),new Color(.75f,.82f,.89f));Fill(new Rect(110,y+3,81*health,9),team==0?Art.Mint:Art.Coral);
+                for(int i=0;i<5;i++){var objective=i<2?mode.Towers[team,i]:i==2?mode.Inhibitors[team]:mode.NexusTowers[team,i-3];bool alive=objective!=null && objective.Alive;Box(new Rect(201+i*18,y-1,12,15),alive?(team==0?Art.Mint:Art.Coral):new Color(.7f,.74f,.77f));}
             }
-            Text(new Rect(30,282,280,26),"无花灵支援时，建筑减伤 80%",12,Muted,TextAnchor.MiddleCenter);
+            Text(new Rect(30,282,280,26),"外塔 → 内塔 → 水晶 → 门牙 → 基地",12,Muted,TextAnchor.MiddleCenter);
+            Text(new Rect(30,304,280,24),"无兵线支援时，建筑减伤 80%",12,Muted,TextAnchor.MiddleCenter);
             Box(new Rect(1395,156,170,235),Paper);
-            Text(new Rect(1400,162,160,28),"花溪路线",17,Art.Ink,TextAnchor.MiddleCenter,true);
+            Text(new Rect(1400,162,160,28),"冰桥路线",17,Art.Ink,TextAnchor.MiddleCenter,true);
             for(int i=0;i<51;i++)Fill(new Rect(1428+i*2,335-i*2,4,4),new Color(.84f,.79f,.60f));
             foreach(var actor in world.Actors)
             {
-                if(actor==null || !actor.Alive || !actor.gameObject.activeInHierarchy)continue;
+                if(actor==null || !actor.Alive || !actor.gameObject.activeInHierarchy || !world.Lane.VisibleTo(world.Player.Team,actor))continue;
                 float x=1480+actor.transform.position.x*2.1f,y=285-actor.transform.position.z*2.1f;
                 float size=actor==world.Player?10:actor.IsStructure?9:actor is LaneMinion?4:7;
                 Box(new Rect(x-size*.5f,y-size*.5f,size,size),actor==world.Player?Art.Yellow:actor.Team==0?Art.Mint:Art.Coral);
             }
-            Text(new Rect(1400,362,160,23),"花灵 "+mode.NextWaveIn.ToString("0")+" 秒后出发",13,Muted,TextAnchor.MiddleCenter);
+            Text(new Rect(1400,362,160,23),"小兵 "+mode.NextWaveIn.ToString("0")+" 秒后出发",13,Muted,TextAnchor.MiddleCenter);
             if(!world.Player.Alive && world.State==SessionState.Battle)
             {
-                Box(new Rect(530,300,540,145),Paper);Text(new Rect(550,316,500,40),"休息一下，再次守护花溪",27,Art.Ink,TextAnchor.MiddleCenter,true);
+                Box(new Rect(530,300,540,145),Paper);Text(new Rect(550,316,500,40),"稍作休整，重返冰桥",27,Art.Ink,TextAnchor.MiddleCenter,true);
                 Text(new Rect(550,367,500,46),"复活倒计时  "+Mathf.CeilToInt(mode.RespawnIn(world.Player))+" 秒",30,new Color(.17f,.57f,.41f),TextAnchor.MiddleCenter,true);
             }
         }

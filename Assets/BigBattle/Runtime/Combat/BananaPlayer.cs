@@ -14,7 +14,7 @@ namespace BigBattle
         public Vector3 Facing { get; protected set; } = Vector3.back;
         public virtual string HeroName=>"香蕉刺客";
         public virtual string[] ActionNames=>SkillNames;
-        public virtual float Cooldown(int index)=>Cooldowns[index];
+        public virtual float Cooldown(int index)=>Cooldowns[index]*CooldownScale(index);
         public virtual string ActionHint(int index)=>index==0?"按住连击":"就绪";
         public bool Spinning => Time.time < spinUntil;
         public float Speed = 5.1f;
@@ -67,7 +67,7 @@ namespace BigBattle
             if (Time.time >= dashUntil && Time.time >= StunnedUntil)
             {
                 if (movement.sqrMagnitude>.01f) Facing=movement.normalized;
-                transform.position=World.Clamp(transform.position+movement*Speed*Time.deltaTime*(Spinning?.8f:1f));
+                transform.position=World.Clamp(transform.position+movement*Speed*MovementScale*Time.deltaTime*(Spinning?.8f:1f));
             }
             int requested=input.Dodge?3:input.Thrust?1:input.Peel?2:input.Ultimate?4:-1;
             if(requested>=0){bufferedSkill=requested;bufferedMove=movement;bufferedUntil=Time.time+.15f;}
@@ -90,7 +90,7 @@ namespace BigBattle
             if (Spinning && Time.time>=nextSpinHit)
             {
                 nextSpinHit=Time.time+.16f;
-                World.HitArea(this,transform.position,2.35f,Vector3.forward,-1,13,.20f);
+                World.HitArea(this,transform.position,2.35f*(HasAugment(20)?1.2f:1),Vector3.forward,-1,13*(HasAugment(20)?1.4f:1),.20f);
                 World.Fx.WhirlBeat(transform.position);
             }
             transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(Facing),Time.deltaTime*28);
@@ -104,17 +104,18 @@ namespace BigBattle
             if (skill<0 || skill>=readyAt.Length || Remaining(skill)>.001f || Time.time<dashUntil || Time.time<StunnedUntil || !Alive) return false;
             if (Spinning && skill!=3) return false;
             readyAt[skill]=Time.time+Cooldowns[skill]; casts[skill]++;
+            readyAt[skill]=Time.time+Cooldown(skill);Reveal();
             Vector3 aim = World.Assist(this,Facing,skill==2?5.2f:3f);
             switch(skill)
             {
                 case 0:
                     ComboStep=ComboActive?(ComboStep+1)%3:0;lastCombo=Time.time;ComboUsage[ComboStep]++;
-                    readyAt[0]=Time.time+ComboCadence[ComboStep];
-                    Facing=aim;Visual.PlayMotion((MotionId)((int)MotionId.Attack1+ComboStep),ComboDuration[ComboStep]);
-                    World.Melee.Slash(this,aim,ComboStep,ComboDuration[ComboStep]*.27f);
+                    readyAt[0]=Time.time+ComboCadence[ComboStep]*CooldownScale(0);
+                    Facing=aim;Visual.PlayMotion((MotionId)((int)MotionId.Attack1+ComboStep),ComboDuration[ComboStep]*CooldownScale(0));
+                    World.Melee.Slash(this,aim,ComboStep,ComboDuration[ComboStep]*CooldownScale(0)*.27f);
                     World.Sound.Play(ComboStep==2?SoundCue.SlashFinish:ComboStep==1?SoundCue.SlashBack:SoundCue.Slash,.85f+ComboStep*.08f);break;
                 case 1:
-                    Facing=aim; dashDirection=aim; dashSpeed=17; dashUntil=Time.time+.16f;
+                    Facing=aim; dashDirection=aim; dashSpeed=17*(HasAugment(19)?1.2f:1); dashUntil=Time.time+.16f;
                     InvulnerableUntil=Time.time+.10f;
                     World.Melee.Thrust(this,aim,transform.position,.28f*.27f);Visual.PlayMotion(MotionId.Thrust,.28f);
                     World.Sound.Play(SoundCue.Thrust); break;
@@ -124,6 +125,7 @@ namespace BigBattle
                 case 3:
                     dashDirection=movement.sqrMagnitude>.01f?movement.normalized:Facing;
                     dashSpeed=18; dashUntil=Time.time+.16f; InvulnerableUntil=Time.time+.30f;
+                    if(HasAugment(21))Heal(MaxHealth*.1f);
                     pendingSkill=-1;World.Melee.Cancel(this);attackBufferUntil=-100;Visual.PlayMotion(MotionId.Dodge,.28f);
                     World.Fx.Burst(transform.position+Vector3.up*.4f,Art.Mint,5); World.Sound.Play(SoundCue.Dodge); break;
                 case 4:

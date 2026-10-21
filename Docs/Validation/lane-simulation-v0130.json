@@ -1,0 +1,85 @@
+{
+    "utc": "2026-10-21T12:28:58.2110747Z",
+    "maxGameSeconds": 900,
+    "runs": [
+        {
+            "hero": "香蕉刺客",
+            "result": "Defeat",
+            "seconds": 478.18402099609377,
+            "enemyCore": 1581.39990234375,
+            "alliedCore": 0.0,
+            "waves": 19,
+            "alliedKills": 88,
+            "enemyKills": 101,
+            "alliedObjectives": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "enemyObjectives": [
+                0.0,
+                0.0,
+                600.0,
+                0.0,
+                0.0,
+                1581.39990234375
+            ]
+        },
+        {
+            "hero": "越越大王",
+            "result": "Defeat",
+            "seconds": 478.5040283203125,
+            "enemyCore": 1800.0,
+            "alliedCore": 0.0,
+            "waves": 19,
+            "alliedKills": 96,
+            "enemyKills": 99,
+            "alliedObjectives": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "enemyObjectives": [
+                0.0,
+                0.0,
+                0.0,
+                900.0,
+                900.0,
+                1800.0
+            ]
+        },
+        {
+            "hero": "阿狸",
+            "result": "Victory",
+            "seconds": 444.86004638671877,
+            "enemyCore": 0.0,
+            "alliedCore": 1800.0,
+            "waves": 18,
+            "alliedKills": 97,
+            "enemyKills": 96,
+            "alliedObjectives": [
+                0.0,
+                0.0,
+                342.0,
+                900.0,
+                900.0,
+                1800.0
+            ],
+            "enemyObjectives": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        }
+    ],
+    "errors": []
+}

@@ -272,6 +272,6 @@ namespace BigBattle
             world.Player.transform.position=Vector3.back*.8f;duelist.transform.position=Vector3.forward*.8f;
             duelist.transform.rotation=Quaternion.LookRotation(Vector3.back);
         }
-        void OnDestroy(){Application.logMessageReceived-=Log;}
+        void OnDestroy(){Time.captureFramerate=0;Application.logMessageReceived-=Log;}
     }
 }

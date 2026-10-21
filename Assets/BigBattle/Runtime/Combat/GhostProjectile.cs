@@ -9,12 +9,12 @@ namespace BigBattle
         public GhostShot Kind {get;private set;}
         public bool Flying {get;private set;}
         public int HitCount {get;private set;}
-        GameRoot world;Combatant source,target;Vector3 aim,origin;float born,speed;LineRenderer chain;Transform core;DoomWaveVisual doom;
+        GameRoot world;Combatant source,target;Vector3 aim,origin;float born,speed,power=1;LineRenderer chain;Transform core;DoomWaveVisual doom;
         readonly HashSet<Combatant> hit=new HashSet<Combatant>();
-        public static GhostProjectile Spawn(GameRoot world,Combatant source,GhostShot kind,Vector3 direction)
+        public static GhostProjectile Spawn(GameRoot world,Combatant source,GhostShot kind,Vector3 direction,float power=1)
         {
             if(world.Transients.GetComponentsInChildren<GhostProjectile>().Length>=48)return null;
-            var go=new GameObject("Ghost projectile • "+kind);go.transform.SetParent(world.Transients);var shot=go.AddComponent<GhostProjectile>();shot.Setup(world,source,kind,direction);return shot;
+            var go=new GameObject("Ghost projectile • "+kind);go.transform.SetParent(world.Transients);var shot=go.AddComponent<GhostProjectile>();shot.power=power;shot.Setup(world,source,kind,direction);return shot;
         }
         void Setup(GameRoot game,Combatant owner,GhostShot kind,Vector3 direction)
         {
@@ -60,8 +60,8 @@ namespace BigBattle
         void Strike(Combatant actor)
         {
             hit.Add(actor);float damage=Kind==GhostShot.Doom?500:Kind==GhostShot.Chain?12:28;
-            if(actor.Damage(damage*source.AttackScale,source,Kind==GhostShot.Chain?Vector3.zero:aim*.18f,0))HitCount++;
-            if(Kind==GhostShot.Chain && actor.Bind(2))
+            if(actor.Damage(damage*source.AttackScale*power*(Kind==GhostShot.Doom && source.HasAugment(25)?1.4f:1),source,Kind==GhostShot.Chain?Vector3.zero:aim*.18f,0))HitCount++;
+            if(Kind==GhostShot.Chain && actor.Bind(source.HasAugment(23)?2.8f:2))
             {
                 var cage=new GameObject("Void chains • two second bind").AddComponent<SoulCage>();cage.transform.SetParent(world.Transients);cage.Setup(actor);world.Sound.Play(SoundCue.Clash,.7f);
             }

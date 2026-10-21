@@ -1,0 +1,12 @@
+{
+  "capturedFrames": 210,
+  "frames": 106,
+  "sourceFirstSeconds": 0.02424335479736328,
+  "sourceLastSeconds": 17.969831466674805,
+  "encodedSeconds": 18.04,
+  "gifBytes": 7770453,
+  "gifSHA256": "3432d8f6089614ece7e4947d78feb291857c8b2d0ee2b2b4d225504d16d4cb85",
+  "source": "Actual 1600x900 native player, every second frame plus final frame, 800x450 GIF; measured unscaled timestamps; no interpolated frames",
+  "scenario": "Fixed Yueyue diagnostic hero, AI controls human slot and picks augments; normal follow camera. Still images test the actual random draft and human choice.",
+  "limits": "Capture count is not game FPS. No physical controller or manual victory claim."
+}

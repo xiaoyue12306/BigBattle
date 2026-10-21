@@ -54,8 +54,8 @@ namespace BigBattle
             world.StartBattle();Check(world.State==SessionState.Battle && world.Wave==1,"Ali can enter the original three-wave combat mode");foreach(var actor in world.Actors)if(actor!=ali)actor.enabled=false;
             field=world.Bubbles;var threat=BubbleTarget(Vector3.right*8);field.Place(threat,ali.transform.position,999);field.Place(ali,ali.transform.position+Vector3.right,80);yield return new WaitForSeconds(1.95f);
             Check(world.State==SessionState.Defeat && field.PendingCount==0 && field.WaveCount==0,"A lethal enemy bubble ends combat and immediately clears remaining waves and armed bubbles");world.EnterPractice();yield return Wait(.08f);
-            world.StartLaneBattle();world.Lane.Autonomous=false;foreach(var hero in world.Lane.Heroes)hero.enabled=false;
-            Check(world.IsLane && world.Lane.Heroes.Count==10 && world.Lane.Heroes.FindAll(h=>h is AliPlayer).Count==3,"Ali lane battle supports one human and nine AI with two explicit Ali bots");
+            world.BeginMayhem(world.SelectedHero,true);world.Lane.Autonomous=false;foreach(var h in world.Lane.Heroes)h.Augments.Clear();foreach(var hero in world.Lane.Heroes)hero.enabled=false;
+            Check(world.IsLane && world.Lane.Heroes.Count==10 && world.Lane.Heroes.TrueForAll(h=>h.VisualStyle==0 || h.VisualStyle==3 || h.VisualStyle==8),"Ali lane battle supports one human and nine AI with a random playable-hero AI roster");
             field=world.Bubbles;Vector3 lanePoint=FlowerLaneMap.ToWorld(new Vector3(5.5f,0,0));field.Place(ali,lanePoint,80);bomb=field.Bombs[0];
             Check(bomb.Across==FlowerLaneMap.Across && bomb.Forward==FlowerLaneMap.Forward(0),"Lane bubbles use the rotated map axes rather than world or facing axes");
             ali.Cast(0,Vector3.zero);float cooldown=ali.Remaining(0);ali.RespawnAt(FlowerLaneMap.Spawn(0),FlowerLaneMap.Forward(0));

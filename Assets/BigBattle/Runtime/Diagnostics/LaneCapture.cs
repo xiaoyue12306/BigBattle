@@ -10,7 +10,7 @@ namespace BigBattle
     public sealed class LaneCapture : MonoBehaviour
     {
         [Serializable]sealed class Timing {public List<float> seconds=new List<float>();}
-        [Serializable]sealed class Run {public string hero,result;public float seconds,enemyCore,alliedCore;public int waves,alliedKills,enemyKills;}
+        [Serializable]sealed class Run {public string hero,result;public float seconds,enemyCore,alliedCore;public int waves,alliedKills,enemyKills;public List<float> alliedObjectives=new List<float>(),enemyObjectives=new List<float>();}
         [Serializable]sealed class Report {public string utc=DateTime.UtcNow.ToString("o");public int maxGameSeconds=900;public List<Run> runs=new List<Run>();public List<string> errors=new List<string>();}
         GameRoot world;bool simulation;LaneHeroBot brain;Report report=new Report();
         public void Setup(GameRoot game,bool fast){world=game;simulation=fast;}
@@ -27,17 +27,18 @@ namespace BigBattle
                 world.CameraRig.Camera.enabled=false;world.GetComponent<GameHud>().enabled=false;
                 foreach(HeroKind kind in new[]{HeroKind.Banana,HeroKind.Yueyue,HeroKind.Ali})
                 {
-                    world.SelectHero(kind);world.StartLaneBattle();brain=world.Player.gameObject.AddComponent<LaneHeroBot>();brain.ExternalInput=true;brain.Setup(world.Lane,world.Player,0);
+                    world.SelectHero(kind);world.BeginMayhem(world.SelectedHero,true);brain=world.Player.gameObject.AddComponent<LaneHeroBot>();brain.ExternalInput=true;brain.Setup(world.Lane,world.Player,0);
                     float born=Time.time;
                     while(world.State==SessionState.Battle && Time.time-born<report.maxGameSeconds)yield return null;
                     var mode=world.Lane;
-                    report.runs.Add(new Run{hero=world.Player.HeroName,result=world.State.ToString(),seconds=Time.time-born,enemyCore=mode.Cores[1]!=null?mode.Cores[1].Health:0,alliedCore=mode.Cores[0]!=null?mode.Cores[0].Health:0,waves=mode.WavesSpawned,alliedKills=mode.HeroKills[0],enemyKills=mode.HeroKills[1]});
+                    var run=new Run{hero=world.Player.HeroName,result=world.State.ToString(),seconds=Time.time-born,enemyCore=mode.Cores[1]!=null?mode.Cores[1].Health:0,alliedCore=mode.Cores[0]!=null?mode.Cores[0].Health:0,waves=mode.WavesSpawned,alliedKills=mode.HeroKills[0],enemyKills=mode.HeroKills[1]};
+                    for(int team=0;team<2;team++)foreach(var b in new[]{mode.Towers[team,0],mode.Towers[team,1],mode.Inhibitors[team],mode.NexusTowers[team,0],mode.NexusTowers[team,1],mode.Cores[team]})(team==0?run.alliedObjectives:run.enemyObjectives).Add(b!=null?b.Health:0);report.runs.Add(run);
                     brain=null;world.EnterPractice();yield return null;
                 }
                 Time.captureFramerate=0;File.WriteAllText(Path.Combine(output,"report.json"),JsonUtility.ToJson(report,true));
                 bool pass=report.errors.Count==0 && report.runs.TrueForAll(r=>r.result=="Victory" || r.result=="Defeat");Debug.Log("LANE_SIM_"+(pass?"PASS":"FAIL"));Application.Quit(pass?0:1);yield break;
             }
-            world.SelectHero(HeroKind.Yueyue);world.StartLaneBattle();world.CameraRig.MapOverview=true;world.CameraRig.Snap();yield return new WaitForSecondsRealtime(.3f);
+            world.SelectHero(HeroKind.Yueyue);world.BeginMayhem(world.SelectedHero,true);world.CameraRig.MapOverview=true;world.CameraRig.Snap();yield return new WaitForSecondsRealtime(.3f);
             yield return new WaitForEndOfFrame();var overview=ScreenCapture.CaptureScreenshotAsTexture();File.WriteAllBytes(Path.Combine(output,"map-overview.png"),overview.EncodeToPNG());Destroy(overview);
             world.CameraRig.MapOverview=false;world.CameraRig.Snap();brain=world.Player.gameObject.AddComponent<LaneHeroBot>();brain.ExternalInput=true;brain.Setup(world.Lane,world.Player,0);
             var timing=new Timing();var frames=new List<Texture2D>();float began=Time.unscaledTime,next=0;int index=0;

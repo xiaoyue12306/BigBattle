@@ -226,7 +226,7 @@ namespace BigBattle
             if(CapturePortrait)return world.Player.transform.position+Vector3.up*1.15f;
             if(CaptureDoom)return world.Player.transform.position+world.Player.Facing*5;
             if(CaptureCloseup)return world.Player.transform.position;
-            if(world!=null && world.IsLane){Vector3 lane=FlowerLaneMap.ToLane(world.Player.transform.position);return FlowerLaneMap.ToWorld(new Vector3(lane.x*.45f,0,Mathf.Clamp(lane.z+3,-28,28)));}
+            if(world!=null && world.IsLane){Vector3 lane=FlowerLaneMap.ToLane(world.Player.transform.position);return FlowerLaneMap.ToWorld(new Vector3(lane.x*.45f,0,Mathf.Clamp(lane.z+3,-39,39)));}
             return world.Player.transform.position*.24f;
         }
         public void Snap(){focus=MapOverview?Vector3.zero:world!=null && (world.IsLane || CaptureCloseup || CaptureDoom)?Target():Vector3.zero;kick=Vector3.zero;shake=punch=0;doomAt=-100;Place();}
@@ -243,14 +243,14 @@ namespace BigBattle
             focus=Vector3.Lerp(focus,target,1-Mathf.Exp(-Time.unscaledDeltaTime*3));
             // Wider floor coverage on narrower displays, including future viewports.
             float doomAge=Time.time-doomAt,expansion=doomAge<1.4f?Mathf.Sin(Mathf.Clamp01(doomAge/1.4f)*Mathf.PI)*1.8f:0;
-            Camera.orthographicSize=(MapOverview?38:CaptureDoom?11.8f:CaptureCloseup?CaptureSize:Mathf.Max(9.8f,15.4f/Mathf.Max(.7f,Camera.aspect))-punch)+expansion;Place();
+            Camera.orthographicSize=(MapOverview?49:CaptureDoom?11.8f:CaptureCloseup?CaptureSize:Mathf.Max(9.8f,15.4f/Mathf.Max(.7f,Camera.aspect))-punch)+expansion;Place();
             shake=Mathf.MoveTowards(shake,0,Time.unscaledDeltaTime*.9f);
             kick=Vector3.Lerp(kick,Vector3.zero,1-Mathf.Exp(-Time.unscaledDeltaTime*22));punch=Mathf.MoveTowards(punch,0,Time.unscaledDeltaTime*1.6f);
         }
         void Place()
         {
             Vector3 jitter=world!=null && !world.Paused?new Vector3(Mathf.Sin(Time.unscaledTime*67),Mathf.Sin(Time.unscaledTime*47),0)*shake+kick:Vector3.zero;
-            Camera.farClipPlane=MapOverview?220:100;RenderSettings.fog=!MapOverview;
+            Camera.farClipPlane=MapOverview?220:100;RenderSettings.fog=!MapOverview; Camera.backgroundColor=world.IsLane?new Color(.06f,.13f,.22f):new Color(.63f,.84f,.89f); RenderSettings.fogColor=Camera.backgroundColor; RenderSettings.ambientEquatorColor=world.IsLane?new Color(.4f,.5f,.62f):new Color(.52f,.65f,.59f);
             transform.position=focus+(MapOverview?new Vector3(0,65,-50.55f):CapturePortrait?new Vector3(0,8,-16):new Vector3(0,18,-14))+jitter;transform.rotation=Quaternion.LookRotation(focus-transform.position);
         }
     }

@@ -17,6 +17,16 @@ namespace BigBattle
         public float BoundUntil {get;private set;}
         public bool Controlled=>Time.time<StunnedUntil || Time.time<BoundUntil;
         public float AttackScale=1;
+        public MayhemAugments Augments {get;internal set;}
+        public float RevealedUntil {get;private set;}
+        public float TowerAggroUntil {get;private set;}
+        float slowUntil;
+        public float MovementScale=>(Time.time<slowUntil?.75f:1)*(Augments!=null?Augments.Movement:1);
+        public float CooldownScale(int skill)=>Augments!=null?Augments.Cooldown(skill):1;
+        public bool HasAugment(int id)=>Augments!=null && Augments.Has(id);
+        public void Slow(float seconds){slowUntil=Mathf.Max(slowUntil,Time.time+seconds);}
+        public void Reveal(){RevealedUntil=Time.time+2;}
+        public void SetMaximumHealth(float value){float gain=value-MaxHealth;bool alive=Alive;MaxHealth=value;Health=alive?Mathf.Clamp(Health+gain,1,MaxHealth):0;}
         public virtual float BaseAttackDamage=>this is MochiEnemy?13:24;
         public virtual int VisualStyle=>this is YueyuePlayer?3:this is MochiEnemy?1:0;
         public virtual bool IsStructure=>false;
@@ -34,9 +44,13 @@ namespace BigBattle
         public virtual bool Damage(float amount, Combatant source, Vector3 push, float stun = .08f)
         {
             if (!Alive || source == null || source.Team == Team || Time.time < InvulnerableUntil || amount <= 0) return false;
+            Reveal();source.Reveal();if(source.Augments!=null)amount=source.Augments.Outgoing(this,amount);if(Augments!=null)amount=Augments.Incoming(amount);
+            if(World.IsLane && this is BananaPlayer && source is BananaPlayer)source.TowerAggroUntil=Time.time+2.5f;
+            if(amount<=0){LastHitAt=Time.time;Visual.Flash();return true;}float priorHealth=Health;
             World.Melee.Cancel(this);
             LastHitAt = Time.time; TotalDamageReceived += amount;
             Health = Mathf.Max(0, Health-amount); Visual.Flash();
+            if(Augments!=null)Augments.Damaged();
             Vector3 direction=transform.position-source.transform.position;direction.y=0;
             Visual.React(direction.normalized,amount>=30?1.3f:.8f);
             if(stun>=1 && !IsDummy)Visual.Slip(stun);
@@ -60,7 +74,7 @@ namespace BigBattle
                 if (IsDummy) { Health = MaxHealth; World.Fx.Notice(this is BananaDuelist?"漂亮！陪练生命已恢复":"漂亮！木桩已重置"); }
                 else { World.RecordDefeat(this,source);Die(); }
             }
-            return true;
+            if(source!=null && source.Augments!=null)source.Augments.Hit(this,Mathf.Min(priorHealth,amount));return true;
         }
 
         public bool Bind(float seconds)
@@ -70,7 +84,7 @@ namespace BigBattle
             var mage=this as YueyuePlayer;if(mage!=null)mage.InterruptCharge();
             return true;
         }
-        public void Cleanse(){StunnedUntil=BoundUntil=0;knockbackVelocity=Vector3.zero;}
+        public void Cleanse(){StunnedUntil=BoundUntil=slowUntil=0;knockbackVelocity=Vector3.zero;}
         public void Restore() { Health = MaxHealth; InvulnerableUntil = 0;Cleanse(); }
         public void Heal(float amount){if(Alive && amount>0)Health=Mathf.Min(MaxHealth,Health+amount);}
         public void WeaponRecoil(Vector3 away)
@@ -80,7 +94,7 @@ namespace BigBattle
         }
         protected virtual void LateUpdate()
         {
-            if(World==null || World.Paused || !Alive)return;
+            if(World==null || World.Paused || !Alive || IsStructure)return;
             if(Time.time<BoundUntil){knockbackVelocity=Vector3.zero;return;}
             transform.position=World.Clamp(transform.position+knockbackVelocity*Time.deltaTime);
             knockbackVelocity*=Mathf.Exp(-18*Time.deltaTime);

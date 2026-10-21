@@ -78,6 +78,12 @@ namespace BigBattle
         {
             ApplyClock();
             var input=Input.Read();
+            if(MayhemLobby || ChoosingAugment)
+            {
+                if(input.Pause){EnterPractice();return;}
+                if(MayhemLobby){if(input.Reroll)RerollHero();if(input.Confirm)ConfirmMayhem();}
+                else{if(input.MenuStep!=0)Lane.OfferSelection=(Lane.OfferSelection+input.MenuStep+3)%3;if(input.Reroll)Lane.RerollOffer();if(input.Confirm)Lane.ConfirmOffer();}return;
+            }
             if(Selecting)
             {
                 if(input.MenuStep!=0)HeroSelection=(HeroSelection+input.MenuStep+HeroCount)%HeroCount;
@@ -96,8 +102,9 @@ namespace BigBattle
                 if(input.Confirm || input.Session)StartBattle();return;
             }
             if(input.Session){if(State==SessionState.Practice)StartBattle();else EnterPractice();return;}
-            if(input.Sparring){EnterSparring();return;}
-            Player.Tick(input);
+            if(input.Sparring){if(IsLane)Lane.TryGate(Player);else EnterSparring();return;}
+            if(input.Interact && IsLane)Lane.TryGate(Player);
+            if(!IsLane || !Lane.Transiting(Player))Player.Tick(input);
             if(State==SessionState.Battle)
             {
                 BattleSeconds+=Time.deltaTime;
@@ -236,7 +243,7 @@ namespace BigBattle
             Combatant best=null;float bestDistance=range;
             foreach(var actor in Actors)
             {
-                if(actor==null || actor.Team==source.Team || !Targetable(actor))continue;
+                if(actor==null || actor.Team==source.Team || !Targetable(actor,source))continue;
                 Vector3 offset=actor.transform.position-source.transform.position;offset.y=0;
                 float distance=offset.magnitude;
                 if(distance<bestDistance && distance>.05f && Vector3.Dot(facing,offset.normalized)>.93f){best=actor;bestDistance=distance;}
@@ -247,7 +254,7 @@ namespace BigBattle
         public Combatant FrontTarget(Combatant source,Vector3 facing,float range,float dot)
         {
             Combatant best=null;float distance=range;
-            foreach(var actor in Actors){if(actor==null || !Targetable(actor) || actor.Team==source.Team)continue;Vector3 delta=actor.transform.position-source.transform.position;delta.y=0;if(delta.magnitude<distance && (delta.sqrMagnitude<.001f || Vector3.Dot(delta.normalized,facing)>dot)){best=actor;distance=delta.magnitude;}}
+            foreach(var actor in Actors){if(actor==null || !Targetable(actor,source) || actor.Team==source.Team)continue;Vector3 delta=actor.transform.position-source.transform.position;delta.y=0;if(delta.magnitude<distance && (delta.sqrMagnitude<.001f || Vector3.Dot(delta.normalized,facing)>dot)){best=actor;distance=delta.magnitude;}}
             return best;
         }
         public Combatant NearestEnemy(Combatant source,float range)=>FrontTarget(source,Vector3.forward,range,-2);

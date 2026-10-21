@@ -11,8 +11,8 @@ namespace BigBattle
         public override float BaseAttackDamage=>damage;
         public void Setup(GameRoot world,YueyuePlayer owner,FallenRecord record)
         {
-            Owner=owner;style=record.Style;damage=record.Damage*.5f;ExpiresAt=Time.time+20;
-            Initialize(world,owner.Team,record.Health*.5f,style);
+            Owner=owner;style=record.Style;damage=record.Damage*(owner.HasAugment(24)?.65f:.5f);ExpiresAt=Time.time+(owner.HasAugment(24)?28:20);
+            Initialize(world,owner.Team,record.Health*(owner.HasAugment(24)?.7f:.5f),style);
             // Fixed snapshot: never halve again when a returned spirit defeats a foe.
             AttackScale=style==8?damage/80:style==3?damage/28:damage/24;
             var aura=new GameObject("Teal returned-spirit aura");aura.transform.SetParent(transform,false);aura.AddComponent<SpiritAura>().Setup(this);

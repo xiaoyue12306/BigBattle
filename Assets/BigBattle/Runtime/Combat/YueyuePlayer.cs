@@ -13,7 +13,7 @@ namespace BigBattle
         readonly float[] ready=new float[5],uses=new float[5];
         public override string HeroName=>"越越大王";
         public override string[] ActionNames=>Names;
-        public override float Cooldown(int i)=>Recovery[i];
+        public override float Cooldown(int i)=>Recovery[i]*CooldownScale(i);
         public override float Remaining(int i)=>Mathf.Max(0,ready[i]-Time.time);
         public override float Casts(int i)=>uses[i];
         public override float BaseAttackDamage=>28;
@@ -21,6 +21,7 @@ namespace BigBattle
         public FallenRecord Fallen {get;private set;}
         public SpiritAlly Servant {get;private set;}
         public bool Charging {get;private set;}
+        public bool NeedsUltimateRelease=>requireRelease;
         public float ChargeProgress=>Charging?Mathf.Clamp01((Time.time-chargeAt)/4):0;
         public bool Phasing=>Time.time<phaseUntil;
         public int ReleasedWaves {get;private set;}
@@ -63,12 +64,12 @@ namespace BigBattle
             {
                 if(Time.time<BoundUntil){InterruptCharge();return;}
                 if(move.sqrMagnitude>.01f)Facing=move.normalized;
-                if(!Controlled)transform.position=World.Clamp(transform.position+move*Speed*.1f*Time.deltaTime);
+                if(!Controlled)transform.position=World.Clamp(transform.position+move*Speed*MovementScale*.1f*Time.deltaTime);
                 if(!held){if(ChargeProgress>=1)ReleaseSword();else InterruptCharge();}
             }
             else
             {
-                if(!Controlled && move.sqrMagnitude>.01f){Facing=move.normalized;transform.position=World.Clamp(transform.position+move*Speed*Time.deltaTime);}
+                if(!Controlled && move.sqrMagnitude>.01f){Facing=move.normalized;transform.position=World.Clamp(transform.position+move*Speed*MovementScale*Time.deltaTime);}
                 if(!Phasing && !Controlled)
                 {
                     if(input.Dodge)Cast(3,move);
@@ -90,9 +91,10 @@ namespace BigBattle
             if(skill==2 && !Fallen.Valid)return false;
             if(skill==4 && (Souls<3 || requireRelease))return false;
             if(skill==4){Charging=true;chargeAt=Time.time;World.Sound.Play(SoundCue.Ultimate,.6f);if(rig!=null)rig.Present(true,0,false);return true;}
-            ready[skill]=Time.time+Recovery[skill];uses[skill]++;
+            ready[skill]=Time.time+Cooldown(skill);uses[skill]++;Reveal();
             if(rig!=null)rig.PlayCast(skill);
             if(skill==0){GhostProjectile.Spawn(World,this,GhostShot.Skull,Facing);Visual.PlayMotion(MotionId.Throw,.42f);World.Sound.Play(SoundCue.Toss,.8f);}
+            if(skill==0 && HasAugment(22))foreach(float angle in new[]{-14f,14f})GhostProjectile.Spawn(World,this,GhostShot.Skull,Quaternion.Euler(0,angle,0)*Facing,.5f);
             if(skill==1){GhostProjectile.Spawn(World,this,GhostShot.Chain,Facing);Visual.PlayMotion(MotionId.Thrust,.45f);World.Sound.Play(SoundCue.Clash,.55f);}
             if(skill==2)
             {
@@ -111,7 +113,7 @@ namespace BigBattle
         }
         void ReleaseSword()
         {
-            Charging=false;requireRelease=true;Souls-=3;ready[4]=Time.time+20;uses[4]++;ReleasedWaves++;
+            Charging=false;requireRelease=true;Souls-=3;ready[4]=Time.time+Cooldown(4);uses[4]++;ReleasedWaves++;Reveal();
             GhostProjectile.Spawn(World,this,GhostShot.Doom,Facing);Visual.PlayMotion(MotionId.Attack3,.7f);
             SoulVfx.Burst(World,SoulEffect.Release,transform.position+Vector3.up*.5f,Facing);
             if(rig!=null)rig.Release();

@@ -1,4 +1,32 @@
-# v0.12.0 validation record
+# v0.13.0 validation record
+
+2026-10-21 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
+
+## Final build, source and standalone
+
+- Final warm build **0 errors / 0 warnings / 138,069,995 bytes**, no C# / shader errors or exceptions in the final log. Existing imported hero clips and Timeline **10 assets / 44 clips / editorScrub=PASS** validate. Three source compilation configurations and **53** input/layout/XInput ABI checks pass. All four physical controller slots remain disconnected.
+- Final native standalone regression **332 passed / 0 failed / zero recorded runtime errors**, UTC **2026-10-21T12:29:00.6993230Z**, [versioned report](Validation/smoke-report-v0130.json). Retains original combat, Mixamo, clash/mute/pause, souls/charge/summons, Timeline, Witch preview guards and Ali bubble/200ms-frame tests.
+- New checks exercise the actual random draft, two guaranteed-change rerolls, Witch exclusion, nine AI choices, three unique offers / one fresh redraw, input navigation / confirmation, all **30** augment hooks, four paused time-based rounds, 300-second inhibitor return, tower/minion priority and provoked hero aggro, full six-objective chains, solid footprints, scaled respawn and reinforcement growth, relic pickup / delayed heal, frostgate trip / cooldown, brush targeting / blind damage, base no-heal, and mode-exit cleanup.
+- Actual enhanced skills produce three skulls, a >2.3s remaining bind, a 126-HP / 52-damage / 28s Ali spirit, one **700**-damage doom release after three real kills, seven pending bubbles, seven-unit range, 1.35s fuse and **108**-damage chain-triggered bubbles. Banana finisher bonus is applied at the actual third melee contact and cannot leak into other damage; spin bonus is applied only to its own pulses.
+- First expanded run was **321/5**, without runtime errors: four assertions needed isolated fixtures (prior hit stun, real hit-pause clock, release guard after spawn, rotated bubble axes); Ali's HUD also instantiated an empty bubble service after cleanup. The final code uses a side-effect-free pending-count query. Subsequent review added dedicated finisher-leak and tower-aggro tests, fixes target ranking, and validates the AI's normal held-button release path after a three-soul respawn.
+
+## Full matches and actual rendering
+
+- [Final three-hero AI runs](Validation/lane-simulation-v0130.json), UTC **2026-10-21T12:28:58.2110747Z**, all conclude without errors: Banana **Defeat, 478.18 game seconds / 19 waves / kills 88:101 / enemy nexus 1581.40 HP**; Yueyue **Defeat, 478.50s / 19 waves / 96:99 / enemy nexus 1800 HP**; Ali **Victory, 444.86s / 18 waves / 97:96 / allied nexus 1800 HP**. Report also preserves each side's six objective health values.
+- Fixed 0.1s simulation steps, drawing disabled, 900-game-second observation cap. Earlier fixed-eight-second respawn versions reached the cap in some/all rosters despite continued fighting. Time-based 8→32s respawns, bounded stronger reinforcements and minion-supported objective priority now create actual siege windows; AI Yueyue releases stale ultimate input after spawn rather than repeatedly failing to charge. An intermediate three-run set also concluded normally. Outcomes vary; these are completion checks, not manual wins, balance proof or realtime performance.
+- Inspected actual bridge overview, random draft, augment cards, normal combat and a nine-frame motion contact sheet. [Actual GIF](Images/mayhem-v0130.gif): **210 captured frames → 106 selected frames / 18.04s encoded / 7,770,453 bytes**, source clock **0.024243→17.969831s**. Every second actual 1600×900 frame plus the final frame is resized to 800×450 and encoded at measured timings; no generated / interpolated frames. Includes base approach / gate return, fighting, death and respawn countdown; no staged invulnerability. [Timing/hash record](Validation/mayhem-preview-v0130.json).
+- The recording uses fixed diagnostic Yueyue, AI input and automatic augment choices; full-map still is a diagnostic overview. Separate screenshots exercise the real random draft and human three-choice panel. Capture count is not game FPS. Preview log ends **LANE_PREVIEW_OK frames=210**, without errors.
+
+## Package, scope and handoff
+
+- Portable **Builds/BigBattle-v0.13.0-Windows.zip: 49,816,440 bytes / 137 entries**. Complete ZIP CRC passes; launcher, Data, gameplay and Timeline hashes match the final tested folder. [Build/package hashes](Validation/build-v0130.json). Reproducible packaging: `Tools/PackageWindows.py --version 0.13.0`. Generated binaries / raw recordings remain local and ignored.
+- [MAYHEM.md](MAYHEM.md) records the agreed snowy-map direction, rules, all augments, controls, compatibility names and primary Riot design references. Original procedural bridge / towers / crystals / minions use no extracted League assets. This is an adapted first version, **not a pixel-identical map or complete current-patch League simulation**. Specific timings / stats and mixed augment tiers are project choices; summoner spells are not added.
+- Still **one human + nine AI**, three combat heroes; Witch remains preview-only. No super minions, gold, XP/levels, skill ranks, shop, equipment, networking or local joining. Garden practice, sparring and three waves remain separate. Late minion growth is a match rule, not hero progression.
+- Building avoidance is local steering on a flat bridge, fog uses a coarse mesh and 0.15s updates, and projectiles/effects lack per-team render compositing. Procedural art, readability and long-session balance need further iteration. Physical Xbox/rumble/reconnect, two physical keyboards, target-TV audio/brightness, low-end load and five-player split screen remain untested/unimplemented.
+
+---
+
+# Historical v0.12.0 validation record
 
 2026-10-20 (Asia/Shanghai), Tuanjie 1.9.3 / 2022.3.62t11, Windows x64 / Direct3D 11 / NVIDIA GeForce RTX 4060 Ti.
 

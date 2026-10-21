@@ -1,0 +1,14 @@
+{
+  "version": "0.13.0",
+  "target": "Windows x64 / Tuanjie 1.9.3",
+  "buildBytes": 138069995,
+  "buildErrors": 0,
+  "buildWarnings": 0,
+  "zipBytes": 49816440,
+  "zipEntries": 137,
+  "zipSHA256": "1a72e140177c7aa2cf63bc45ceea4f67f49082d094c2de3cd79c7040dc8f115f",
+  "exeSHA256": "2b0b27140664ec090e1bca4bea283311b09210f401190d1e8ddfab8bbf462123",
+  "runtimeAssemblySHA256": "653ccdd1c87db212c446442ba2a58c8bcd687f4fd135ca48eebf1af3b4aaa03a",
+  "timelineAssemblySHA256": "86929f1bbd990d940af7fc816dd8ab1a1f5ce2c0bc8d19ae991d3b2e4b73b6a0",
+  "zipCRC": "PASS"
+}

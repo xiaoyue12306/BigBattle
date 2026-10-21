@@ -31,7 +31,7 @@ namespace BigBattle
             var visual = root.AddComponent<ActorVisual>();
             visual.Body = new GameObject("Body rig").transform; visual.Body.SetParent(root.transform, false);
             if (style == 0) {visual.BuildBanana();visual.library=Resources.Load<MixamoMotionLibrary>("LocalMixamo/Library");}
-            else if (style == 1) visual.BuildMochi(); else if(style==3)YueyueVisual.Build(visual);else if(style==7)WitchVisual.Build(visual);else if(style==8)AliVisual.Build(visual);else if(style==4 || style==5)visual.BuildGuardian(style==5);else if(style==6)visual.BuildSprout();else visual.BuildDummy();
+            else if (style == 1) visual.BuildMochi(); else if(style==3)YueyueVisual.Build(visual);else if(style==7)WitchVisual.Build(visual);else if(style==8)AliVisual.Build(visual);else if(style==4 || style==5 || style==9){visual.ExternalBodyPose=true;AbyssMap.Structure(visual,style,parent.GetComponent<Combatant>().Team);}else if(style==6)visual.BuildIceMinion(parent.GetComponent<Combatant>().Team,parent.GetComponent<LaneMinion>()?.Kind??0);else visual.BuildDummy();
             visual.Renderers = System.Array.FindAll(root.GetComponentsInChildren<Renderer>(),r=>r.GetComponentInParent<SoulVfx>()==null); return visual;
         }
 
@@ -118,6 +118,16 @@ namespace BigBattle
             }
             for(int side=-1;side<=1;side+=2){Eye(Body,new Vector3(side*.18f,core?1.85f:2.4f,core?.88f:.52f),core?.11f:.085f);Art.Shape("Garden cheek",PrimitiveType.Sphere,Body,new Vector3(side*.34f,core?1.63f:2.23f,core?.83f:.45f),new Vector3(.16f,.08f,.035f),new Color(1,.63f,.59f));}
             Art.Shape("Smile",PrimitiveType.Capsule,Body,new Vector3(0,core?1.58f:2.15f,core?.92f:.55f),new Vector3(.12f,.025f,.025f),Art.Ink).transform.localRotation=Quaternion.Euler(0,0,90);
+        }
+        void BuildIceMinion(int team,int kind)
+        {
+            Color color=team==0?new Color(.16f,.48f,.86f):new Color(.75f,.18f,.29f),metal=new Color(.50f,.6f,.68f);
+            Art.Shape("Minion armored body",PrimitiveType.Capsule,Body,new Vector3(0,.45f,0),new Vector3(.58f,.42f,.53f),color);
+            Art.Shape("Minion steel helmet",PrimitiveType.Sphere,Body,new Vector3(0,.85f,0),new Vector3(.64f,.46f,.6f),metal);
+            Art.Shape("Minion face slit",PrimitiveType.Cube,Body,new Vector3(0,.84f,.29f),new Vector3(.36f,.08f,.04f),Art.Ink);
+            for(int s=-1;s<=1;s+=2){Art.Shape("Minion boot",PrimitiveType.Cube,Body,new Vector3(s*.18f,.12f,.06f),new Vector3(.20f,.20f,.30f),metal);Art.Shape("Minion gauntlet",PrimitiveType.Sphere,Body,new Vector3(s*.38f,.45f,.05f),Vector3.one*.20f,color);}
+            if(kind==1){Art.Shape("Caster staff",PrimitiveType.Cylinder,Body,new Vector3(.4f,.65f,.1f),new Vector3(.07f,.6f,.07f),metal);Art.Shape("Caster focus",PrimitiveType.Sphere,Body,new Vector3(.4f,1.2f,.1f),Vector3.one*.2f,color);}
+            if(kind==2){Body.localScale=Vector3.one*1.25f;for(int s=-1;s<=1;s+=2)Art.Shape("Cannon carriage wheel",PrimitiveType.Sphere,Body,new Vector3(s*.4f,.2f,0),new Vector3(.22f,.48f,.48f),metal);Art.Shape("Siege cannon barrel",PrimitiveType.Cube,Body,new Vector3(0,.6f,.5f),new Vector3(.28f,.28f,1.1f),metal);}
         }
 
         static void Eye(Transform parent, Vector3 position, float size)

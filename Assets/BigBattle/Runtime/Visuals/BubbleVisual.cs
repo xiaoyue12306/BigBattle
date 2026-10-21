@@ -7,7 +7,7 @@ namespace BigBattle
     {
         static Mesh cloud;
         readonly List<Transform> cells=new List<Transform>();readonly List<float> distances=new List<float>();readonly List<Renderer> renderers=new List<Renderer>();
-        readonly MaterialPropertyBlock block=new MaterialPropertyBlock();Transform shell,halo;
+        readonly MaterialPropertyBlock block=new MaterialPropertyBlock();Transform shell,halo;float flightLength=5;
         public float VisualClock {get;private set;}
         public Vector3 ShellScale=>shell!=null?shell.localScale:Vector3.zero;
         static Mesh Cloud()
@@ -35,9 +35,9 @@ namespace BigBattle
             v.shell=v.Cell("Translucent bubble shell",Vector3.up*.58f,Vector3.one*1.1f,true).transform;
             v.halo=Art.Ring("Bubble contact halo",v.transform,.48f,.035f,Art.Yellow).transform;v.PaintBomb(0);return v;
         }
-        public static BubbleVisual Blast(Transform parent,Vector3 position,Vector3 across,Vector3 forward,float[] limits)
+        public static BubbleVisual Blast(Transform parent,Vector3 position,Vector3 across,Vector3 forward,float[] limits,float range=5)
         {
-            var go=new GameObject("Near-to-far golden cross explosion");go.transform.SetParent(parent);go.transform.position=position;var v=go.AddComponent<BubbleVisual>();
+            var go=new GameObject("Near-to-far golden cross explosion");go.transform.SetParent(parent);go.transform.position=position;var v=go.AddComponent<BubbleVisual>();v.flightLength=range;
             v.cells.Add(v.Cell("Cross origin",Vector3.zero,Vector3.one*1.45f,false).transform);v.distances.Add(0);
             Vector3[] directions={across,-across,forward,-forward};
             for(int d=0;d<4;d++)for(float start=0;start<limits[d]-.02f;start+=.8f)
@@ -59,7 +59,7 @@ namespace BigBattle
             VisualClock=age;
             for(int i=0;i<cells.Count;i++)
             {
-                float elapsed=age-distances[i]/BubbleField.Length*BubbleField.TravelTime;bool visible=reach+.42f>=distances[i] && elapsed>=-.012f;
+                float elapsed=age-distances[i]/flightLength*BubbleField.TravelTime;bool visible=reach+.42f>=distances[i] && elapsed>=-.012f;
                 cells[i].gameObject.SetActive(visible);if(!visible)continue;
                 float fade=Mathf.Clamp01((.43f-elapsed)/.23f),rise=1+Mathf.Sin(Mathf.Clamp01(elapsed/.28f)*Mathf.PI)*.12f;
                 var scale=cells[i].localScale;scale.y=rise*(i==0?1.4f:1.05f);cells[i].localScale=scale;Tint(renderers[i],elapsed,fade,1);

@@ -11,11 +11,11 @@ namespace BigBattle
         public override int VisualStyle=>8;
         public override float BaseAttackDamage=>80;
         public override string[] ActionNames=>Names;
-        public override float Cooldown(int i)=>i==0?PlacementInterval:0;
+        public override float Cooldown(int i)=>i==0?PlacementInterval*CooldownScale(0):0;
         public override float Remaining(int i)=>i==0?Mathf.Max(0,ready-Time.time):0;
         public override float Casts(int i)=>i==0?uses:0;
-        public int PendingBubbles=>World.Bubbles.PendingFor(this);
-        public override string ActionHint(int i)=>i==0?"在场 "+PendingBubbles+" / 5":"尚未配置";
+        public int PendingBubbles=>World.PendingBubblesFor(this);
+        public override string ActionHint(int i)=>i==0?"在场 "+PendingBubbles+" / "+(HasAugment(26)?7:5):"尚未配置";
         public override void Setup(GameRoot world){SetupTeam(world,0);}
         public override void SetupTeam(GameRoot world,int team)
         {SetupAli(world,team,180,false);}
@@ -31,7 +31,7 @@ namespace BigBattle
             if(!Controlled)
             {
                 if(move.sqrMagnitude>.001f)Facing=move.normalized;
-                transform.position=World.Clamp(transform.position+move*Speed*Time.deltaTime);
+                transform.position=World.Clamp(transform.position+move*Speed*MovementScale*Time.deltaTime);
                 if(input.Attack)Cast(0,move);
             }
             transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(Facing),1-Mathf.Exp(-Time.deltaTime*18));Visual.Animate(Controlled?0:move.magnitude,false);
@@ -40,7 +40,7 @@ namespace BigBattle
         {
             if(skill!=0 || !Alive || Controlled || Remaining(0)>0 || World.Paused || (World.State!=SessionState.Practice && World.State!=SessionState.Battle))return false;
             if(!World.Bubbles.Place(this,transform.position,BaseAttackDamage*AttackScale))return false;
-            ready=Time.time+PlacementInterval;uses++;if(rig!=null)rig.PlayPlace();return true;
+            ready=Time.time+Cooldown(0);uses++;Reveal();if(rig!=null)rig.PlayPlace();return true;
         }
         public override void ResetCombat(){base.ResetCombat();ready=uses=0;if(rig!=null)rig.ResetPose();}
         public override void RespawnAt(Vector3 point,Vector3 direction){base.RespawnAt(point,direction);if(rig!=null)rig.ResetPose();}
@@ -49,6 +49,7 @@ namespace BigBattle
     public sealed partial class GameRoot
     {
         BubbleField bubbles;
+        public int PendingBubblesFor(Combatant owner)=>bubbles!=null?bubbles.PendingFor(owner):0;
         public BubbleField Bubbles
         {
             get
